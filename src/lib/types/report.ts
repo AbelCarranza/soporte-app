@@ -25,10 +25,13 @@ export interface ReportData {
   // Periféricos
   monitor_brand?: string;
   monitor_serial?: string;
+  monitor_code?: string;
   keyboard_brand?: string;
   keyboard_serial?: string;
+  keyboard_code?: string;
   mouse_brand?: string;
   mouse_serial?: string;
+  mouse_code?: string;
   other_peripheral?: string;
 
   // Plan de acción

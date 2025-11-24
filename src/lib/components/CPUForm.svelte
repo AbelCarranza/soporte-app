@@ -1,6 +1,8 @@
 <script lang="ts">
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { reportStore } from '$lib/stores/reportStorage';
+
 	const dispatch = createEventDispatcher();
 
 	let brand = '';
@@ -18,20 +20,37 @@
 	let os = '';
 	let observations = '';
 
-	export function setData(values: any) {
-		brand = values.Brand;
-		asset_code = values.AssetCode; 
-		cpu = values.CPU;
-		speed = values.CPUSpeed;
-		ram = values.RAM;
-		hdd_brand = values.HDDBrand;
-		hdd_capacity = values.HDDCapacity;
-		hdd_technology = values.HDDTechnology;
-		serial = values.Serial;
-		os = values.OS;
-		plate = values.Plate;
-	}
+	reportStore.subscribe((data) => {
+		brand = data.brand ?? '';
+		asset_code = data.asset_code ?? '';
+		cpu = data.cpu ?? '';
+		speed = data.speed ?? '';
+		ram = data.ram ?? '';
+		hdd_brand = data.hdd_brand ?? '';
+		hdd_capacity = data.hdd_capacity ?? '';
+		hdd_technology = data.hdd_technology ?? '';
+		serial = data.serial ?? '';
+		os = data.os ?? '';
+		plate = data.plate ?? '';
+		observations = data.observations ?? '';
+	});
 
+	export function setData(values: any) {
+		reportStore.update((current) => ({
+			...current,
+			brand: values.Brand,
+			asset_code: values.AssetCode,
+			cpu: values.CPU,
+			speed: values.CPUSpeed,
+			ram: values.RAM,
+			hdd_brand: values.HDDBrand,
+			hdd_capacity: values.HDDCapacity,
+			hdd_technology: values.HDDTechnology,
+			serial: values.Serial,
+			os: values.OS,
+			plate: values.Plate
+		}));
+	}
 	export function enviarDatos() {
 		dispatch('update', {
 			brand,

@@ -1,72 +1,91 @@
 <script lang="ts">
-	import InputField from './InputField.svelte';
-	import { createEventDispatcher } from 'svelte';
-	const dispatch = createEventDispatcher();
+  import InputField from './InputField.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import { perifericoStore } from '$lib/stores/perifericoStore';
+  import type { PerifericoData } from '$lib/stores/perifericoStore';
 
-	let showMonitor = false;
-	let showKeyboard = false;
-	let showMouse = false;
-	let showOthers = false;
+  const dispatch = createEventDispatcher();
 
-	let monitor_brand = '';
-	let monitor_code = '';
-	let monitor_serial = '';
+  let showMonitor = false;
+  let showKeyboard = false;
+  let showMouse = false;
+  let showOthers = false;
 
-	let keyboard_brand = '';
-	let keyboard_code = '';
-	let keyboard_serial = '';
+  let monitor_brand = '';
+  let monitor_code = '';
+  let monitor_serial = '';
 
-	let mouse_brand = '';
-	let mouse_code = '';
-	let mouse_serial = '';
+  let keyboard_brand = '';
+  let keyboard_code = '';
+  let keyboard_serial = '';
 
-	let other_peripheral = '';
+  let mouse_brand = '';
+  let mouse_code = '';
+  let mouse_serial = '';
 
-	export function setData(values: any) {
-		if (values.monitor_brand || values.monitor_code || values.monitor_serial) {
-			showMonitor = true;
-			monitor_brand = values.monitor_brand || '';
-			monitor_code = values.monitor_code|| '';
-			monitor_serial = values.monitor_serial || '';
-		}
+  let other_peripheral = '';
 
-		if (values.keyboard_brand || values.keyboard_code || values.keyboard_serial) {
-			showKeyboard = true;
-			
-			keyboard_brand = values.keyboard_brand || '';
-			keyboard_code = values.keyboard_code || '';
-			keyboard_serial = values.keyboard_serial || '';
-			console.log(keyboard_code)
-		}
+  perifericoStore.subscribe((data: PerifericoData) => {
+    showMonitor = data.showMonitor ?? false;
+    showKeyboard = data.showKeyboard ?? false;
+    showMouse = data.showMouse ?? false;
+    showOthers = data.showOthers ?? false;
 
-		if (values.mouse_brand || values.mouse_code || values.mouse_serial) {
-			showMouse = true;
-			mouse_brand = values.mouse_brand || '';
-			mouse_code = values.mouse_code || '';
-			mouse_serial = values.mouse_serial || '';
-		}
+    monitor_brand = data.monitor_brand ?? '';
+    monitor_code = data.monitor_code ?? '';
+    monitor_serial = data.monitor_serial ?? '';
 
-		if (values.other_peripheral) {
-			showOthers = true;
-			other_peripheral = values.other_peripheral;
-		}
-	}
+    keyboard_brand = data.keyboard_brand ?? '';
+    keyboard_code = data.keyboard_code ?? '';
+    keyboard_serial = data.keyboard_serial ?? '';
 
-	export function enviarDatos() {
-		dispatch('update', {
-			monitor_brand,
-			monitor_code,
-			monitor_serial,
-			keyboard_brand,
-			keyboard_code,
-			keyboard_serial,
-			mouse_brand,
-			mouse_code,
-			mouse_serial,
-			other_peripheral
-		});
-	}
+    mouse_brand = data.mouse_brand ?? '';
+    mouse_code = data.mouse_code ?? '';
+    mouse_serial = data.mouse_serial ?? '';
+
+    other_peripheral = data.other_peripheral ?? '';
+  });
+
+  export function setData(values: any) {
+    perifericoStore.update((current) => ({
+      ...current,
+      showMonitor: !!(values.monitor_brand || values.monitor_code || values.monitor_serial),
+      showKeyboard: !!(values.keyboard_brand || values.keyboard_code || values.keyboard_serial),
+      showMouse: !!(values.mouse_brand || values.mouse_code || values.mouse_serial),
+      showOthers: !!values.other_peripheral,
+
+      monitor_brand: values.monitor_brand ?? current.monitor_brand,
+      monitor_code: values.monitor_code ?? current.monitor_code,
+      monitor_serial: values.monitor_serial ?? current.monitor_serial,
+
+      keyboard_brand: values.keyboard_brand ?? current.keyboard_brand,
+      keyboard_code: values.keyboard_code ?? current.keyboard_code,
+      keyboard_serial: values.keyboard_serial ?? current.keyboard_serial,
+
+      mouse_brand: values.mouse_brand ?? current.mouse_brand,
+      mouse_code: values.mouse_code ?? current.mouse_code,
+      mouse_serial: values.mouse_serial ?? current.mouse_serial,
+
+      other_peripheral: values.other_peripheral ?? current.other_peripheral
+    }));
+  }
+
+  export function enviarDatos() {
+    dispatch('update', {
+      monitor_brand,
+      monitor_code,
+      monitor_serial,
+      keyboard_brand,
+      keyboard_code,
+      keyboard_serial,
+      mouse_brand,
+      mouse_code,
+      mouse_serial,
+      other_peripheral
+    });
+  }
 </script>
+
 
 <div class="form-container">
 	<!-- MONITOR -->

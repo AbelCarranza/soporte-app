@@ -1,38 +1,53 @@
 <script lang="ts">
-	import InputField from './InputField.svelte';
-	import { createEventDispatcher } from 'svelte';
+  import InputField from './InputField.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import { reportanteStore } from '$lib/stores/reportanteStore';
+  import type { ReportanteData } from '$lib/stores/reportanteStore';
+  import { get } from 'svelte/store';
 
-	const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher();
 
-	export let reported_by = '';
-	export let location = '';
-	export let technician = '';
+  export let reported_by = '';
+  export let location = '';
+  export let technician = '';
+  let issue_date = '';
 
-	let issue_date = '';
+  // Inicializar desde store
+  $: {
+    const data: ReportanteData = get(reportanteStore);
+    reported_by = data.reported_by ?? '';
+    location = data.location ?? '';
+    technician = data.technician ?? '';
+    issue_date = data.issue_date ?? '';
+  }
 
-	function generarFecha() {
-		const hoy = new Date();
-		const dia = String(hoy.getDate()).padStart(2, '0');
-		const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-		const anio = hoy.getFullYear();
+  function generarFecha() {
+    const hoy = new Date();
+    const dia = String(hoy.getDate()).padStart(2, '0');
+    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+    const anio = hoy.getFullYear();
 
-		issue_date = `${dia}-${mes}-${anio}`;
-	}
+    issue_date = `${dia}-${mes}-${anio}`;
+  }
 
-	generarFecha();
+  generarFecha();
 
-	export function setData(values: any) {
-		location = values.Location;
-	}
+  // Actualizar store desde setData
+  export function setData(values: any) {
+    reportanteStore.update((current) => ({
+      ...current,
+      location: values.Location ?? current.location
+    }));
+  }
 
-	export function enviarDatos() {
-		dispatch('update', {
-			reported_by,
-			location,
-			technician,
-			issue_date
-		});
-	}
+  export function enviarDatos() {
+    dispatch('update', {
+      reported_by,
+      location,
+      technician,
+      issue_date
+    });
+  }
 </script>
 
 <div class="form-container">

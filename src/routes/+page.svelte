@@ -36,7 +36,7 @@
 	async function recibirBusqueda(
 		e: CustomEvent<{ tipo: string; codigo: string; tipoBusqueda: string }>
 	) {
-		const { codigo, tipoBusqueda } = e.detail;
+		const { codigo, tipoBusqueda, tipo } = e.detail;
 
 		const data = await buscarEnSheets(tipoBusqueda, codigo);
 
@@ -44,10 +44,21 @@
 
 		const eq = data[0];
 
-		// Siempre rellenar location
+		// === RELLENAR REPORTANTE COMO ANTES ===
 		reportanteRef?.setData({
 			Location: eq.Location
 		});
+
+		if (tipo === '4') {
+			// === RELLENAR BACKUP ===
+			backupRef?.setData({
+				// aquí van los campos que necesites pasar al backup
+				backupField1: eq.BackupField1,
+				backupField2: eq.BackupField2
+				// etc.
+			});
+			return; // si solo quieres enviar al backup, puedes terminar aquí
+		}
 
 		// === 1. BÚSQUEDA POR CÓDIGO PATRIMONIAL ===
 		if (tipoBusqueda === '1') {
@@ -55,27 +66,24 @@
 				case 'AssetCode':
 					cpuForm?.setData(eq);
 					break;
-
 				case 'MonitorCode':
 					perifericoRef?.setData({
 						monitor_brand: eq.MonitorBrand,
-						monitor_code: eq.MonitorCode, // <--- agregar
+						monitor_code: eq.MonitorCode,
 						monitor_serial: eq.MonitorSerial
 					});
 					break;
-
 				case 'KeyboardCode':
 					perifericoRef?.setData({
 						keyboard_brand: eq.KeyboardBrand,
-						keyboard_code: eq.KeyboardCode, // <--- agregar
+						keyboard_code: eq.KeyboardCode,
 						keyboard_serial: eq.KeyboardSerial
 					});
 					break;
-
 				case 'MouseCode':
 					perifericoRef?.setData({
 						mouse_brand: eq.MouseBrand,
-						mouse_code: eq.MouseCode, // <--- agregar
+						mouse_code: eq.MouseCode,
 						mouse_serial: eq.MouseSerial
 					});
 					break;
@@ -89,21 +97,18 @@
 			case 'Serial':
 				cpuForm?.setData(eq);
 				break;
-
 			case 'MonitorSerial':
 				perifericoRef?.setData({
 					monitor_brand: eq.MonitorBrand,
 					monitor_serial: eq.MonitorSerial
 				});
 				break;
-
 			case 'KeyboardSerial':
 				perifericoRef?.setData({
 					keyboard_brand: eq.KeyboardBrand,
 					keyboard_serial: eq.KeyboardSerial
 				});
 				break;
-
 			case 'MouseSerial':
 				perifericoRef?.setData({
 					mouse_brand: eq.MouseBrand,

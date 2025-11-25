@@ -5,6 +5,8 @@
 	import PerifericoForm from '$lib/components/PerifericoForm.svelte';
 	import ReportanteForm from '$lib/components/ReportanteForm.svelte';
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
+	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
+	import PerifericoReplacementForm from '$lib/components/PerifericoReplacementForm.svelte';
 
 	import { initialReportData } from '$lib/constants/initialReportData';
 	import { buscarEnSheets } from '../lib/services/sheets';
@@ -18,16 +20,27 @@
 
 	type FormWithEnviarDatos = SvelteComponent & { enviarDatos: () => void };
 
+	$: esReemplazo = reportData.selected_decision === 'Reemplazo con Equipo de Reserva';
+	console.log(reportData.selected_decision);
+
 	let reportanteRef: FormWithEnviarDatos | undefined;
 	let cpuForm: FormWithEnviarDatos | undefined;
 	let perifericoRef: FormWithEnviarDatos | undefined;
 	let backupRef: FormWithEnviarDatos | undefined;
+	let cpuReplacementRef: FormWithEnviarDatos | undefined;
+	let perifericoReplacementRef: FormWithEnviarDatos | undefined;
+
+	$: totalSteps = esReemplazo ? 6 : 4;
 
 	function next() {
 		if (step === 1 && reportanteRef) reportanteRef.enviarDatos();
 		if (step === 2 && cpuForm) cpuForm.enviarDatos();
 		if (step === 3 && perifericoRef) perifericoRef.enviarDatos();
-		if (step < 4) step++;
+		if (step === 4 && backupRef) backupRef.enviarDatos();
+		if (step === 5 && cpuReplacementRef) cpuReplacementRef.enviarDatos();
+		if (step === 6 && perifericoReplacementRef) perifericoReplacementRef.enviarDatos();
+
+		if (step < totalSteps) step++;
 	}
 	function prev() {
 		if (step > 1) step--;
@@ -44,22 +57,20 @@
 
 		const eq = data[0];
 
-		// === RELLENAR REPORTANTE COMO ANTES ===
 		reportanteRef?.setData({
 			Location: eq.Location
 		});
 
 		if (tipo === '4') {
-			// === RELLENAR BACKUP ===
 			backupRef?.setData({
-				// aquí van los campos que necesites pasar al backup
-				backupField1: eq.BackupField1,
-				backupField2: eq.BackupField2
-				// etc.
+				selected_decision: 'Reemplazo con Equipo de Reserva',
+				replacement_brand: eq.Brand,
+				replacement_serial: eq.Serial,
+				replacement_asset_code: eq.AssetCode,
+				replacement_specs: eq.Specs
 			});
-			return; // si solo quieres enviar al backup, puedes terminar aquí
+			return;
 		}
-
 		// === 1. BÚSQUEDA POR CÓDIGO PATRIMONIAL ===
 		if (tipoBusqueda === '1') {
 			switch (eq.matchField) {
@@ -133,11 +144,21 @@
 	<div class="steps">
 		<div class="step {step >= 1 ? 'active' : ''}">1</div>
 		<div class="line"></div>
+
 		<div class="step {step >= 2 ? 'active' : ''}">2</div>
 		<div class="line"></div>
+
 		<div class="step {step >= 3 ? 'active' : ''}">3</div>
 		<div class="line"></div>
+
 		<div class="step {step >= 4 ? 'active' : ''}">4</div>
+
+		{#if esReemplazo}
+			<div class="line"></div>
+			<div class="step {step >= 5 ? 'active' : ''}">5</div>
+			<div class="line"></div>
+			<div class="step {step >= 6 ? 'active' : ''}">6</div>
+		{/if}
 	</div>
 
 	<div class="form-card">
@@ -145,9 +166,7 @@
 			<h2>Datos del Reportante</h2>
 			<ReportanteForm
 				bind:this={reportanteRef}
-				on:update={(e) => {
-					reportData = { ...reportData, ...e.detail };
-				}}
+				on:update={(e) => (reportData = { ...reportData, ...e.detail })}
 			/>
 		{/if}
 
@@ -155,9 +174,7 @@
 			<h2>Datos del Equipo</h2>
 			<CPUForm
 				bind:this={cpuForm}
-				on:update={(e) => {
-					reportData = { ...reportData, ...e.detail };
-				}}
+				on:update={(e) => (reportData = { ...reportData, ...e.detail })}
 			/>
 		{/if}
 
@@ -165,14 +182,13 @@
 			<h2>Periféricos</h2>
 			<PerifericoForm
 				bind:this={perifericoRef}
-				on:update={(e) => {
-					reportData = { ...reportData, ...e.detail };
-				}}
+				on:update={(e) => (reportData = { ...reportData, ...e.detail })}
 			/>
 		{/if}
 
 		{#if step === 4}
 			<h2>Backup</h2>
+
 			<BackupForm
 				bind:this={backupRef}
 				on:update={(e) => {
@@ -180,15 +196,42 @@
 				}}
 			/>
 
+		{/if}
+
+		<!-- PASO 5: CPU DE REEMPLAZO -->
+		{#if step === 5 && esReemplazo}
+			<h2>Datos del Equipo de Reemplazo</h2>
+			<CPUReplacementForm
+				bind:this={cpuReplacementRef}
+				on:update={(e) => {
+					reportData = { ...reportData, replacement_cpu: e.detail };
+				}}
+			/>
+		{/if}
+
+		<!-- PASO 6: PERIFÉRICOS DE REEMPLAZO -->
+		{#if step === 6 && esReemplazo}
+			<h2>Periféricos del Equipo de Reemplazo</h2>
+			<PerifericoReplacementForm
+				bind:this={perifericoReplacementRef}
+				on:update={(e) => {
+					reportData = { ...reportData, replacement_peripherals: e.detail };
+				}}
+			/>
+		{/if}
+
+		{#if (!esReemplazo && step === 4) || (esReemplazo && step === 6)}
 			<FinalButtons on:generarWord={generarWord} on:enviarSheets={enviarSheets} />
 		{/if}
 
+		<!-- BOTONES -->
 		<div class="nav-buttons">
 			{#if step > 1}
 				<button class="btn prev" on:click={prev}>Atrás</button>
 			{/if}
 
-			{#if step < 4}
+			<!-- Condición dinámica -->
+			{#if (!esReemplazo && step < 4) || (esReemplazo && step < 6)}
 				<button class="btn next" on:click={next}>Siguiente</button>
 			{/if}
 		</div>

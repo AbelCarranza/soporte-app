@@ -17,7 +17,6 @@
 	let hdd_capacity = '';
 	let hdd_technology = '';
 
-	let os = '';
 	let observations = '';
 
 	reportStore.subscribe((data) => {
@@ -30,7 +29,6 @@
 		hdd_capacity = data.hdd_capacity ?? '';
 		hdd_technology = data.hdd_technology ?? '';
 		serial = data.serial ?? '';
-		os = data.os ?? '';
 		plate = data.plate ?? '';
 		observations = data.observations ?? '';
 	});
@@ -47,7 +45,6 @@
 			hdd_capacity: values.HDDCapacity,
 			hdd_technology: values.HDDTechnology,
 			serial: values.Serial,
-			os: values.OS,
 			plate: values.Plate
 		}));
 	}
@@ -63,7 +60,6 @@
 			hdd_brand,
 			hdd_capacity,
 			hdd_technology,
-			os,
 			observations
 		});
 	}
@@ -138,24 +134,6 @@
 						label="Tecnología"
 						bind:value={hdd_technology}
 						placeholder="Ej: SSD, HDD, NVMe"
-						required
-					/>
-				</div>
-			</div>
-		</div>
-
-		<!-- Sección de Sistema Operativo -->
-		<div class="form-section">
-			<h2 class="section-title">
-				<span class="icon">🖥️</span>
-				Sistema Operativo
-			</h2>
-			<div class="form-grid">
-				<div class="form-row">
-					<InputField
-						label="Sistema Operativo"
-						bind:value={os}
-						placeholder="Ej: Windows 10 Pro, Ubuntu 20.04"
 						required
 					/>
 				</div>

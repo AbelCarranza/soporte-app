@@ -5,10 +5,6 @@
 
 	let selected_decision = '';
 	let action_plan = '';
-	let replacement_brand = '';
-	let replacement_serial = '';
-	let replacement_asset_code = '';
-	let replacement_specs = '';
 	let other_description = '';
 
 	const decisionOptions = [
@@ -20,28 +16,32 @@
 		{ value: 'other', label: 'Otro' }
 	];
 
-	$: showReplacementFields = selected_decision === 'Reemplazo con Equipo de Reserva';
+	// Mostrar campo adicional
 	$: showOtherFields = selected_decision === 'other';
 
-$: {
-	if (selected_decision === 'other') {
-		action_plan = other_description;
-		console.log("actio ", action_plan)
-	} else if (selected_decision) {
-		action_plan = selected_decision;
-		other_description = '';
-		console.log("other ", action_plan)
+	// Lógica de action_plan
+	$: {
+		if (selected_decision === 'other') {
+			action_plan = other_description;
+		} else if (selected_decision) {
+			action_plan = selected_decision;
+			other_description = '';
+		}
 	}
-}
 
+	// 🔥 Emitir cambios solo cuando haya valores relevantes
+	$: if (selected_decision !== '' || action_plan !== '') {
+		dispatch('update', {
+			action_plan,
+			selected_decision
+		});
+	}
+
+	// Para cuando se hace click en "Siguiente"
 	export function enviarDatos() {
 		dispatch('update', {
 			action_plan,
-			replacement_brand,
-			replacement_serial,
-			replacement_asset_code,
-			replacement_specs
-
+			selected_decision
 		});
 	}
 </script>
@@ -75,45 +75,6 @@ $: {
 			</div>
 		</div>
 	</div>
-
-	<!-- Sección de Reemplazo con Equipo de Reserva -->
-	{#if showReplacementFields}
-		<div class="form-section conditional-section">
-			<h2 class="section-title">
-				<span class="icon">🔄</span>
-				Equipo de Reemplazo
-			</h2>
-			<div class="form-grid">
-				<div class="form-row">
-					<InputField
-						label="Marca / Modelo"
-						bind:value={replacement_brand}
-						placeholder="Ej: Dell Latitude 5420"
-						required
-					/>
-					<InputField
-						label="Número de Serie"
-						bind:value={replacement_serial}
-						placeholder="Ej: SN987654321"
-						required
-					/>
-				</div>
-				<div class="form-row">
-					<InputField
-						label="Código Patrimonial"
-						bind:value={replacement_asset_code}
-						placeholder="Ej: PAT-005678"
-						required
-					/>
-					<InputField
-						label="Especificaciones Técnicas"
-						bind:value={replacement_specs}
-						placeholder="Ej: Intel i7, 16GB RAM, 512GB SSD"
-					/>
-				</div>
-			</div>
-		</div>
-	{/if}
 
 	<!-- Sección de Otro -->
 	{#if showOtherFields}

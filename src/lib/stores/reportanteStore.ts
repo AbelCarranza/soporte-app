@@ -1,11 +1,6 @@
 import { writable } from 'svelte/store';
+import type { ReportanteData } from '$lib/types/ReportanteData';
 
-export interface ReportanteData {
-  reported_by?: string;
-  location?: string;
-  technician?: string;
-  issue_date?: string;
-}
 
 
 const initialData: ReportanteData = {};

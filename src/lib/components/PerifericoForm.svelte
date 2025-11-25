@@ -23,7 +23,7 @@
   let mouse_code = '';
   let mouse_serial = '';
 
-  let other_peripheral = '';
+  
 
   perifericoStore.subscribe((data: PerifericoData) => {
     showMonitor = data.showMonitor ?? false;
@@ -43,7 +43,6 @@
     mouse_code = data.mouse_code ?? '';
     mouse_serial = data.mouse_serial ?? '';
 
-    other_peripheral = data.other_peripheral ?? '';
   });
 
   export function setData(values: any) {
@@ -65,8 +64,6 @@
       mouse_brand: values.mouse_brand ?? current.mouse_brand,
       mouse_code: values.mouse_code ?? current.mouse_code,
       mouse_serial: values.mouse_serial ?? current.mouse_serial,
-
-      other_peripheral: values.other_peripheral ?? current.other_peripheral
     }));
   }
 
@@ -81,7 +78,6 @@
       mouse_brand,
       mouse_code,
       mouse_serial,
-      other_peripheral
     });
   }
 </script>
@@ -185,25 +181,6 @@
 		{/if}
 	</div>
 
-	<!-- OTROS -->
-	<div class="form-section">
-		<label class="section-toggle">
-			<input type="checkbox" bind:checked={showOthers} />
-			<span>🔌 Otros periféricos</span>
-		</label>
-
-		{#if showOthers}
-			<div class="form-grid">
-				<div class="form-row full-width">
-					<InputField
-						label="Descripción de Otros Periféricos"
-						bind:value={other_peripheral}
-						placeholder="Ej: Webcam Logitech C920, Parlantes, Tableta Wacom..."
-					/>
-				</div>
-			</div>
-		{/if}
-	</div>
 </div>
 <style>
 	.form-container {
@@ -240,10 +217,6 @@
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 20px;
 		align-items: start;
-	}
-
-	.form-row.full-width {
-		grid-template-columns: 1fr;
 	}
 
 	.form-section .form-row {
@@ -295,7 +268,6 @@
 		}
 	}
 
-	/* Efecto sutil al hacer hover en toda la sección */
 	.form-section {
 		cursor: pointer;
 	}

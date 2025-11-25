@@ -37,12 +37,19 @@ export interface ReportData {
   // Plan de acción
   action_plan?: string;
 
-  // Equipo de reemplazo
-  replacement_brand?: string;
-  replacement_serial?: string;
-  replacement_asset_code?: string;
-  replacement_specs?: string;
+	// Agregar este campo:
+	selected_decision: string;
 
+	// Si tu BackupForm tiene estos, agrégalos también:
+	replacement_brand?: string;
+	replacement_serial?: string;
+	replacement_asset_code?: string;
+	replacement_specs?: string;
+
+	// Si harás pasos 5 y 6:
+	replacement_cpu?: any;
+	replacement_peripherals?: any;
+  
   // Registro y cierre
   technician?: string;
 }

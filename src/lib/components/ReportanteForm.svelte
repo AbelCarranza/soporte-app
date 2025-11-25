@@ -28,11 +28,9 @@
     const anio = hoy.getFullYear();
 
     issue_date = `${dia}-${mes}-${anio}`;
+	
   }
 
-  generarFecha();
-
-  // Actualizar store desde setData
   export function setData(values: any) {
     reportanteStore.update((current) => ({
       ...current,
@@ -41,6 +39,7 @@
   }
 
   export function enviarDatos() {
+	generarFecha();
     dispatch('update', {
       reported_by,
       location,

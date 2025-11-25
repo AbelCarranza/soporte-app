@@ -18,7 +18,6 @@ export interface ReportData {
   hdd_brand?: string;
   hdd_capacity?: string;
   hdd_technology?: string;
-  operating_system?: string;
 
   observations?: string;
 
@@ -32,7 +31,6 @@ export interface ReportData {
   mouse_brand?: string;
   mouse_serial?: string;
   mouse_code?: string;
-  other_peripheral?: string;
 
   // Plan de acción
   action_plan?: string;
@@ -40,15 +38,35 @@ export interface ReportData {
 	// Agregar este campo:
 	selected_decision: string;
 
-	// Si tu BackupForm tiene estos, agrégalos también:
-	replacement_brand?: string;
-	replacement_serial?: string;
-	replacement_asset_code?: string;
-	replacement_specs?: string;
+  // Datos del equipo BK
+  bk_brand?: string;
+  bk_asset?: string;
+  bk_serial?: string;
+  bk_plate?: string;
+  bk_cpu?: string;
+  bk_speed?: string;
+  bk_ram?: string;
 
-	// Si harás pasos 5 y 6:
-	replacement_cpu?: any;
-	replacement_peripherals?: any;
+  // Disco duro BK
+  bk_hdbrand: string;
+  bk_hdd_cap?: string;
+  bk_hdd_tech?: string;
+  bk_obs?: string;
+
+
+  // Periféricos BK
+  bk_monitor?: string;
+  bk_mon_serial?: string;
+  bk_mon_code?: string;
+  bk_keyboard?: string;
+  bk_key_serial?: string;
+  bk_key_code?: string;
+  bk_mouse?: string;
+  bk_mouse_code?: string;
+  bk_mouse_serial?: string;
+
+
+
   
   // Registro y cierre
   technician?: string;

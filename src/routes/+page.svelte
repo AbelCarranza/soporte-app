@@ -7,21 +7,29 @@
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
 	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
 	import PerifericoReplacementForm from '$lib/components/PerifericoReplacementForm.svelte';
+	import { decisionStore } from '$lib/stores/decisionStore';
+	import { stepStore } from '$lib/stores/stepStore';
+	import { get } from 'svelte/store';
 
 	import { initialReportData } from '$lib/constants/initialReportData';
-	import { buscarEnSheets } from '../lib/services/sheets';
+	import { generarFicha } from '$lib/services/docGenerator';
+	import { recibirBusquedaHandler } from '$lib/services/recibirBusqueda';
 	import type { ReportData } from '$lib/types/report';
 	import type { SvelteComponent } from 'svelte';
-	import { generarFicha } from '$lib/services/docGenerator';
 
-	let step = 1;
+	let step = get(stepStore);
+	const decisionData = get(decisionStore);
 
-	let reportData: ReportData = { ...initialReportData };
+	$: stepStore.set(step);
+
+	let reportData: ReportData = {
+		...initialReportData,
+		...decisionData 
+	};
 
 	type FormWithEnviarDatos = SvelteComponent & { enviarDatos: () => void };
 
 	$: esReemplazo = reportData.selected_decision === 'Reemplazo con Equipo de Reserva';
-	console.log(reportData.selected_decision);
 
 	let reportanteRef: FormWithEnviarDatos | undefined;
 	let cpuForm: FormWithEnviarDatos | undefined;
@@ -47,89 +55,21 @@
 	}
 
 	async function recibirBusqueda(
-		e: CustomEvent<{ tipo: string; codigo: string; tipoBusqueda: string }>
+		e: CustomEvent<{ tipo: string; codigo: string; form: string }>
 	) {
-		const { codigo, tipoBusqueda, tipo } = e.detail;
-
-		const data = await buscarEnSheets(tipoBusqueda, codigo);
-
-		if (!data || data.length === 0) return;
-
-		const eq = data[0];
-
-		reportanteRef?.setData({
-			Location: eq.Location
+		await recibirBusquedaHandler(e, {
+			reportanteRef,
+			cpuForm,
+			perifericoRef,
+			cpuReplacementRef,
+			perifericoReplacementRef
 		});
-
-		if (tipo === '4') {
-			backupRef?.setData({
-				selected_decision: 'Reemplazo con Equipo de Reserva',
-				replacement_brand: eq.Brand,
-				replacement_serial: eq.Serial,
-				replacement_asset_code: eq.AssetCode,
-				replacement_specs: eq.Specs
-			});
-			return;
-		}
-		// === 1. BÚSQUEDA POR CÓDIGO PATRIMONIAL ===
-		if (tipoBusqueda === '1') {
-			switch (eq.matchField) {
-				case 'AssetCode':
-					cpuForm?.setData(eq);
-					break;
-				case 'MonitorCode':
-					perifericoRef?.setData({
-						monitor_brand: eq.MonitorBrand,
-						monitor_code: eq.MonitorCode,
-						monitor_serial: eq.MonitorSerial
-					});
-					break;
-				case 'KeyboardCode':
-					perifericoRef?.setData({
-						keyboard_brand: eq.KeyboardBrand,
-						keyboard_code: eq.KeyboardCode,
-						keyboard_serial: eq.KeyboardSerial
-					});
-					break;
-				case 'MouseCode':
-					perifericoRef?.setData({
-						mouse_brand: eq.MouseBrand,
-						mouse_code: eq.MouseCode,
-						mouse_serial: eq.MouseSerial
-					});
-					break;
-			}
-
-			return;
-		}
-
-		// === 2. BÚSQUEDA POR SERIE ===
-		switch (eq.matchField) {
-			case 'Serial':
-				cpuForm?.setData(eq);
-				break;
-			case 'MonitorSerial':
-				perifericoRef?.setData({
-					monitor_brand: eq.MonitorBrand,
-					monitor_serial: eq.MonitorSerial
-				});
-				break;
-			case 'KeyboardSerial':
-				perifericoRef?.setData({
-					keyboard_brand: eq.KeyboardBrand,
-					keyboard_serial: eq.KeyboardSerial
-				});
-				break;
-			case 'MouseSerial':
-				perifericoRef?.setData({
-					mouse_brand: eq.MouseBrand,
-					mouse_serial: eq.MouseSerial
-				});
-				break;
-		}
 	}
 
 	function generarWord() {
+		if (step === 6 && perifericoReplacementRef) {
+			perifericoReplacementRef.enviarDatos();
+		}
 		generarFicha(reportData);
 	}
 
@@ -195,7 +135,6 @@
 					reportData = { ...reportData, ...e.detail };
 				}}
 			/>
-
 		{/if}
 
 		<!-- PASO 5: CPU DE REEMPLAZO -->
@@ -204,7 +143,7 @@
 			<CPUReplacementForm
 				bind:this={cpuReplacementRef}
 				on:update={(e) => {
-					reportData = { ...reportData, replacement_cpu: e.detail };
+					reportData = { ...reportData, ...e.detail };
 				}}
 			/>
 		{/if}
@@ -215,7 +154,7 @@
 			<PerifericoReplacementForm
 				bind:this={perifericoReplacementRef}
 				on:update={(e) => {
-					reportData = { ...reportData, replacement_peripherals: e.detail };
+					reportData = { ...reportData, ...e.detail };
 				}}
 			/>
 		{/if}

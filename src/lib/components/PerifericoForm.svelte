@@ -2,7 +2,6 @@
   import InputField from './InputField.svelte';
   import { createEventDispatcher } from 'svelte';
   import { perifericoStore } from '$lib/stores/perifericoStore';
-  import type { PerifericoData } from '$lib/stores/perifericoStore';
 
   const dispatch = createEventDispatcher();
 
@@ -25,7 +24,7 @@
 
   
 
-  perifericoStore.subscribe((data: PerifericoData) => {
+  perifericoStore.subscribe((data: any) => {
     showMonitor = data.showMonitor ?? false;
     showKeyboard = data.showKeyboard ?? false;
     showMouse = data.showMouse ?? false;

@@ -2,7 +2,7 @@
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
     import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
-    import type { BackupPerifericoData } from '$lib/stores/backupPerifericoStore';
+
 
 	const dispatch = createEventDispatcher();
 
@@ -24,9 +24,8 @@
 	let bk_mouse_code = '';
 	let bk_mouse_serial = '';
 
-	let bk_other_peripherals = '';
 
-	backupPerifericoStore.subscribe((data: BackupPerifericoData) => {
+	backupPerifericoStore.subscribe((data: any) => {
 		showMonitor = data.showMonitor ?? false;
 		showKeyboard = data.showKeyboard ?? false;
 		showMouse = data.showMouse ?? false;
@@ -44,7 +43,6 @@
 		bk_mouse_code = data.bk_mouse_code ?? '';
 		bk_mouse_serial = data.bk_mouse_serial ?? '';
 
-		bk_other_peripherals = data.bk_other_peripherals ?? '';
 	});
 
 	export function setData(values: any) {
@@ -54,7 +52,6 @@
 			showMonitor: !!(values.bk_monitor || values.bk_mon_code || values.bk_mon_serial),
 			showKeyboard: !!(values.bk_keyboard || values.bk_key_code || values.bk_key_serial),
 			showMouse: !!(values.bk_mouse || values.bk_mouse_code || values.bk_mouse_serial),
-			showOthers: !!values.bk_other_peripherals,
 
 			bk_monitor: values.bk_monitor ?? current.bk_monitor,
 			bk_mon_code: values.bk_mon_code ?? current.bk_mon_code,
@@ -68,11 +65,11 @@
 			bk_mouse_code: values.bk_mouse_code ?? current.bk_mouse_code,
 			bk_mouse_serial: values.bk_mouse_serial ?? current.bk_mouse_serial,
 
-			bk_other_peripherals: values.bk_other_peripherals ?? current.bk_other_peripherals
 		}));
 	}
 
 	export function enviarDatos() {
+		console.log(bk_monitor)
 		dispatch('update', {
 			bk_monitor,
 			bk_mon_code,
@@ -83,7 +80,6 @@
 			bk_mouse,
 			bk_mouse_code,
 			bk_mouse_serial,
-			bk_other_peripherals
 		});
 	}
 </script>
@@ -179,10 +175,6 @@
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
 		gap: 20px;
 		align-items: start;
-	}
-
-	.form-row.full-width {
-		grid-template-columns: 1fr;
 	}
 
 	.form-section .form-row {

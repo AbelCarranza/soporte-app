@@ -1,7 +1,7 @@
 import type { ReportData } from '$lib/types/report';
 
 export async function generarFicha(data: ReportData) {
-	// Importar SOLO dentro de la función (en cliente)
+    
 	const PizZip = (await import('pizzip')).default;
 	const Docxtemplater = (await import('docxtemplater')).default;
 	const PizZipUtils = (await import('pizzip/utils/index.js')).default;

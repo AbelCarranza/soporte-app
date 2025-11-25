@@ -3,7 +3,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	import { replacementStore } from '$lib/stores/replacementStorage';
-	import type { ReplacementData } from '$lib/stores/replacementStorage';
+	
 
 	const dispatch = createEventDispatcher();
 
@@ -21,11 +21,10 @@
 
 	let bk_obs = '';
 
-	// Para evitar loop
 	let initialized = false;
 
-	// === PARA AUTORELLENO DESDE SHEETS ===
 	export function setData(values: any) {
+		console.log(values)
 		bk_brand = values?.Brand ?? '';
 		bk_asset = values?.AssetCode ?? '';
 		bk_serial = values?.Serial ?? '';
@@ -42,7 +41,7 @@
 	}
 
 	// === CARGAR DESDE STORAGE ===
-	replacementStore.subscribe((data: ReplacementData) => {
+	replacementStore.subscribe((data:any) => {
 		bk_brand = data.bk_brand ?? '';
 		bk_asset = data.bk_asset ?? '';
 		bk_serial = data.bk_serial ?? '';
@@ -78,7 +77,6 @@
 		}));
 	}
 
-	// === ENVÍO AL PADRE ===
 	export function enviarDatos() {
 		dispatch('update', {
 			bk_brand,

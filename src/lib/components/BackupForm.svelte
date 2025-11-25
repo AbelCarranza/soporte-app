@@ -1,11 +1,15 @@
 <script lang="ts">
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
+	import { decisionStore } from '$lib/stores/decisionStore';
+	import { get } from 'svelte/store';
 	const dispatch = createEventDispatcher();
 
-	let selected_decision = '';
-	let action_plan = '';
-	let other_description = '';
+	const stored = get(decisionStore);
+
+	let selected_decision = stored.selected_decision;
+	let action_plan = stored.action_plan;
+	let other_description = stored.other_description || '';
 
 	const decisionOptions = [
 		{ value: '', label: 'Seleccione una opción', disabled: true },
@@ -16,10 +20,8 @@
 		{ value: 'other', label: 'Otro' }
 	];
 
-	// Mostrar campo adicional
 	$: showOtherFields = selected_decision === 'other';
 
-	// Lógica de action_plan
 	$: {
 		if (selected_decision === 'other') {
 			action_plan = other_description;
@@ -29,20 +31,14 @@
 		}
 	}
 
-	// 🔥 Emitir cambios solo cuando haya valores relevantes
+	$: decisionStore.set({ selected_decision, action_plan, other_description });
+
 	$: if (selected_decision !== '' || action_plan !== '') {
-		dispatch('update', {
-			action_plan,
-			selected_decision
-		});
+		dispatch('update', { action_plan, selected_decision });
 	}
 
-	// Para cuando se hace click en "Siguiente"
 	export function enviarDatos() {
-		dispatch('update', {
-			action_plan,
-			selected_decision
-		});
+		dispatch('update', { action_plan, selected_decision });
 	}
 </script>
 

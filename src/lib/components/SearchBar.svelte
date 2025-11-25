@@ -4,7 +4,7 @@
 	const dispatch = createEventDispatcher();
 
 	let codigo = ''; 
-	let tipoBusqueda = '1'; 
+	let form = '1'; 
 	let tipo = '3'; 
 
 	function buscar() {
@@ -13,7 +13,7 @@
 		dispatch('buscar', {
 			tipo,
 			codigo,
-			tipoBusqueda
+			form
 		});
 	}
 </script>
@@ -24,12 +24,12 @@
 
 	<div class="radios">
 		<label>
-			<input type="radio" bind:group={tipoBusqueda} value="1" />
+			<input type="radio" bind:group={form} value="1" />
 			Código patrimonial
 		</label>
 
 		<label>
-			<input type="radio" bind:group={tipoBusqueda} value="2" />
+			<input type="radio" bind:group={form} value="2" />
 			Serie
 		</label>
 	</div>

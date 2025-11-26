@@ -16,5 +16,5 @@ export interface BackupPerifericoData {
   bk_mouse_code?: string;
   bk_mouse_serial?: string;
 
-  bk_other_peripherals?: string;
+  bk_obs?: string;
 }

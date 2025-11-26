@@ -186,6 +186,7 @@
 		justify-content: space-around;
 		align-items: center;
 		background-color: #1e5aa8;
+		box-shadow: -2px 12px 5px 2px rgb(0 0 255 / 0.2);
 	}
 	.container-head img {
 		padding: 10px;

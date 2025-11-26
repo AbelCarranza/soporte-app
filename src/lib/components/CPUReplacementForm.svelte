@@ -3,7 +3,6 @@
 	import { createEventDispatcher } from 'svelte';
 
 	import { replacementStore } from '$lib/stores/replacementStorage';
-	
 
 	const dispatch = createEventDispatcher();
 
@@ -19,29 +18,11 @@
 	let bk_hdd_cap = '';
 	let bk_hdd_tech = '';
 
-	let bk_obs = '';
 
 	let initialized = false;
 
-	export function setData(values: any) {
-		console.log(values)
-		bk_brand = values?.Brand ?? '';
-		bk_asset = values?.AssetCode ?? '';
-		bk_serial = values?.Serial ?? '';
-		bk_plate = values?.Plate ?? '';
-		bk_cpu = values?.CPU ?? '';
-		bk_speed = values?.CPUSpeed ?? '';
-		bk_ram = values?.RAM ?? '';
-
-		bk_hdbrand = values?.HDDBrand ?? '';
-		bk_hdd_cap = values?.HDDCapacity ?? '';
-		bk_hdd_tech = values?.HDDTechnology ?? '';
-
-		bk_obs = values?.Observations ?? '';
-	}
-
 	// === CARGAR DESDE STORAGE ===
-	replacementStore.subscribe((data:any) => {
+	replacementStore.subscribe((data: any) => {
 		bk_brand = data.bk_brand ?? '';
 		bk_asset = data.bk_asset ?? '';
 		bk_serial = data.bk_serial ?? '';
@@ -54,10 +35,23 @@
 		bk_hdd_cap = data.bk_hdd_cap ?? '';
 		bk_hdd_tech = data.bk_hdd_tech ?? '';
 
-		bk_obs = data.bk_obs ?? '';
-
 		initialized = true;
 	});
+
+	export function setData(values: any) {
+		console.log(values);
+		bk_brand = values?.Brand ?? '';
+		bk_asset = values?.AssetCode ?? '';
+		bk_serial = values?.Serial ?? '';
+		bk_plate = values?.Plate ?? '';
+		bk_cpu = values?.CPU ?? '';
+		bk_speed = values?.CPUSpeed ?? '';
+		bk_ram = values?.RAM ?? '';
+
+		bk_hdbrand = values?.HDDBrand ?? '';
+		bk_hdd_cap = values?.HDDCapacity ?? '';
+		bk_hdd_tech = values?.HDDTechnology ?? '';
+	}
 
 	// === GUARDAR CAMBIOS EN STORAGE SOLO SI YA CARGÓ ===
 	$: if (initialized) {
@@ -73,7 +67,6 @@
 			bk_hdbrand,
 			bk_hdd_cap,
 			bk_hdd_tech,
-			bk_obs
 		}));
 	}
 
@@ -89,11 +82,9 @@
 			bk_hdbrand,
 			bk_hdd_cap,
 			bk_hdd_tech,
-			bk_obs
 		});
 	}
 </script>
-
 
 <div class="form-container">
 	<!-- Información del Equipo de Reemplazo -->
@@ -163,23 +154,6 @@
 			</div>
 		</div>
 
-		<!-- Observaciones -->
-		<div class="form-section">
-			<h2 class="section-title">
-				<span class="icon">📝</span>
-				Observaciones
-			</h2>
-
-			<div class="form-grid">
-				<div class="form-row full-width">
-					<InputField
-						label="Observaciones"
-						bind:value={bk_obs}
-						placeholder="Ingrese observaciones..."
-					/>
-				</div>
-			</div>
-		</div>
 	</div>
 </div>
 

@@ -17,8 +17,6 @@
 	let hdd_capacity = '';
 	let hdd_technology = '';
 
-	let observations = '';
-
 	reportStore.subscribe((data) => {
 		brand = data.brand ?? '';
 		asset_code = data.asset_code ?? '';
@@ -30,7 +28,6 @@
 		hdd_technology = data.hdd_technology ?? '';
 		serial = data.serial ?? '';
 		plate = data.plate ?? '';
-		observations = data.observations ?? '';
 	});
 
 	export function setData(values: any) {
@@ -60,7 +57,6 @@
 			hdd_brand,
 			hdd_capacity,
 			hdd_technology,
-			observations
 		});
 	}
 </script>
@@ -139,23 +135,6 @@
 				</div>
 			</div>
 		</div>
-
-		<!-- Sección de Observaciones -->
-		<div class="form-section">
-			<h2 class="section-title">
-				<span class="icon">📝</span>
-				Observaciones
-			</h2>
-			<div class="form-grid">
-				<div class="form-row full-width">
-					<InputField
-						label="Observaciones"
-						bind:value={observations}
-						placeholder="Ingrese cualquier observación adicional..."
-					/>
-				</div>
-			</div>
-		</div>
 	</div>
 </div>
 
@@ -210,10 +189,6 @@
 		grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
 		gap: 20px;
 		align-items: start;
-	}
-
-	.form-row.full-width {
-		grid-template-columns: 1fr;
 	}
 
 	/* Responsive */

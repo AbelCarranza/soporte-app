@@ -1,86 +1,87 @@
 <script lang="ts">
-  import InputField from './InputField.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import { perifericoStore } from '$lib/stores/perifericoStore';
+	import InputField from './InputField.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import { perifericoStore } from '$lib/stores/perifericoStore';
 
-  const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher();
 
-  let showMonitor = false;
-  let showKeyboard = false;
-  let showMouse = false;
-  let showOthers = false;
+	let showMonitor = false;
+	let showKeyboard = false;
+	let showMouse = false;
+	let showOthers = false;
 
-  let monitor_brand = '';
-  let monitor_code = '';
-  let monitor_serial = '';
+	let monitor_brand = '';
+	let monitor_code = '';
+	let monitor_serial = '';
 
-  let keyboard_brand = '';
-  let keyboard_code = '';
-  let keyboard_serial = '';
+	let keyboard_brand = '';
+	let keyboard_code = '';
+	let keyboard_serial = '';
 
-  let mouse_brand = '';
-  let mouse_code = '';
-  let mouse_serial = '';
+	let mouse_brand = '';
+	let mouse_code = '';
+	let mouse_serial = '';
 
-  
+	let observations = '';
 
-  perifericoStore.subscribe((data: any) => {
-    showMonitor = data.showMonitor ?? false;
-    showKeyboard = data.showKeyboard ?? false;
-    showMouse = data.showMouse ?? false;
-    showOthers = data.showOthers ?? false;
+	perifericoStore.subscribe((data: any) => {
+		showMonitor = data.showMonitor ?? false;
+		showKeyboard = data.showKeyboard ?? false;
+		showMouse = data.showMouse ?? false;
+		showOthers = data.showOthers ?? false;
 
-    monitor_brand = data.monitor_brand ?? '';
-    monitor_code = data.monitor_code ?? '';
-    monitor_serial = data.monitor_serial ?? '';
+		monitor_brand = data.monitor_brand ?? '';
+		monitor_code = data.monitor_code ?? '';
+		monitor_serial = data.monitor_serial ?? '';
 
-    keyboard_brand = data.keyboard_brand ?? '';
-    keyboard_code = data.keyboard_code ?? '';
-    keyboard_serial = data.keyboard_serial ?? '';
+		keyboard_brand = data.keyboard_brand ?? '';
+		keyboard_code = data.keyboard_code ?? '';
+		keyboard_serial = data.keyboard_serial ?? '';
 
-    mouse_brand = data.mouse_brand ?? '';
-    mouse_code = data.mouse_code ?? '';
-    mouse_serial = data.mouse_serial ?? '';
+		mouse_brand = data.mouse_brand ?? '';
+		mouse_code = data.mouse_code ?? '';
+		mouse_serial = data.mouse_serial ?? '';
 
-  });
+		observations = data.observations ?? '';
+	});
 
-  export function setData(values: any) {
-    perifericoStore.update((current) => ({
-      ...current,
-      showMonitor: !!(values.monitor_brand || values.monitor_code || values.monitor_serial),
-      showKeyboard: !!(values.keyboard_brand || values.keyboard_code || values.keyboard_serial),
-      showMouse: !!(values.mouse_brand || values.mouse_code || values.mouse_serial),
-      showOthers: !!values.other_peripheral,
+	export function setData(values: any) {
+		perifericoStore.update((current) => ({
+			...current,
+			showMonitor: !!(values.monitor_brand || values.monitor_code || values.monitor_serial),
+			showKeyboard: !!(values.keyboard_brand || values.keyboard_code || values.keyboard_serial),
+			showMouse: !!(values.mouse_brand || values.mouse_code || values.mouse_serial),
+			showOthers: !!values.other_peripheral,
 
-      monitor_brand: values.monitor_brand ?? current.monitor_brand,
-      monitor_code: values.monitor_code ?? current.monitor_code,
-      monitor_serial: values.monitor_serial ?? current.monitor_serial,
+			monitor_brand: values.monitor_brand ?? current.monitor_brand,
+			monitor_code: values.monitor_code ?? current.monitor_code,
+			monitor_serial: values.monitor_serial ?? current.monitor_serial,
 
-      keyboard_brand: values.keyboard_brand ?? current.keyboard_brand,
-      keyboard_code: values.keyboard_code ?? current.keyboard_code,
-      keyboard_serial: values.keyboard_serial ?? current.keyboard_serial,
+			keyboard_brand: values.keyboard_brand ?? current.keyboard_brand,
+			keyboard_code: values.keyboard_code ?? current.keyboard_code,
+			keyboard_serial: values.keyboard_serial ?? current.keyboard_serial,
 
-      mouse_brand: values.mouse_brand ?? current.mouse_brand,
-      mouse_code: values.mouse_code ?? current.mouse_code,
-      mouse_serial: values.mouse_serial ?? current.mouse_serial,
-    }));
-  }
+			mouse_brand: values.mouse_brand ?? current.mouse_brand,
+			mouse_code: values.mouse_code ?? current.mouse_code,
+			mouse_serial: values.mouse_serial ?? current.mouse_serial
+		}));
+	}
 
-  export function enviarDatos() {
-    dispatch('update', {
-      monitor_brand,
-      monitor_code,
-      monitor_serial,
-      keyboard_brand,
-      keyboard_code,
-      keyboard_serial,
-      mouse_brand,
-      mouse_code,
-      mouse_serial,
-    });
-  }
+	export function enviarDatos() {
+		dispatch('update', {
+			monitor_brand,
+			monitor_code,
+			monitor_serial,
+			keyboard_brand,
+			keyboard_code,
+			keyboard_serial,
+			mouse_brand,
+			mouse_code,
+			mouse_serial,
+			observations
+		});
+	}
 </script>
-
 
 <div class="form-container">
 	<!-- MONITOR -->
@@ -132,11 +133,7 @@
 						placeholder="Ej: Logitech K120, Dell KB216"
 						required
 					/>
-					<InputField
-						label="Código"
-						bind:value={keyboard_code}
-						placeholder="Ej: LOG-K120"
-					/>
+					<InputField label="Código" bind:value={keyboard_code} placeholder="Ej: LOG-K120" />
 					<InputField
 						label="Número de Serie"
 						bind:value={keyboard_serial}
@@ -164,11 +161,7 @@
 						placeholder="Ej: Logitech M90, Dell MS116"
 						required
 					/>
-					<InputField
-						label="Código"
-						bind:value={mouse_code}
-						placeholder="Ej: LOG-M90"
-					/>
+					<InputField label="Código" bind:value={mouse_code} placeholder="Ej: LOG-M90" />
 					<InputField
 						label="Número de Serie"
 						bind:value={mouse_serial}
@@ -179,8 +172,23 @@
 			</div>
 		{/if}
 	</div>
-
+	<div class="form-section">
+		<h2 class="section-toggle">
+			<span class="icon">📝</span>
+			Observaciones
+		</h2>
+		<div class="form-grid">
+			<div class="form-row">
+				<InputField
+					label="Observaciones"
+					bind:value={observations}
+					placeholder="Ingrese cualquier observación adicional..."
+				/>
+			</div>
+		</div>
+	</div>
 </div>
+
 <style>
 	.form-container {
 		max-width: 1000px;

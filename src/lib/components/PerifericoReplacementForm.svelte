@@ -1,8 +1,7 @@
 <script lang="ts">
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
-    import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
-
+	import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
 
 	const dispatch = createEventDispatcher();
 
@@ -24,6 +23,7 @@
 	let bk_mouse_code = '';
 	let bk_mouse_serial = '';
 
+	let bk_obs = '';
 
 	backupPerifericoStore.subscribe((data: any) => {
 		showMonitor = data.showMonitor ?? false;
@@ -43,6 +43,7 @@
 		bk_mouse_code = data.bk_mouse_code ?? '';
 		bk_mouse_serial = data.bk_mouse_serial ?? '';
 
+		bk_obs = data.bk_obs ?? '';
 	});
 
 	export function setData(values: any) {
@@ -65,11 +66,12 @@
 			bk_mouse_code: values.bk_mouse_code ?? current.bk_mouse_code,
 			bk_mouse_serial: values.bk_mouse_serial ?? current.bk_mouse_serial,
 
+			bk_obs: values.bk_bk_obs ?? current.bk_obs
 		}));
 	}
 
 	export function enviarDatos() {
-		console.log(bk_monitor)
+		console.log(bk_monitor);
 		dispatch('update', {
 			bk_monitor,
 			bk_mon_code,
@@ -80,6 +82,7 @@
 			bk_mouse,
 			bk_mouse_code,
 			bk_mouse_serial,
+			bk_obs
 		});
 	}
 </script>
@@ -138,6 +141,22 @@
 			</div>
 		{/if}
 	</div>
+	<div class="form-section">
+		<h2 class="section-title">
+			<span class="icon">📝</span>
+			Observaciones
+		</h2>
+
+		<div class="form-grid">
+			<div class="form-row full-width">
+				<InputField
+					label="Observaciones"
+					bind:value={bk_obs}
+					placeholder="Ingrese observaciones..."
+				/>
+			</div>
+		</div>
+	</div>
 </div>
 
 <style>
@@ -194,6 +213,10 @@
 
 	.section-toggle input {
 		transform: scale(1.3);
+	}
+
+	.form-row.full-width {
+		grid-template-columns: 1fr;
 	}
 
 	@media (max-width: 768px) {

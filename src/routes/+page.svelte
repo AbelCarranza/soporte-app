@@ -7,6 +7,7 @@
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
 	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
 	import PerifericoReplacementForm from '$lib/components/PerifericoReplacementForm.svelte';
+	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { stepStore } from '$lib/stores/stepStore';
 	import { get } from 'svelte/store';
@@ -71,7 +72,26 @@
 		generarFicha(reportData);
 	}
 
-	async function enviarSheets() {}
+	async function enviarSheets() {
+
+		if (esReemplazo) {
+			if (step === 6 && perifericoReplacementRef) {
+				perifericoReplacementRef.enviarDatos();
+			}
+		} else {
+			if (step === 4 && backupRef) {
+				backupRef.enviarDatos();
+			}
+		}
+
+		try {
+			await enviarDatosASheets(reportData);
+			alert('Datos enviados correctamente');
+		} catch (err) {
+			console.error(err);
+			alert('Error enviando a Sheets');
+		}
+	}
 </script>
 
 <div class="container-head">

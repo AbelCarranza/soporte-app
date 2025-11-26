@@ -210,10 +210,6 @@
 		align-items: start;
 	}
 
-	.form-row.full-width {
-		grid-template-columns: 1fr;
-	}
-
 	/* Responsive */
 	@media (max-width: 768px) {
 		.form-container {

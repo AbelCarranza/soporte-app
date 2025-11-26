@@ -16,5 +16,5 @@ export interface PerifericoData {
   mouse_code?: string;
   mouse_serial?: string;
 
-  other_peripheral?: string;
+  observations?: string;
 }

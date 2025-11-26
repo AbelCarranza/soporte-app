@@ -19,8 +19,6 @@ export interface ReportData {
   hdd_capacity?: string;
   hdd_technology?: string;
 
-  observations?: string;
-
   // Periféricos
   monitor_brand?: string;
   monitor_serial?: string;

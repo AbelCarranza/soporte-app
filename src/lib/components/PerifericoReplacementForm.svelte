@@ -142,7 +142,7 @@
 		{/if}
 	</div>
 	<div class="form-section">
-		<h2 class="section-title">
+		<h2 class="section-toggle">
 			<span class="icon">📝</span>
 			Observaciones
 		</h2>

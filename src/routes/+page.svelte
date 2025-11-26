@@ -24,7 +24,7 @@
 
 	let reportData: ReportData = {
 		...initialReportData,
-		...decisionData 
+		...decisionData
 	};
 
 	type FormWithEnviarDatos = SvelteComponent & { enviarDatos: () => void };
@@ -54,9 +54,7 @@
 		if (step > 1) step--;
 	}
 
-	async function recibirBusqueda(
-		e: CustomEvent<{ tipo: string; codigo: string; form: string }>
-	) {
+	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
 		await recibirBusquedaHandler(e, {
 			reportanteRef,
 			cpuForm,
@@ -76,11 +74,16 @@
 	async function enviarSheets() {}
 </script>
 
-<div class="container">
+<div class="container-head">
+	<div>
+		<img src="src/lib/assets/logo_resize .webp" alt="logo" />
+	</div>
 	<header>
 		<SearchBar on:buscar={recibirBusqueda} />
 	</header>
+</div>
 
+<div class="container">
 	<div class="steps">
 		<div class="step {step >= 1 ? 'active' : ''}">1</div>
 		<div class="line"></div>
@@ -178,14 +181,19 @@
 </div>
 
 <style>
+	.container-head {
+		display: flex;
+		justify-content: space-around;
+		align-items: center;
+		background-color: #1e5aa8;
+	}
+	.container-head img {
+		padding: 10px;
+	}
 	.container {
 		margin: 0 auto;
 		padding: 1.5rem;
 		max-width: 900px;
-	}
-
-	header {
-		margin-bottom: 2rem;
 	}
 
 	.steps {

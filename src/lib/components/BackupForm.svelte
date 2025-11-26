@@ -98,9 +98,7 @@
 		max-width: 1000px;
 		margin: 0 auto;
 		padding: 24px;
-		background: #ffffff;
 		border-radius: 12px;
-		box-shadow: 0 2px 20px rgba(0, 0, 0, 0.1);
 	}
 
 	.form-section {

@@ -3,9 +3,9 @@
 
 	const dispatch = createEventDispatcher();
 
-	let codigo = ''; 
-	let form = '1'; 
-	let tipo = '3'; 
+	let codigo = '';
+	let form = '1';
+	let tipo = '3';
 
 	function buscar() {
 		if (!codigo.trim()) return;
@@ -19,8 +19,9 @@
 </script>
 
 <div class="search-container">
-
-	<input class="input" type="text" placeholder="Código" bind:value={codigo} />
+	<div>
+		<input class="input" type="text" placeholder="Código" bind:value={codigo} />
+	</div>
 
 	<div class="radios">
 		<label>
@@ -49,6 +50,7 @@
 		align-items: center;
 		padding: 10px 0;
 		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.radios {

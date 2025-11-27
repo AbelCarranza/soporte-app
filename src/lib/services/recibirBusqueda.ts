@@ -1,4 +1,5 @@
 import { buscarEnSheets } from '../services/sheets';
+import { notifySuccess, notifyError } from './notyf';
 
 type Refs = {
     reportanteRef?: any;
@@ -47,7 +48,10 @@ export async function recibirBusquedaHandler(
     const { codigo, form, tipo } = e.detail;
 
     const data = await buscarEnSheets(form, codigo);
-    if (!data || data.length === 0) return;
+        if (!data || data.length === 0) {
+        notifyError('No se encontraron equipos. Verifique el código ingresado.');
+        return;
+    }
 
     const eq = data[0];
 
@@ -56,8 +60,10 @@ export async function recibirBusquedaHandler(
     if (tipo === '4') {
         if (eq.matchField === 'AssetCode' || eq.matchField === 'Serial') {
             refs.cpuReplacementRef?.setData(eq);
+            notifySuccess('Datos de CPU para reemplazo completados');
         } else {
             setPerifericoData(refs.perifericoReplacementRef, eq, perifericoMap);
+            notifySuccess('Datos del periférico para reemplazo completados');
         }
         return;
     }
@@ -65,8 +71,10 @@ export async function recibirBusquedaHandler(
     if (form === '1') {
         if (eq.matchField === 'AssetCode' || eq.matchField === 'Serial') {
             refs.cpuForm?.setData(eq);
+            notifySuccess('Datos de CPU completados');
         } else {
             setPerifericoData(refs.perifericoRef, eq, perifericoMapForm);
+            notifySuccess('Datos del periférico completados');
         }
         return;
     }

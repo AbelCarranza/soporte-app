@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
 
+	export let loading = false; // <--- NUEVO
+
 	const dispatch = createEventDispatcher();
 
 	let codigo = '';
@@ -8,13 +10,10 @@
 	let tipo = '3';
 
 	function buscar() {
-		if (!codigo.trim()) return;
+		if (!codigo.trim() || loading) return;
 
-		dispatch('buscar', {
-			tipo,
-			codigo,
-			form
-		});
+		// lanzamos el evento
+		dispatch('buscar', { tipo, codigo, form });
 	}
 </script>
 
@@ -40,7 +39,13 @@
 		<option value="4">Entrada</option>
 	</select>
 
-	<button class="btn" on:click={buscar}> Buscar </button>
+	<button class="btn" on:click={buscar} disabled={loading}>
+		{#if loading}
+			<div class="spinner"></div>
+		{:else}
+			Buscar
+		{/if}
+	</button>
 </div>
 
 <style>
@@ -90,5 +95,41 @@
 
 	.btn:hover {
 		background: #005fcc;
+	}
+	.btn {
+		padding: 8px 12px;
+		background: #0077ff;
+		color: white;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+		font-size: 0.95rem;
+		min-width: 80px;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+
+	.btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.spinner {
+		width: 16px;
+		height: 16px;
+		border: 3px solid white;
+		border-top-color: transparent;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	@keyframes spin {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

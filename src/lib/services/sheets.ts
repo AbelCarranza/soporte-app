@@ -1,3 +1,5 @@
+import { notifySuccess, notifyError } from './notyf';
+
 export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 	const SCRIPT_URL =
 		'https://script.google.com/macros/s/AKfycbwHlyZmiAQ6Cdgoa-YRQLUBcIeH_clWjGLKT9Na1DcnrNvfEHw6WFXR0IachIPjP7ceIg/exec';
@@ -5,7 +7,6 @@ export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 	const response = await fetch(SCRIPT_URL, { credentials: 'omit' });
 	const data = await response.json();
 
-	console.log('DATA RECIBIDA:', data);
 
 	if (!Array.isArray(data)) return [];
 
@@ -37,6 +38,5 @@ export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 			.filter(Boolean);
 	}
 
-	console.log('RESULTADO FILTRADO:', filtrado);
 	return filtrado;
 }

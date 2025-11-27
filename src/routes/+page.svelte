@@ -20,6 +20,7 @@
 
 	let step = get(stepStore);
 	const decisionData = get(decisionStore);
+	let loadingSearch = false;
 
 	$: stepStore.set(step);
 
@@ -56,13 +57,19 @@
 	}
 
 	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
-		await recibirBusquedaHandler(e, {
-			reportanteRef,
-			cpuForm,
-			perifericoRef,
-			cpuReplacementRef,
-			perifericoReplacementRef
-		});
+		loadingSearch = true;
+
+		try {
+			await recibirBusquedaHandler(e, {
+				reportanteRef,
+				cpuForm,
+				perifericoRef,
+				cpuReplacementRef,
+				perifericoReplacementRef
+			});
+		} finally {
+			loadingSearch = false;
+		}
 	}
 
 	function generarWord() {
@@ -73,7 +80,6 @@
 	}
 
 	async function enviarSheets() {
-
 		if (esReemplazo) {
 			if (step === 6 && perifericoReplacementRef) {
 				perifericoReplacementRef.enviarDatos();
@@ -99,7 +105,7 @@
 		<img src="src/lib/assets/logo_resize .webp" alt="logo" />
 	</div>
 	<header>
-		<SearchBar on:buscar={recibirBusqueda} />
+		<SearchBar on:buscar={recibirBusqueda} loading={loadingSearch} />
 	</header>
 </div>
 

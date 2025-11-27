@@ -26,6 +26,7 @@
 	},
 	"dependencies": {
 		"docxtemplater": "^3.67.5",
+		"notyf": "^3.10.0",
 		"pizzip": "^3.2.0",
 		"svoast": "^3.0.3",
 		"xmldom": "^0.6.0"

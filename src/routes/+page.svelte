@@ -52,6 +52,7 @@
 
 		if (step < totalSteps) step++;
 	}
+	
 	function prev() {
 		if (step > 1) step--;
 	}
@@ -98,6 +99,9 @@
 			alert('Error enviando a Sheets');
 		}
 	}
+	function goTo(num: number) {
+		step = num;
+	}
 </script>
 
 <div class="container-head">
@@ -111,22 +115,34 @@
 
 <div class="container">
 	<div class="steps">
-		<div class="step {step >= 1 ? 'active' : ''}">1</div>
+		<button class="step {step >= 1 ? 'active' : ''}" type="button" on:click={() => goTo(1)}
+			>1</button
+		>
 		<div class="line"></div>
 
-		<div class="step {step >= 2 ? 'active' : ''}">2</div>
+		<button class="step {step >= 2 ? 'active' : ''}" type="button" on:click={() => goTo(2)}
+			>2</button
+		>
 		<div class="line"></div>
 
-		<div class="step {step >= 3 ? 'active' : ''}">3</div>
+		<button class="step {step >= 3 ? 'active' : ''}" type="button" on:click={() => goTo(3)}
+			>3</button
+		>
 		<div class="line"></div>
 
-		<div class="step {step >= 4 ? 'active' : ''}">4</div>
+		<button class="step {step >= 4 ? 'active' : ''}" type="button" on:click={() => goTo(4)}
+			>4</button
+		>
 
 		{#if esReemplazo}
 			<div class="line"></div>
-			<div class="step {step >= 5 ? 'active' : ''}">5</div>
+			<button class="step {step >= 5 ? 'active' : ''}" type="button" on:click={() => goTo(5)}
+				>5</button
+			>
 			<div class="line"></div>
-			<div class="step {step >= 6 ? 'active' : ''}">6</div>
+			<button class="step {step >= 6 ? 'active' : ''}" type="button" on:click={() => goTo(6)}
+				>6</button
+			>
 		{/if}
 	</div>
 
@@ -231,15 +247,15 @@
 	}
 
 	.step {
-		width: 30px;
-		height: 30px;
+		background: #ddd;
 		border-radius: 50%;
-		background: #d4d4d4;
+		width: 35px;
+		height: 35px;
 		display: flex;
-		justify-content: center;
 		align-items: center;
-		font-weight: 600;
-		color: #555;
+		justify-content: center;
+		cursor: pointer;
+		border: none;
 	}
 
 	.step.active {

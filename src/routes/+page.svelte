@@ -7,6 +7,8 @@
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
 	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
 	import PerifericoReplacementForm from '$lib/components/PerifericoReplacementForm.svelte';
+	import { resetAllStores } from '$lib/stores/resetStores';
+
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { stepStore } from '$lib/stores/stepStore';
@@ -21,6 +23,7 @@
 	let step = get(stepStore);
 	const decisionData = get(decisionStore);
 	let loadingSearch = false;
+	let loadingSheets = false;
 
 	$: stepStore.set(step);
 
@@ -52,7 +55,7 @@
 
 		if (step < totalSteps) step++;
 	}
-	
+
 	function prev() {
 		if (step > 1) step--;
 	}
@@ -78,31 +81,55 @@
 			perifericoReplacementRef.enviarDatos();
 		}
 		generarFicha(reportData);
+
+		wordGenerado = true;
 	}
 
-	async function enviarSheets() {
-		if (esReemplazo) {
-			if (step === 6 && perifericoReplacementRef) {
-				perifericoReplacementRef.enviarDatos();
-			}
-		} else {
-			if (step === 4 && backupRef) {
-				backupRef.enviarDatos();
-			}
-		}
+	async function confirmarEnvio() {
+		mostrarPopup = false;
+		loadingSheets = true;
 
 		try {
 			await enviarDatosASheets(reportData);
 			alert('Datos enviados correctamente');
+
+			resetAllStores();
+
+			reportData = {
+				...initialReportData,
+				selected_decision: '' 
+			};
+
+			// Reinicia estado UI
+			wordGenerado = false;
+			step = 1;
 		} catch (err) {
 			console.error(err);
 			alert('Error enviando a Sheets');
+		} finally {
+			loadingSheets = false;
 		}
 	}
 	function goTo(num: number) {
 		step = num;
 	}
+	let wordGenerado = false;
+	let mostrarPopup = false;
 </script>
+
+{#if mostrarPopup}
+	<div class="popup-overlay">
+		<div class="popup">
+			<h3>¿Enviar datos a Google Sheets?</h3>
+			<p>Esta acción limpiará completamente el formulario. ¿Deseas continuar?</p>
+
+			<div class="popup-buttons">
+				<button class="confirm" on:click={confirmarEnvio}>Aceptar</button>
+				<button class="cancel" on:click={() => (mostrarPopup = false)}>Cancelar</button>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <div class="container-head">
 	<div>
@@ -205,7 +232,12 @@
 		{/if}
 
 		{#if (!esReemplazo && step === 4) || (esReemplazo && step === 6)}
-			<FinalButtons on:generarWord={generarWord} on:enviarSheets={enviarSheets} />
+			<FinalButtons
+				on:generarWord={generarWord}
+				on:confirmarEnvioSheets={() => (mostrarPopup = true)}
+				canSend={wordGenerado}
+				{loadingSheets}
+			/>
 		{/if}
 
 		<!-- BOTONES -->
@@ -305,5 +337,134 @@
 	.next {
 		background: #0070f3;
 		color: white;
+	}
+	/* ---------- FONDO OSCURO ---------- */
+	.popup-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100vw;
+		height: 100vh;
+		background: rgba(0, 0, 0, 0.45);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 9999;
+		backdrop-filter: blur(2px);
+		animation: fadeInBg 0.25s ease-out forwards;
+	}
+
+	/* ---------- TARJETA DEL POPUP ---------- */
+	.popup {
+		background: #ffffff;
+		padding: 24px 28px;
+		border-radius: 14px;
+		width: 380px;
+		max-width: 90%;
+		text-align: center;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+		transform: translateY(15px);
+		opacity: 0;
+		animation: popupSlideUp 0.25s ease-out forwards;
+	}
+
+	/* ---------- TITULO ---------- */
+	.popup h3 {
+		font-size: 20px;
+		margin-bottom: 10px;
+		font-weight: 600;
+		color: #333;
+	}
+
+	/* ---------- TEXTO ---------- */
+	.popup p {
+		font-size: 15px;
+		color: #555;
+		margin-top: 0;
+	}
+
+	/* ---------- BOTONES ---------- */
+	.popup-buttons {
+		margin-top: 22px;
+		display: flex;
+		gap: 12px;
+		justify-content: center;
+		flex-wrap: wrap; /* hace responsive */
+	}
+
+	/* Botón aceptar */
+	.popup-buttons .confirm {
+		background: #2a8f2a;
+		color: white;
+		padding: 9px 18px;
+		border-radius: 8px;
+		font-size: 15px;
+		min-width: 110px;
+		transition: transform 0.15s;
+	}
+
+	.popup-buttons .confirm:hover {
+		transform: scale(1.05);
+	}
+
+	/* Botón cancelar */
+	.popup-buttons .cancel {
+		background: #999;
+		color: white;
+		padding: 9px 18px;
+		border-radius: 8px;
+		font-size: 15px;
+		min-width: 110px;
+		transition: transform 0.15s;
+	}
+
+	.popup-buttons .cancel:hover {
+		transform: scale(1.05);
+	}
+
+	/* ---------- ANIMACIONES ---------- */
+	@keyframes fadeInBg {
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
+	}
+
+	@keyframes popupSlideUp {
+		from {
+			transform: translateY(30px);
+			opacity: 0;
+		}
+		to {
+			transform: translateY(0);
+			opacity: 1;
+		}
+	}
+
+	/* ---------- RESPONSIVE EXTRA ---------- */
+	@media (max-width: 450px) {
+		.popup {
+			width: 95%;
+			padding: 20px;
+			border-radius: 12px;
+		}
+
+		.popup h3 {
+			font-size: 18px;
+		}
+
+		.popup p {
+			font-size: 14px;
+		}
+
+		.popup-buttons {
+			gap: 8px;
+		}
+
+		.popup-buttons button {
+			width: 100%;
+		}
 	}
 </style>

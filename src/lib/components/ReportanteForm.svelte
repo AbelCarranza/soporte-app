@@ -1,52 +1,73 @@
 <script lang="ts">
-  import InputField from './InputField.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import { reportanteStore } from '$lib/stores/reportanteStore';
-  import type { ReportanteData } from '$lib/stores/reportanteStore';
-  import { get } from 'svelte/store';
+	import InputField from './InputField.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import { reportanteStore } from '$lib/stores/reportanteStore';
 
-  const dispatch = createEventDispatcher();
+	import { get } from 'svelte/store';
+	import { notifyError } from '$lib/services/notyf';
 
-  export let reported_by = '';
-  export let location = '';
-  export let technician = '';
-  let issue_date = '';
+	const dispatch = createEventDispatcher();
 
-  // Inicializar desde store
-  $: {
-    const data: ReportanteData = get(reportanteStore);
-    reported_by = data.reported_by ?? '';
-    location = data.location ?? '';
-    technician = data.technician ?? '';
-    issue_date = data.issue_date ?? '';
-  }
+	export let reported_by = '';
+	export let location = '';
+	export let technician = '';
+	let issue_date = '';
 
-  function generarFecha() {
-    const hoy = new Date();
-    const dia = String(hoy.getDate()).padStart(2, '0');
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-    const anio = hoy.getFullYear();
+	// Inicializar desde store
+	$: {
+		const data: any = get(reportanteStore);
+		reported_by = data.reported_by ?? '';
+		location = data.location ?? '';
+		technician = data.technician ?? '';
+		issue_date = data.issue_date ?? '';
+	}
 
-    issue_date = `${dia}-${mes}-${anio}`;
-	
-  }
+	function generarFecha() {
+		const hoy = new Date();
+		const dia = String(hoy.getDate()).padStart(2, '0');
+		const mes = String(hoy.getMonth() + 1).padStart(2, '0');
+		const anio = hoy.getFullYear();
 
-  export function setData(values: any) {
-    reportanteStore.update((current) => ({
-      ...current,
-      location: values.Location ?? current.location
-    }));
-  }
+		issue_date = `${dia}-${mes}-${anio}`;
+	}
 
-  export function enviarDatos() {
-	generarFecha();
-    dispatch('update', {
-      reported_by,
-      location,
-      technician,
-      issue_date
-    });
-  }
+	export function setData(values: any) {
+		reportanteStore.update((current) => ({
+			...current,
+			location: values.Location ?? current.location
+		}));
+	}
+	export function enviarDatos(): boolean {
+		let ok = true;
+
+		if (!reported_by.trim()) {
+			notifyError("El campo 'Persona que Reporta' es obligatorio.");
+			ok = false;
+		}
+
+		if (!location.trim()) {
+			notifyError("El campo 'Ubicación' es obligatorio.");
+			ok = false;
+		}
+
+		if (!technician.trim()) {
+			notifyError("El campo 'Técnico Responsable' es obligatorio.");
+			ok = false;
+		}
+
+		if (!ok) return false;
+
+		generarFecha();
+
+		reportanteStore.set({
+			reported_by,
+			location,
+			technician,
+			issue_date
+		});
+
+		return true;
+	}
 </script>
 
 <div class="form-container">

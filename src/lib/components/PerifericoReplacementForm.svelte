@@ -1,91 +1,92 @@
 <script lang="ts">
-	import InputField from './InputField.svelte';
-	import { createEventDispatcher } from 'svelte';
-	import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
+  import InputField from './InputField.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
+  import type { BackupPerifericoData, SetBackupPerifericoValues } from '$lib/types/BackupPerifericoData';
 
-	const dispatch = createEventDispatcher();
+  const dispatch = createEventDispatcher<{ update: BackupPerifericoData }>();
 
-	let showMonitor = false;
-	let showKeyboard = false;
-	let showMouse = false;
-	let showOthers = false;
+  let showMonitor = false;
+  let showKeyboard = false;
+  let showMouse = false;
+  let showOthers = false;
 
-	// Nuevos valores BACKUP
-	let bk_monitor = '';
-	let bk_mon_code = '';
-	let bk_mon_serial = '';
+  let bk_monitor = '';
+  let bk_mon_code = '';
+  let bk_mon_serial = '';
 
-	let bk_keyboard = '';
-	let bk_key_code = '';
-	let bk_key_serial = '';
+  let bk_keyboard = '';
+  let bk_key_code = '';
+  let bk_key_serial = '';
 
-	let bk_mouse = '';
-	let bk_mouse_code = '';
-	let bk_mouse_serial = '';
+  let bk_mouse = '';
+  let bk_mouse_code = '';
+  let bk_mouse_serial = '';
 
-	let bk_obs = '';
+  let bk_obs = '';
 
-	backupPerifericoStore.subscribe((data: any) => {
-		showMonitor = data.showMonitor ?? false;
-		showKeyboard = data.showKeyboard ?? false;
-		showMouse = data.showMouse ?? false;
-		showOthers = data.showOthers ?? false;
+  // === CARGAR DESDE STORE ===
+  backupPerifericoStore.subscribe((data: BackupPerifericoData) => {
+    showMonitor = data.showMonitor ?? false;
+    showKeyboard = data.showKeyboard ?? false;
+    showMouse = data.showMouse ?? false;
+    showOthers = data.showOthers ?? false;
 
-		bk_monitor = data.bk_monitor ?? '';
-		bk_mon_code = data.bk_mon_code ?? '';
-		bk_mon_serial = data.bk_mon_serial ?? '';
+    bk_monitor = data.bk_monitor ?? '';
+    bk_mon_code = data.bk_mon_code ?? '';
+    bk_mon_serial = data.bk_mon_serial ?? '';
 
-		bk_keyboard = data.bk_keyboard ?? '';
-		bk_key_code = data.bk_key_code ?? '';
-		bk_key_serial = data.bk_key_serial ?? '';
+    bk_keyboard = data.bk_keyboard ?? '';
+    bk_key_code = data.bk_key_code ?? '';
+    bk_key_serial = data.bk_key_serial ?? '';
 
-		bk_mouse = data.bk_mouse ?? '';
-		bk_mouse_code = data.bk_mouse_code ?? '';
-		bk_mouse_serial = data.bk_mouse_serial ?? '';
+    bk_mouse = data.bk_mouse ?? '';
+    bk_mouse_code = data.bk_mouse_code ?? '';
+    bk_mouse_serial = data.bk_mouse_serial ?? '';
 
-		bk_obs = data.bk_obs ?? '';
-	});
+    bk_obs = data.bk_obs ?? '';
+  });
 
-	export function setData(values: any) {
-		backupPerifericoStore.update((current) => ({
-			...current,
+  export function setData(values: SetBackupPerifericoValues): void {
+    backupPerifericoStore.update((current) => ({
+      ...current,
 
-			showMonitor: !!(values.bk_monitor || values.bk_mon_code || values.bk_mon_serial),
-			showKeyboard: !!(values.bk_keyboard || values.bk_key_code || values.bk_key_serial),
-			showMouse: !!(values.bk_mouse || values.bk_mouse_code || values.bk_mouse_serial),
+      showMonitor: !!(values.bk_monitor || values.bk_mon_code || values.bk_mon_serial),
+      showKeyboard: !!(values.bk_keyboard || values.bk_key_code || values.bk_key_serial),
+      showMouse: !!(values.bk_mouse || values.bk_mouse_code || values.bk_mouse_serial),
 
-			bk_monitor: values.bk_monitor ?? current.bk_monitor,
-			bk_mon_code: values.bk_mon_code ?? current.bk_mon_code,
-			bk_mon_serial: values.bk_mon_serial ?? current.bk_mon_serial,
+      bk_monitor: values.bk_monitor ?? current.bk_monitor,
+      bk_mon_code: values.bk_mon_code ?? current.bk_mon_code,
+      bk_mon_serial: values.bk_mon_serial ?? current.bk_mon_serial,
 
-			bk_keyboard: values.bk_keyboard ?? current.bk_keyboard,
-			bk_key_code: values.bk_key_code ?? current.bk_key_code,
-			bk_key_serial: values.bk_key_serial ?? current.bk_key_serial,
+      bk_keyboard: values.bk_keyboard ?? current.bk_keyboard,
+      bk_key_code: values.bk_key_code ?? current.bk_key_code,
+      bk_key_serial: values.bk_key_serial ?? current.bk_key_serial,
 
-			bk_mouse: values.bk_mouse ?? current.bk_mouse,
-			bk_mouse_code: values.bk_mouse_code ?? current.bk_mouse_code,
-			bk_mouse_serial: values.bk_mouse_serial ?? current.bk_mouse_serial,
+      bk_mouse: values.bk_mouse ?? current.bk_mouse,
+      bk_mouse_code: values.bk_mouse_code ?? current.bk_mouse_code,
+      bk_mouse_serial: values.bk_mouse_serial ?? current.bk_mouse_serial,
 
-			bk_obs: values.bk_bk_obs ?? current.bk_obs
-		}));
-	}
+      bk_obs: values.bk_obs ?? current.bk_obs
+    }));
+  }
 
-	export function enviarDatos() {
-		console.log(bk_monitor);
-		dispatch('update', {
-			bk_monitor,
-			bk_mon_code,
-			bk_mon_serial,
-			bk_keyboard,
-			bk_key_code,
-			bk_key_serial,
-			bk_mouse,
-			bk_mouse_code,
-			bk_mouse_serial,
-			bk_obs
-		});
-	}
+  export function enviarDatos(): void {
+    dispatch('update', {
+      bk_monitor,
+      bk_mon_code,
+      bk_mon_serial,
+      bk_keyboard,
+      bk_key_code,
+      bk_key_serial,
+      bk_mouse,
+      bk_mouse_code,
+      bk_mouse_serial,
+      bk_obs
+    });
+  }
 </script>
+
 
 <div class="form-container">
 	<!-- MONITOR -->

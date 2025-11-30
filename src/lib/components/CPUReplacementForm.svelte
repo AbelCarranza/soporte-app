@@ -1,90 +1,89 @@
 <script lang="ts">
-	import InputField from './InputField.svelte';
-	import { createEventDispatcher } from 'svelte';
+  import InputField from './InputField.svelte';
+  import { createEventDispatcher } from 'svelte';
+  import { replacementStore } from '$lib/stores/replacementStorage';
+  import type { ReplacementData, SetReplacementValues } from '$lib/types/ReplacementData';
 
-	import { replacementStore } from '$lib/stores/replacementStorage';
+  const dispatch = createEventDispatcher<{ update: ReplacementData }>();
 
-	const dispatch = createEventDispatcher();
+  let bk_brand = '';
+  let bk_asset = '';
+  let bk_serial = '';
+  let bk_plate = '';
+  let bk_cpu = '';
+  let bk_speed = '';
+  let bk_ram = '';
 
-	let bk_brand = '';
-	let bk_asset = '';
-	let bk_serial = '';
-	let bk_plate = '';
-	let bk_cpu = '';
-	let bk_speed = '';
-	let bk_ram = '';
+  let bk_hdbrand = '';
+  let bk_hdd_cap = '';
+  let bk_hdd_tech = '';
 
-	let bk_hdbrand = '';
-	let bk_hdd_cap = '';
-	let bk_hdd_tech = '';
+  let initialized = false;
 
+  // === CARGAR DESDE STORAGE ===
+  replacementStore.subscribe((data: ReplacementData) => {
+    bk_brand = data.bk_brand ?? '';
+    bk_asset = data.bk_asset ?? '';
+    bk_serial = data.bk_serial ?? '';
+    bk_plate = data.bk_plate ?? '';
+    bk_cpu = data.bk_cpu ?? '';
+    bk_speed = data.bk_speed ?? '';
+    bk_ram = data.bk_ram ?? '';
 
-	let initialized = false;
+    bk_hdbrand = data.bk_hdbrand ?? '';
+    bk_hdd_cap = data.bk_hdd_cap ?? '';
+    bk_hdd_tech = data.bk_hdd_tech ?? '';
 
-	// === CARGAR DESDE STORAGE ===
-	replacementStore.subscribe((data: any) => {
-		bk_brand = data.bk_brand ?? '';
-		bk_asset = data.bk_asset ?? '';
-		bk_serial = data.bk_serial ?? '';
-		bk_plate = data.bk_plate ?? '';
-		bk_cpu = data.bk_cpu ?? '';
-		bk_speed = data.bk_speed ?? '';
-		bk_ram = data.bk_ram ?? '';
+    initialized = true;
+  });
 
-		bk_hdbrand = data.bk_hdbrand ?? '';
-		bk_hdd_cap = data.bk_hdd_cap ?? '';
-		bk_hdd_tech = data.bk_hdd_tech ?? '';
+  export function setData(values: SetReplacementValues): void {
+    bk_brand = values.Brand ?? '';
+    bk_asset = values.AssetCode ?? '';
+    bk_serial = values.Serial ?? '';
+    bk_plate = values.Plate ?? '';
+    bk_cpu = values.CPU ?? '';
+    bk_speed = values.CPUSpeed ?? '';
+    bk_ram = values.RAM ?? '';
 
-		initialized = true;
-	});
+    bk_hdbrand = values.HDDBrand ?? '';
+    bk_hdd_cap = values.HDDCapacity ?? '';
+    bk_hdd_tech = values.HDDTechnology ?? '';
+  }
 
-	export function setData(values: any) {
-		console.log(values);
-		bk_brand = values?.Brand ?? '';
-		bk_asset = values?.AssetCode ?? '';
-		bk_serial = values?.Serial ?? '';
-		bk_plate = values?.Plate ?? '';
-		bk_cpu = values?.CPU ?? '';
-		bk_speed = values?.CPUSpeed ?? '';
-		bk_ram = values?.RAM ?? '';
+  // === GUARDAR CAMBIOS EN STORAGE SOLO SI YA CARGÓ ===
+  $: if (initialized) {
+    replacementStore.update((current) => ({
+      ...current,
+      bk_brand,
+      bk_asset,
+      bk_serial,
+      bk_plate,
+      bk_cpu,
+      bk_speed,
+      bk_ram,
+      bk_hdbrand,
+      bk_hdd_cap,
+      bk_hdd_tech,
+    }));
+  }
 
-		bk_hdbrand = values?.HDDBrand ?? '';
-		bk_hdd_cap = values?.HDDCapacity ?? '';
-		bk_hdd_tech = values?.HDDTechnology ?? '';
-	}
-
-	// === GUARDAR CAMBIOS EN STORAGE SOLO SI YA CARGÓ ===
-	$: if (initialized) {
-		replacementStore.update((current) => ({
-			...current,
-			bk_brand,
-			bk_asset,
-			bk_serial,
-			bk_plate,
-			bk_cpu,
-			bk_speed,
-			bk_ram,
-			bk_hdbrand,
-			bk_hdd_cap,
-			bk_hdd_tech,
-		}));
-	}
-
-	export function enviarDatos() {
-		dispatch('update', {
-			bk_brand,
-			bk_asset,
-			bk_serial,
-			bk_plate,
-			bk_cpu,
-			bk_speed,
-			bk_ram,
-			bk_hdbrand,
-			bk_hdd_cap,
-			bk_hdd_tech,
-		});
-	}
+  export function enviarDatos(): void {
+    dispatch('update', {
+      bk_brand,
+      bk_asset,
+      bk_serial,
+      bk_plate,
+      bk_cpu,
+      bk_speed,
+      bk_ram,
+      bk_hdbrand,
+      bk_hdd_cap,
+      bk_hdd_tech,
+    });
+  }
 </script>
+
 
 <div class="form-container">
 	<!-- Información del Equipo de Reemplazo -->

@@ -18,3 +18,19 @@ export interface BackupPerifericoData {
 
   bk_obs?: string;
 }
+
+export interface SetBackupPerifericoValues {
+  bk_monitor?: string;
+  bk_mon_code?: string;
+  bk_mon_serial?: string;
+
+  bk_keyboard?: string;
+  bk_key_code?: string;
+  bk_key_serial?: string;
+
+  bk_mouse?: string;
+  bk_mouse_code?: string;
+  bk_mouse_serial?: string;
+
+  bk_obs?: string;
+}

@@ -3,15 +3,20 @@
 	import { createEventDispatcher } from 'svelte';
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { get } from 'svelte/store';
-	const dispatch = createEventDispatcher();
 
-	const stored = get(decisionStore);
+	import type { DecisionData, DecisionOption } from '$lib/types/decision';
 
-	let selected_decision = stored.selected_decision;
-	let action_plan = stored.action_plan;
-	let other_description = stored.other_description || '';
+	const dispatch = createEventDispatcher<{
+		update: { action_plan: string; selected_decision: string };
+	}>();
 
-	const decisionOptions = [
+	const stored: DecisionData = get(decisionStore);
+
+	let selected_decision: string = stored.selected_decision;
+	let action_plan: string = stored.action_plan;
+	let other_description: string = stored.other_description || '';
+
+	const decisionOptions: DecisionOption[] = [
 		{ value: '', label: 'Seleccione una opción', disabled: true },
 		{ value: 'Reemplazo con Equipo de Reserva', label: 'Reemplazo con Equipo de Reserva' },
 		{ value: 'Reparación en el Lugar', label: 'Reparación en el Lugar' },
@@ -20,6 +25,7 @@
 		{ value: 'other', label: 'Otro' }
 	];
 
+	let showOtherFields: boolean;
 	$: showOtherFields = selected_decision === 'other';
 
 	$: {
@@ -37,7 +43,7 @@
 		dispatch('update', { action_plan, selected_decision });
 	}
 
-	export function enviarDatos() {
+	export function enviarDatos(): void {
 		dispatch('update', { action_plan, selected_decision });
 	}
 </script>

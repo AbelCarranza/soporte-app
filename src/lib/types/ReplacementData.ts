@@ -13,3 +13,16 @@ export interface ReplacementData {
 
   bk_obs?: string;
 }
+
+export interface SetReplacementValues {
+  Brand: string;
+  AssetCode: string;
+  Serial: string;
+  Plate: string;
+  CPU: string;
+  CPUSpeed: string;
+  RAM: string;
+  HDDBrand: string;
+  HDDCapacity: string;
+  HDDTechnology: string;
+}

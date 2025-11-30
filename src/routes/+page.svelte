@@ -1,4 +1,5 @@
 <script lang="ts">
+
 	import SearchBar from '../lib/components/SearchBar.svelte';
 	import CPUForm from '$lib/components/CPUForm.svelte';
 	import BackupForm from '$lib/components/BackupForm.svelte';
@@ -7,21 +8,28 @@
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
 	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
 	import PerifericoReplacementForm from '$lib/components/PerifericoReplacementForm.svelte';
-	import { resetAllStores } from '$lib/stores/resetStores';
+
 
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
-	import { decisionStore } from '$lib/stores/decisionStore';
-	import { stepStore } from '$lib/stores/stepStore';
-	import { get } from 'svelte/store';
-
-	import { initialReportData } from '$lib/constants/initialReportData';
 	import { generarFicha } from '$lib/services/docGenerator';
 	import { recibirBusquedaHandler } from '$lib/services/recibirBusqueda';
+
+
+	import { decisionStore } from '$lib/stores/decisionStore';
+	import { stepStore } from '$lib/stores/stepStore';
+	import { resetAllStores } from '$lib/stores/resetStores';
+	import { get } from 'svelte/store';
+
+
 	import type { ReportData } from '$lib/types/report';
 	import type { SvelteComponent } from 'svelte';
+	import { initialReportData } from '$lib/constants/initialReportData';
+
+
 
 	let step = get(stepStore);
 	const decisionData = get(decisionStore);
+
 	let loadingSearch = false;
 	let loadingSheets = false;
 
@@ -32,26 +40,43 @@
 		...decisionData
 	};
 
-	type FormWithEnviarDatos = SvelteComponent & { enviarDatos: () => void };
 
-	$: esReemplazo = reportData.selected_decision === 'Reemplazo con Equipo de Reserva';
+	$: esReemplazo =
+		reportData.selected_decision === 'Reemplazo con Equipo de Reserva';
 
-	let reportanteRef: FormWithEnviarDatos | undefined;
+	$: totalSteps = esReemplazo ? 6 : 4;
+
+	let wordGenerado = false;
+	let mostrarPopup = false;
+
+
+	let reportanteRef: { enviarDatos: () => boolean } | null = null;
+
+
+	type FormWithEnviarDatos = SvelteComponent & {
+		enviarDatos?: () => void;
+	};
+
 	let cpuForm: FormWithEnviarDatos | undefined;
 	let perifericoRef: FormWithEnviarDatos | undefined;
 	let backupRef: FormWithEnviarDatos | undefined;
 	let cpuReplacementRef: FormWithEnviarDatos | undefined;
 	let perifericoReplacementRef: FormWithEnviarDatos | undefined;
 
-	$: totalSteps = esReemplazo ? 6 : 4;
+
 
 	function next() {
-		if (step === 1 && reportanteRef) reportanteRef.enviarDatos();
-		if (step === 2 && cpuForm) cpuForm.enviarDatos();
-		if (step === 3 && perifericoRef) perifericoRef.enviarDatos();
-		if (step === 4 && backupRef) backupRef.enviarDatos();
-		if (step === 5 && cpuReplacementRef) cpuReplacementRef.enviarDatos();
-		if (step === 6 && perifericoReplacementRef) perifericoReplacementRef.enviarDatos();
+
+		if (step === 1 && reportanteRef) {
+			const ok = reportanteRef.enviarDatos();
+			if (!ok) return;
+		}
+
+		if (step === 2) cpuForm?.enviarDatos?.();
+		if (step === 3) perifericoRef?.enviarDatos?.();
+		if (step === 4) backupRef?.enviarDatos?.();
+		if (step === 5) cpuReplacementRef?.enviarDatos?.();
+		if (step === 6) perifericoReplacementRef?.enviarDatos?.();
 
 		if (step < totalSteps) step++;
 	}
@@ -60,7 +85,18 @@
 		if (step > 1) step--;
 	}
 
-	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
+	function goTo(num: number) {
+		if (num > 1 && reportanteRef) {
+			const ok = reportanteRef.enviarDatos();
+			if (!ok) return;
+		}
+		step = num;
+	}
+
+
+	async function recibirBusqueda(
+		e: CustomEvent<{ tipo: string; codigo: string; form: string }>
+	) {
 		loadingSearch = true;
 
 		try {
@@ -76,12 +112,11 @@
 		}
 	}
 
-	function generarWord() {
-		if (step === 6 && perifericoReplacementRef) {
-			perifericoReplacementRef.enviarDatos();
+	function generarWord() {		if (step === 6) {
+			perifericoReplacementRef?.enviarDatos?.();
 		}
-		generarFicha(reportData);
 
+		generarFicha(reportData);
 		wordGenerado = true;
 	}
 
@@ -97,10 +132,9 @@
 
 			reportData = {
 				...initialReportData,
-				selected_decision: '' 
+				selected_decision: ''
 			};
 
-			// Reinicia estado UI
 			wordGenerado = false;
 			step = 1;
 		} catch (err) {
@@ -110,11 +144,6 @@
 			loadingSheets = false;
 		}
 	}
-	function goTo(num: number) {
-		step = num;
-	}
-	let wordGenerado = false;
-	let mostrarPopup = false;
 </script>
 
 {#if mostrarPopup}

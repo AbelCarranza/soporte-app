@@ -18,3 +18,19 @@ export interface PerifericoData {
 
   observations?: string;
 }
+
+export interface SetPerifericoValues {
+  monitor_brand?: string;
+  monitor_code?: string;
+  monitor_serial?: string;
+
+  keyboard_brand?: string;
+  keyboard_code?: string;
+  keyboard_serial?: string;
+
+  mouse_brand?: string;
+  mouse_code?: string;
+  mouse_serial?: string;
+
+  observations?: string;
+}

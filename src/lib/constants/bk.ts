@@ -69,5 +69,3 @@ export interface ReportData {
   // Registro y cierre
   technician?: string;
 }
-
-

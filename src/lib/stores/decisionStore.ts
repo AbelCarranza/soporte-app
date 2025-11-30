@@ -1,16 +1,27 @@
 import { writable } from 'svelte/store';
+import type { DecisionData } from '$lib/types/decision';
 
-type DecisionData = {
-  selected_decision: string;
-  action_plan: string;
-  other_description: string;
-};
+function safeParse(data: string | null): DecisionData {
+  try {
+    return data ? JSON.parse(data) as DecisionData : {
+      selected_decision: '',
+      action_plan: '',
+      other_description: ''
+    };
+  } catch {
+    return {
+      selected_decision: '',
+      action_plan: '',
+      other_description: ''
+    };
+  }
+}
 
-const stored = typeof window !== 'undefined' ? localStorage.getItem('decisionData') : null;
+const stored = typeof window !== 'undefined'
+  ? localStorage.getItem('decisionData')
+  : null;
 
-export const decisionStore = writable<DecisionData>(
-  stored ? JSON.parse(stored) : { selected_decision: '', action_plan: '', other_description: '' }
-);
+export const decisionStore = writable<DecisionData>(safeParse(stored));
 
 if (typeof window !== 'undefined') {
   decisionStore.subscribe((data) => {

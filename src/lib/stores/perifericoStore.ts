@@ -1,17 +1,23 @@
 import { writable } from 'svelte/store';
 import type { PerifericoData } from '$lib/types/PerifericoData';
 
+function safeParsePeriferico(data: string | null): PerifericoData {
+  try {
+    return data ? JSON.parse(data) as PerifericoData : {};
+  } catch {
+    return {};
+  }
+}
 
-const initialData: PerifericoData = {};
+const stored = typeof window !== 'undefined'
+  ? localStorage.getItem('perifericoData')
+  : null;
 
+const initialData: PerifericoData = safeParsePeriferico(stored);
 
 export const perifericoStore = writable<PerifericoData>(initialData);
 
-
 if (typeof window !== 'undefined') {
-  const stored = localStorage.getItem('perifericoData');
-  if (stored) perifericoStore.set(JSON.parse(stored));
-
   perifericoStore.subscribe((data) => {
     localStorage.setItem('perifericoData', JSON.stringify(data));
   });

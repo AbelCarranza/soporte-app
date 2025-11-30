@@ -1,18 +1,17 @@
 <script lang="ts">
 	import { createEventDispatcher } from 'svelte';
+	import type { BuscarEventDetail } from '$lib/types/events';
 
-	export let loading = false; // <--- NUEVO
+	export let loading = false;
 
-	const dispatch = createEventDispatcher();
+	const dispatch = createEventDispatcher<{ buscar: BuscarEventDetail }>();
 
 	let codigo = '';
 	let form = '1';
 	let tipo = '3';
 
-	function buscar() {
+	function buscar(): void {
 		if (!codigo.trim() || loading) return;
-
-		// lanzamos el evento
 		dispatch('buscar', { tipo, codigo, form });
 	}
 </script>

@@ -2,7 +2,7 @@
 	import { createEventDispatcher } from 'svelte';
 
 	export let canSend = false;
-	export let loadingSheets = false; // <-- NUEVO
+	export let loadingSheets = false;
 
 	const dispatch = createEventDispatcher();
 

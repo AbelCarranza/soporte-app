@@ -3,12 +3,17 @@ import { writable } from 'svelte/store';
 import type { ReportData } from '$lib/types/report';
 import { initialReportData } from '$lib/constants/initialReportData';
 
-let initial: ReportData = { ...initialReportData };
-
-if (browser) {
-  const stored = localStorage.getItem('reportData');
-  if (stored) initial = JSON.parse(stored);
+function safeParseReport(data: string | null): ReportData {
+  try {
+    return data ? JSON.parse(data) as ReportData : { ...initialReportData };
+  } catch {
+    return { ...initialReportData };
+  }
 }
+
+const stored = browser ? localStorage.getItem('reportData') : null;
+
+const initial: ReportData = safeParseReport(stored);
 
 export const reportStore = writable<ReportData>(initial);
 

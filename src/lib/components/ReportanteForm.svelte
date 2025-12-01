@@ -2,6 +2,8 @@
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { reportanteStore } from '$lib/stores/reportanteStore';
+	import Svelecte from 'svelecte';
+	import { getReportantes, addReportante } from '$lib/services/reportanteAPI';
 
 	import { get } from 'svelte/store';
 	import { notifyError } from '$lib/services/notyf';
@@ -13,6 +15,8 @@
 	export let technician = '';
 	let issue_date = '';
 
+	let opciones_reportante: string[] = [];
+
 	// Inicializar desde store
 	$: {
 		const data: any = get(reportanteStore);
@@ -21,6 +25,13 @@
 		technician = data.technician ?? '';
 		issue_date = data.issue_date ?? '';
 	}
+
+	// Cargar reportantes al inicio
+	async function cargarReportantes() {
+		opciones_reportante = await getReportantes();
+	}
+
+	cargarReportantes();
 
 	function generarFecha() {
 		const hoy = new Date();
@@ -37,35 +48,35 @@
 			location: values.Location ?? current.location
 		}));
 	}
-	export function enviarDatos(): boolean {
+	export async function enviarDatos(): Promise<boolean> {
 		let ok = true;
 
 		if (!reported_by.trim()) {
 			notifyError("El campo 'Persona que Reporta' es obligatorio.");
 			ok = false;
 		}
-
 		if (!location.trim()) {
 			notifyError("El campo 'Ubicación' es obligatorio.");
 			ok = false;
 		}
-
 		if (!technician.trim()) {
 			notifyError("El campo 'Técnico Responsable' es obligatorio.");
 			ok = false;
 		}
-
 		if (!ok) return false;
 
 		generarFecha();
 
-		reportanteStore.set({
-			reported_by,
-			location,
-			technician,
-			issue_date
-		});
+		// Actualizar store
+		reportanteStore.set({ reported_by, location, technician, issue_date });
 
+		// Agregar reportante si es nuevo
+		if (reported_by && !opciones_reportante.includes(reported_by)) {
+			await addReportante(reported_by);
+			opciones_reportante = await getReportantes();
+		}
+
+		dispatch('update', { reported_by, location, technician, issue_date });
 		return true;
 	}
 </script>
@@ -80,11 +91,11 @@
 			</h2>
 			<div class="form-grid">
 				<div class="form-row">
-					<InputField
-						label="Persona que Reporta"
+					<Svelecte
+						options={opciones_reportante}
 						bind:value={reported_by}
-						placeholder="Ej: Juan Pérez González"
-						required
+						placeholder="Buscar o seleccionar"
+						disabled={false}
 					/>
 				</div>
 				<div class="form-row">

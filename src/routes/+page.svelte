@@ -1,5 +1,4 @@
 <script lang="ts">
-
 	import SearchBar from '../lib/components/SearchBar.svelte';
 	import CPUForm from '$lib/components/CPUForm.svelte';
 	import BackupForm from '$lib/components/BackupForm.svelte';
@@ -9,23 +8,21 @@
 	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
 	import PerifericoReplacementForm from '$lib/components/PerifericoReplacementForm.svelte';
 
-
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { generarFicha } from '$lib/services/docGenerator';
 	import { recibirBusquedaHandler } from '$lib/services/recibirBusqueda';
+	import { notifyError } from '$lib/services/notyf';
 
+	
 
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { stepStore } from '$lib/stores/stepStore';
 	import { resetAllStores } from '$lib/stores/resetStores';
 	import { get } from 'svelte/store';
 
-
 	import type { ReportData } from '$lib/types/report';
 	import type { SvelteComponent } from 'svelte';
 	import { initialReportData } from '$lib/constants/initialReportData';
-
-
 
 	let step = get(stepStore);
 	const decisionData = get(decisionStore);
@@ -40,18 +37,15 @@
 		...decisionData
 	};
 
-
-	$: esReemplazo =
-		reportData.selected_decision === 'Reemplazo con Equipo de Reserva';
+	$: esReemplazo = reportData.selected_decision === 'Reemplazo con Equipo de Reserva';
 
 	$: totalSteps = esReemplazo ? 6 : 4;
 
 	let wordGenerado = false;
 	let mostrarPopup = false;
 
-
-	let reportanteRef: { enviarDatos: () => boolean } | null = null;
-
+	let reportanteRef: { enviarDatos: () => Promise<boolean> } | null = null;
+	let backupRef: { enviarDatos: () => boolean } | null = null;
 
 	type FormWithEnviarDatos = SvelteComponent & {
 		enviarDatos?: () => void;
@@ -59,14 +53,10 @@
 
 	let cpuForm: FormWithEnviarDatos | undefined;
 	let perifericoRef: FormWithEnviarDatos | undefined;
-	let backupRef: FormWithEnviarDatos | undefined;
 	let cpuReplacementRef: FormWithEnviarDatos | undefined;
 	let perifericoReplacementRef: FormWithEnviarDatos | undefined;
 
-
-
 	function next() {
-
 		if (step === 1 && reportanteRef) {
 			const ok = reportanteRef.enviarDatos();
 			if (!ok) return;
@@ -74,7 +64,10 @@
 
 		if (step === 2) cpuForm?.enviarDatos?.();
 		if (step === 3) perifericoRef?.enviarDatos?.();
-		if (step === 4) backupRef?.enviarDatos?.();
+		if (step === 4 && backupRef) {
+			const ok = backupRef.enviarDatos();
+			if (!ok) return;
+		}
 		if (step === 5) cpuReplacementRef?.enviarDatos?.();
 		if (step === 6) perifericoReplacementRef?.enviarDatos?.();
 
@@ -93,10 +86,7 @@
 		step = num;
 	}
 
-
-	async function recibirBusqueda(
-		e: CustomEvent<{ tipo: string; codigo: string; form: string }>
-	) {
+	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
 		loadingSearch = true;
 
 		try {
@@ -112,10 +102,23 @@
 		}
 	}
 
-	function generarWord() {		if (step === 6) {
+	function generarWord() {
+		if (step === 6) {
 			perifericoReplacementRef?.enviarDatos?.();
 		}
 
+		const { selected_decision, action_plan, other_description } = get(decisionStore);
+
+		if (!selected_decision.trim()) {
+			notifyError('Debe seleccionar una decisión antes de generar el Word.');
+			return;
+		}
+
+		if (selected_decision === 'other' && !other_description.trim()) {
+			notifyError('Debe describir la decisión antes de generar el Word.');
+			return;
+		}
+		
 		generarFicha(reportData);
 		wordGenerado = true;
 	}

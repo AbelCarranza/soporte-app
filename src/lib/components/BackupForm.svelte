@@ -2,6 +2,7 @@
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { decisionStore } from '$lib/stores/decisionStore';
+	import { notifyError } from '$lib/services/notyf';
 	import { get } from 'svelte/store';
 
 	import type { DecisionData, DecisionOption } from '$lib/types/decision';
@@ -25,9 +26,12 @@
 		{ value: 'other', label: 'Otro' }
 	];
 
-	let showOtherFields: boolean;
+	let showOtherFields = selected_decision === 'other';
+
+	// Mostrar campo "Otro"
 	$: showOtherFields = selected_decision === 'other';
 
+	// Sincronizar valores automáticamente
 	$: {
 		if (selected_decision === 'other') {
 			action_plan = other_description;
@@ -37,14 +41,38 @@
 		}
 	}
 
+	// Guardar en store
 	$: decisionStore.set({ selected_decision, action_plan, other_description });
 
+	// Enviar al padre cuando cambian valores
 	$: if (selected_decision !== '' || action_plan !== '') {
 		dispatch('update', { action_plan, selected_decision });
 	}
 
-	export function enviarDatos(): void {
+	// VALIDACIÓN MANUAL
+	export function enviarDatos(): boolean {
+
+		// 1. Asegurar sincronización ANTES de validar
+		if (selected_decision === 'other') {
+			action_plan = other_description.trim();
+		}
+
+		// 2. Validar selección
+		if (!selected_decision.trim()) {
+			notifyError('Debe seleccionar una decisión.');
+			return false;
+		}
+
+		// 3. Validar campo "otro"
+		if (selected_decision === 'other' && !other_description.trim()) {
+			notifyError("Debe describir la decisión en el campo 'Descripción de la Decisión'.");
+			return false;
+		}
+
+		// 4. Enviar datos al padre
 		dispatch('update', { action_plan, selected_decision });
+
+		return true;
 	}
 </script>
 

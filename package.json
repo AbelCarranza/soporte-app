@@ -15,6 +15,7 @@
 	},
 	"devDependencies": {
 		"@sveltejs/adapter-auto": "^7.0.0",
+		"@sveltejs/adapter-static": "^3.0.10",
 		"@sveltejs/kit": "^2.48.5",
 		"@sveltejs/vite-plugin-svelte": "^6.2.1",
 		"prettier": "^3.6.2",
@@ -28,6 +29,7 @@
 		"docxtemplater": "^3.67.5",
 		"notyf": "^3.10.0",
 		"pizzip": "^3.2.0",
+		"svelecte": "^5.3.0",
 		"svoast": "^3.0.3",
 		"xmldom": "^0.6.0"
 	}

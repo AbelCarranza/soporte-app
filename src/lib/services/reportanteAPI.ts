@@ -7,13 +7,13 @@ export async function getReportantes(): Promise<string[]> {
 
 		const data = await response.json();
 
-		let reportantesSimulados: string[] = [];
+		let reportantes: string[] = [];
 
 		if (Array.isArray(data)) {
-			reportantesSimulados = data.map((item: any) => item.psr).filter(Boolean);
+			reportantes = data.map((item: any) => item.psr).filter(Boolean);
 		}
 
-		return reportantesSimulados;
+		return reportantes;
 	} catch (error) {
 		console.error('Error obteniendo reportantes:', error);
 		return [];

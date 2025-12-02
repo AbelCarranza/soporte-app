@@ -4,6 +4,7 @@ export async function enviarDatosASheets(reportData: any) {
 
 	const form = new FormData();
 
+  form.append('ID', String(reportData.ticket_id));
 
 	form.append('loc', reportData.location || '');
 	form.append('fecha', reportData.issue_date || '');
@@ -102,8 +103,7 @@ form.append(
 	});
 
 	const data = await res.json();
-	console.log('Respuesta de Apps Script:', data);
 
-	alert('Respuesta del servidor:\n' + JSON.stringify(data, null, 2));
+
 	return data;
 }

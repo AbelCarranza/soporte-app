@@ -11,7 +11,7 @@
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { generarFicha } from '$lib/services/docGenerator';
 	import { recibirBusquedaHandler } from '$lib/services/recibirBusqueda';
-	import { notifyError } from '$lib/services/notyf';
+	import { notifyError,notifySuccess } from '$lib/services/notyf';
 
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { stepStore } from '$lib/stores/stepStore';
@@ -22,11 +22,16 @@
 	import type { SvelteComponent } from 'svelte';
 	import { initialReportData } from '$lib/constants/initialReportData';
 
+	import { onMount } from 'svelte';
+	import { getFolio } from '$lib/services/folio';
+
 	let step = get(stepStore);
 	const decisionData = get(decisionStore);
 
 	let loadingSearch = false;
 	let loadingSheets = false;
+	let ticket_id: number | null = null;
+	let cargandoFolio = true;
 
 	$: stepStore.set(step);
 
@@ -54,6 +59,15 @@
 	let cpuReplacementRef: FormWithEnviarDatos | undefined;
 	let perifericoReplacementRef: FormWithEnviarDatos | undefined;
 
+	onMount(async () => {
+		ticket_id = await getFolio();
+		cargandoFolio = false;
+	});
+
+	$: if (ticket_id !== null) {
+		reportData.ticket_id = ticket_id;
+	}
+
 	async function next() {
 		if (step === 1 && reportanteRef) {
 			const ok = await reportanteRef.enviarDatos();
@@ -76,15 +90,26 @@
 		if (step > 1) step--;
 	}
 
-	function goTo(num: number) {
+	async function goTo(num: number) {
 		if (num > 1 && reportanteRef) {
-			const ok = reportanteRef.enviarDatos();
+			const ok = await reportanteRef.enviarDatos();
 			if (!ok) return;
 		}
+
 		step = num;
 	}
 
 	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
+		const { tipo } = e.detail;
+		if (
+			tipo === '4' && // Entrada
+			!((step === 4 && esReemplazo) || (esReemplazo && (step === 5 || step === 6)))
+		) {
+			notifyError(
+				'La búsqueda por *Entrada* solo está permitida durante el proceso de Reemplazo de Equipo de Reserva.'
+			);
+			return;
+		}
 		loadingSearch = true;
 
 		try {
@@ -127,7 +152,7 @@
 
 		try {
 			await enviarDatosASheets(reportData);
-			alert('Datos enviados correctamente');
+			notifySuccess('Datos enviados correctamente');
 
 			resetAllStores();
 
@@ -140,7 +165,6 @@
 			step = 1;
 		} catch (err) {
 			console.error(err);
-			alert('Error enviando a Sheets');
 		} finally {
 			loadingSheets = false;
 		}

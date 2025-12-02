@@ -1,7 +1,7 @@
 export interface ReportData {
   // Información general
   issue_date?: string;     
-  ticket_id?: string;       
+  ticket_id?: number;       
   reported_by?: string;     
   location?: string;        
 

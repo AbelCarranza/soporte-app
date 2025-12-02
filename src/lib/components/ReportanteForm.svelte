@@ -14,6 +14,7 @@
 	export let location = '';
 	export let technician = '';
 	let issue_date = '';
+	let loading = true;
 
 	let opciones_reportante: string[] = [];
 
@@ -28,7 +29,15 @@
 
 	// Cargar reportantes al inicio
 	async function cargarReportantes() {
-		opciones_reportante = await getReportantes();
+		loading = true;
+		try {
+			opciones_reportante = await getReportantes();
+		} catch (e) {
+			notifyError('No se pudieron cargar los reportantes.');
+			opciones_reportante = [];
+		} finally {
+			loading = false;
+		}
 	}
 
 	cargarReportantes();
@@ -51,10 +60,11 @@
 	export async function enviarDatos(): Promise<boolean> {
 		let ok = true;
 
-		if (!reported_by.trim()) {
+		if (!reported_by || reported_by.trim() === '') {
 			notifyError("El campo 'Persona que Reporta' es obligatorio.");
 			ok = false;
 		}
+
 		if (!location.trim()) {
 			notifyError("El campo 'Ubicación' es obligatorio.");
 			ok = false;
@@ -63,16 +73,14 @@
 			notifyError("El campo 'Técnico Responsable' es obligatorio.");
 			ok = false;
 		}
+		
 		if (!ok) return false;
 
 		generarFecha();
 
-		// Actualizar store
 		reportanteStore.set({ reported_by, location, technician, issue_date });
 
-		// Agregar reportante si es nuevo
 		if (reported_by && !opciones_reportante.includes(reported_by)) {
-			await addReportante(reported_by);
 			opciones_reportante = await getReportantes();
 		}
 
@@ -92,10 +100,20 @@
 			<div class="form-grid">
 				<div class="form-row">
 					<Svelecte
-						options={opciones_reportante}
 						bind:value={reported_by}
-						placeholder="Buscar o seleccionar"
-						disabled={false}
+						options={opciones_reportante}
+						placeholder={loading ? 'Cargando reportantes...' : 'Seleccione o escriba el reportante'}
+						clearable
+						creatable
+						keepCreated={true}
+						disabled={loading}
+						i18n={{ noResultsText: 'No hay opciones disponibles' }}
+						onCreateOption={async (option: { label: string; value: string }) => {
+							const nuevoReportante = option.label || option.value;
+							opciones_reportante = [...opciones_reportante, nuevoReportante];
+							await addReportante(nuevoReportante);
+							reported_by = nuevoReportante;
+						}}
 					/>
 				</div>
 				<div class="form-row">

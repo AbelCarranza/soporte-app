@@ -13,8 +13,6 @@
 	import { recibirBusquedaHandler } from '$lib/services/recibirBusqueda';
 	import { notifyError } from '$lib/services/notyf';
 
-	
-
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { stepStore } from '$lib/stores/stepStore';
 	import { resetAllStores } from '$lib/stores/resetStores';
@@ -56,9 +54,9 @@
 	let cpuReplacementRef: FormWithEnviarDatos | undefined;
 	let perifericoReplacementRef: FormWithEnviarDatos | undefined;
 
-	function next() {
+	async function next() {
 		if (step === 1 && reportanteRef) {
-			const ok = reportanteRef.enviarDatos();
+			const ok = await reportanteRef.enviarDatos();
 			if (!ok) return;
 		}
 
@@ -118,7 +116,7 @@
 			notifyError('Debe describir la decisión antes de generar el Word.');
 			return;
 		}
-		
+
 		generarFicha(reportData);
 		wordGenerado = true;
 	}

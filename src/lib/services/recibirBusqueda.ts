@@ -48,7 +48,7 @@ export async function recibirBusquedaHandler(
     const { codigo, form, tipo } = e.detail;
 
     const data = await buscarEnSheets(form, codigo);
-        if (!data || data.length === 0) {
+    if (!data || data.length === 0) {
         notifyError('No se encontraron equipos. Verifique el código ingresado.');
         return;
     }
@@ -68,13 +68,15 @@ export async function recibirBusquedaHandler(
         return;
     }
 
-    if (form === '1') {
+    if (form === '1' || form === '2') {
+        const tipoBusqueda = form === '1' ? '' : 'por serie';
+
         if (eq.matchField === 'AssetCode' || eq.matchField === 'Serial') {
             refs.cpuForm?.setData(eq);
-            notifySuccess('Datos de CPU completados');
+            notifySuccess(`Datos de CPU ${tipoBusqueda} completados`);
         } else {
             setPerifericoData(refs.perifericoRef, eq, perifericoMapForm);
-            notifySuccess('Datos del periférico completados');
+            notifySuccess(`Datos del periférico ${tipoBusqueda} completados`);
         }
         return;
     }

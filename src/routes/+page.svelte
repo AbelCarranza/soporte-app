@@ -187,7 +187,7 @@
 
 <div class="container-head">
 	<div>
-		<img src="src/lib/assets/logo_resize .webp" alt="logo" />
+		<img src="/logo_resize.webp" alt="logo" />
 	</div>
 	<header>
 		<SearchBar on:buscar={recibirBusqueda} loading={loadingSearch} />

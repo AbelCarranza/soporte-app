@@ -28,10 +28,10 @@
 
 	let showOtherFields = selected_decision === 'other';
 
-	// Mostrar campo "Otro"
+
 	$: showOtherFields = selected_decision === 'other';
 
-	// Sincronizar valores automáticamente
+
 	$: {
 		if (selected_decision === 'other') {
 			action_plan = other_description;
@@ -41,35 +41,30 @@
 		}
 	}
 
-	// Guardar en store
 	$: decisionStore.set({ selected_decision, action_plan, other_description });
 
-	// Enviar al padre cuando cambian valores
 	$: if (selected_decision !== '' || action_plan !== '') {
 		dispatch('update', { action_plan, selected_decision });
 	}
 
-	// VALIDACIÓN MANUAL
+
 	export function enviarDatos(): boolean {
 
-		// 1. Asegurar sincronización ANTES de validar
 		if (selected_decision === 'other') {
 			action_plan = other_description.trim();
 		}
 
-		// 2. Validar selección
+
 		if (!selected_decision.trim()) {
 			notifyError('Debe seleccionar una decisión.');
 			return false;
 		}
 
-		// 3. Validar campo "otro"
 		if (selected_decision === 'other' && !other_description.trim()) {
 			notifyError("Debe describir la decisión en el campo 'Descripción de la Decisión'.");
 			return false;
 		}
 
-		// 4. Enviar datos al padre
 		dispatch('update', { action_plan, selected_decision });
 
 		return true;
@@ -80,7 +75,6 @@
 	<!-- Sección de Decisión -->
 	<div class="form-section">
 		<h2 class="section-title">
-			<span class="icon">✅</span>
 			Decisión Tomada
 		</h2>
 		<div class="form-grid">
@@ -187,7 +181,6 @@
 		grid-template-columns: 1fr;
 	}
 
-	/* Estilos para el select personalizado */
 	.select-field {
 		display: flex;
 		flex-direction: column;

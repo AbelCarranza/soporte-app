@@ -11,7 +11,7 @@
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { generarFicha } from '$lib/services/docGenerator';
 	import { recibirBusquedaHandler } from '$lib/services/recibirBusqueda';
-	import { notifyError,notifySuccess } from '$lib/services/notyf';
+	import { notifyError, notifySuccess } from '$lib/services/notyf';
 
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { stepStore } from '$lib/stores/stepStore';
@@ -58,6 +58,21 @@
 	let perifericoRef: FormWithEnviarDatos | undefined;
 	let cpuReplacementRef: FormWithEnviarDatos | undefined;
 	let perifericoReplacementRef: FormWithEnviarDatos | undefined;
+
+	$: descripcionPaso =
+		step === 1
+			? 'Introduce los datos del reportante.'
+			: step === 2
+				? 'Completa la información del equipo.'
+				: step === 3
+					? 'Agrega los periféricos asociados.'
+					: step === 4
+						? 'Registra la información del backup.'
+						: step === 5
+							? 'Datos del equipo de reemplazo.'
+							: step === 6
+								? 'Periféricos del equipo de reemplazo.'
+								: '';
 
 	onMount(async () => {
 		ticket_id = await getFolio();
@@ -194,116 +209,153 @@
 	</header>
 </div>
 
-<div class="container">
-	<div class="steps">
-		<button class="step {step >= 1 ? 'active' : ''}" type="button" on:click={() => goTo(1)}
-			>1</button
-		>
-		<div class="line"></div>
+<div class="layout">
+	<!-- Sidebar -->
+	<div class="sidebar">
+		<h3 class="sidebar-title">Paso {step}</h3>
+		<p class="sidebar-sub">{descripcionPaso}</p>
 
-		<button class="step {step >= 2 ? 'active' : ''}" type="button" on:click={() => goTo(2)}
-			>2</button
-		>
-		<div class="line"></div>
+		<ul class="menu">
+			<li>
+				<button
+					type="button"
+					class="menu-item {step === 1 ? 'active' : ''}"
+					on:click={() => goTo(1)}
+				>
+					<span class="icon-circle"><i class="fa-solid fa-user"></i></span>
+					Datos del Reportante
+				</button>
+			</li>
 
-		<button class="step {step >= 3 ? 'active' : ''}" type="button" on:click={() => goTo(3)}
-			>3</button
-		>
-		<div class="line"></div>
+			<li>
+				<button
+					type="button"
+					class="menu-item {step === 2 ? 'active' : ''}"
+					on:click={() => goTo(2)}
+				>
+					<span class="icon-circle"><i class="fa-solid fa-laptop"></i></span>
+					Datos del Equipo
+				</button>
+			</li>
 
-		<button class="step {step >= 4 ? 'active' : ''}" type="button" on:click={() => goTo(4)}
-			>4</button
-		>
+			<li>
+				<button
+					type="button"
+					class="menu-item {step === 3 ? 'active' : ''}"
+					on:click={() => goTo(3)}
+				>
+					<span class="icon-circle"><i class="fa-solid fa-computer-mouse"></i></span>
+					Periféricos
+				</button>
+			</li>
 
-		{#if esReemplazo}
-			<div class="line"></div>
-			<button class="step {step >= 5 ? 'active' : ''}" type="button" on:click={() => goTo(5)}
-				>5</button
-			>
-			<div class="line"></div>
-			<button class="step {step >= 6 ? 'active' : ''}" type="button" on:click={() => goTo(6)}
-				>6</button
-			>
-		{/if}
+			<li>
+				<button
+					type="button"
+					class="menu-item {step === 4 ? 'active' : ''}"
+					on:click={() => goTo(4)}
+				>
+					<span class="icon-circle"><i class="fa-solid fa-box"></i></span>
+					Backup
+				</button>
+			</li>
+
+			{#if esReemplazo}
+				<li>
+					<button
+						type="button"
+						class="menu-item {step === 5 ? 'active' : ''}"
+						on:click={() => goTo(5)}
+					>
+						<span class="icon-circle"><i class="fa-solid fa-laptop-code"></i></span>
+						Equipo de Reemplazo
+					</button>
+				</li>
+
+				<li>
+					<button
+						type="button"
+						class="menu-item {step === 6 ? 'active' : ''}"
+						on:click={() => goTo(6)}
+					>
+						<span class="icon-circle"><i class="fa-solid fa-computer-mouse"></i></span>
+						Periféricos Reemplazo
+					</button>
+				</li>
+			{/if}
+		</ul>
 	</div>
 
-	<div class="form-card">
-		{#if step === 1}
-			<h2>Datos del Reportante</h2>
-			<ReportanteForm
-				bind:this={reportanteRef}
-				on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-			/>
-		{/if}
-
-		{#if step === 2}
-			<h2>Datos del Equipo</h2>
-			<CPUForm
-				bind:this={cpuForm}
-				on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-			/>
-		{/if}
-
-		{#if step === 3}
-			<h2>Periféricos</h2>
-			<PerifericoForm
-				bind:this={perifericoRef}
-				on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-			/>
-		{/if}
-
-		{#if step === 4}
-			<h2>Backup</h2>
-
-			<BackupForm
-				bind:this={backupRef}
-				on:update={(e) => {
-					reportData = { ...reportData, ...e.detail };
-				}}
-			/>
-		{/if}
-
-		<!-- PASO 5: CPU DE REEMPLAZO -->
-		{#if step === 5 && esReemplazo}
-			<h2>Datos del Equipo de Reemplazo</h2>
-			<CPUReplacementForm
-				bind:this={cpuReplacementRef}
-				on:update={(e) => {
-					reportData = { ...reportData, ...e.detail };
-				}}
-			/>
-		{/if}
-
-		<!-- PASO 6: PERIFÉRICOS DE REEMPLAZO -->
-		{#if step === 6 && esReemplazo}
-			<h2>Periféricos del Equipo de Reemplazo</h2>
-			<PerifericoReplacementForm
-				bind:this={perifericoReplacementRef}
-				on:update={(e) => {
-					reportData = { ...reportData, ...e.detail };
-				}}
-			/>
-		{/if}
-
-		{#if (!esReemplazo && step === 4) || (esReemplazo && step === 6)}
-			<FinalButtons
-				on:generarWord={generarWord}
-				on:confirmarEnvioSheets={() => (mostrarPopup = true)}
-				canSend={wordGenerado}
-				{loadingSheets}
-			/>
-		{/if}
-
-		<!-- BOTONES -->
-		<div class="nav-buttons">
-			{#if step > 1}
-				<button class="btn prev" on:click={prev}>Atrás</button>
+	<!-- CONTENT -->
+	<div class="content">
+		<div class="form-card">
+			{#if step === 1}
+				<h2>Datos del Reportante</h2>
+				<ReportanteForm
+					bind:this={reportanteRef}
+					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+				/>
 			{/if}
 
-			<!-- Condición dinámica -->
-			{#if (!esReemplazo && step < 4) || (esReemplazo && step < 6)}
-				<button class="btn next" on:click={next}>Siguiente</button>
+			{#if step === 2}
+				<h2>Datos del Equipo</h2>
+				<CPUForm
+					bind:this={cpuForm}
+					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+				/>
 			{/if}
+
+			{#if step === 3}
+				<h2>Periféricos</h2>
+				<PerifericoForm
+					bind:this={perifericoRef}
+					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+				/>
+			{/if}
+
+			{#if step === 4}
+				<h2>Backup</h2>
+				<BackupForm
+					bind:this={backupRef}
+					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+				/>
+			{/if}
+
+			{#if step === 5 && esReemplazo}
+				<h2>Datos del Equipo de Reemplazo</h2>
+				<CPUReplacementForm
+					bind:this={cpuReplacementRef}
+					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+				/>
+			{/if}
+
+			{#if step === 6 && esReemplazo}
+				<h2>Periféricos del Equipo de Reemplazo</h2>
+				<PerifericoReplacementForm
+					bind:this={perifericoReplacementRef}
+					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+				/>
+			{/if}
+
+			{#if (!esReemplazo && step === 4) || (esReemplazo && step === 6)}
+				<FinalButtons
+					on:generarWord={generarWord}
+					on:confirmarEnvioSheets={() => (mostrarPopup = true)}
+					canSend={wordGenerado}
+					{loadingSheets}
+				/>
+			{/if}
+
+			<!-- BOTONES -->
+			<div class="nav-buttons">
+				{#if step > 1}
+					<button class="btn prev" on:click={prev}>Atrás</button>
+				{/if}
+
+				{#if (!esReemplazo && step < 4) || (esReemplazo && step < 6)}
+					<button class="btn next" on:click={next}>Siguiente</button>
+				{/if}
+			</div>
 		</div>
 	</div>
 </div>
@@ -311,101 +363,136 @@
 <style>
 	.container-head {
 		display: flex;
-		justify-content: space-around;
+		justify-content: space-between;
 		align-items: center;
-		background-color: #1e5aa8;
-		box-shadow: -2px 12px 5px 2px rgb(0 0 255 / 0.2);
+		background-color: white;
+		padding: 5px;
 	}
-	.container-head img {
-		padding: 10px;
-	}
-	.container {
-		margin: 0 auto;
-		padding: 1.5rem;
-		max-width: 900px;
-	}
-
-	.steps {
+	/* Layout general */
+	.layout {
 		display: flex;
-		align-items: center;
-		gap: 0.7rem;
-		margin-bottom: 1.5rem;
+		min-height: 100vh;
 	}
 
-	.step {
-		background: #ddd;
-		border-radius: 50%;
-		width: 35px;
-		height: 35px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		cursor: pointer;
-		border: none;
-	}
-
-	.step.active {
-		background: #0070f3;
+	/* Sidebar */
+	.sidebar {
+		width: 260px;
+		background: #0e2239;
+		padding: 25px 20px;
 		color: white;
 	}
 
-	.line {
+	.sidebar-title {
+		font-size: 1.4rem;
+		font-weight: 600;
+		margin-bottom: 2px;
+	}
+
+	.sidebar-sub {
+		font-size: 0.9rem;
+		color: #9cb6d1;
+		margin-bottom: 20px;
+	}
+
+	.menu {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+	}
+
+	.menu-item {
+		background: transparent;
+		border: none;
+		text-align: left;
+		padding: 12px 20px;
+		margin: 0 -20px;
+		display: flex;
+		align-items: center;
+		width: calc(100% + 40px);
+		border-radius: 0;
+		color: #c8d7e5;
+		cursor: pointer;
+		transition: 0.2s;
+		font-size: 1rem;
+	}
+
+	.menu-item:hover {
+		background: #173657;
+	}
+
+	.menu-item.active {
+		background: #1f4e7a;
+		color: white;
+		font-weight: 600;
+	}
+
+	.content {
 		flex: 1;
-		height: 2px;
-		background: #ccc;
+		display: flex;
+		justify-content: center;
+		padding: 40px 20px;
 	}
 
 	.form-card {
+		width: 900px;
 		background: white;
-		border-radius: 14px;
-		padding: 1.5rem;
-		box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
-		border: 1px solid #eee;
+		padding: 30px;
+		border-radius: 12px;
+		box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 	}
 
 	h2 {
-		margin-bottom: 1rem;
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: #333;
+		margin-bottom: 20px;
+		color: #22354a;
+		font-size: 1.6rem;
+		font-weight: 700;
+		border-bottom: 2px solid #e2e8f0;
+		padding-bottom: 16px;
 	}
 
 	.nav-buttons {
+		margin-top: 25px;
 		display: flex;
 		justify-content: space-between;
-		margin-top: 1.5rem;
 	}
 
-	button {
-		padding: 0.5rem 1.2rem;
-		border-radius: 8px;
+	.btn {
+		padding: 10px 18px;
+		border-radius: 6px;
 		border: none;
 		cursor: pointer;
-		font-weight: 600;
+		font-size: 1rem;
 	}
 
 	.prev {
-		background: #ddd;
+		background: #ccc;
 	}
 
 	.next {
-		background: #0070f3;
+		background: #1e88e5;
 		color: white;
 	}
-	/* ---------- FONDO OSCURO ---------- */
-	.popup-overlay {
-		position: fixed;
-		top: 0;
-		left: 0;
-		width: 100vw;
-		height: 100vh;
-		background: rgba(0, 0, 0, 0.45);
+
+	.icon-circle {
+		width: 32px;
+		height: 32px;
+		border-radius: 50%;
+		background: #5c6269;
+		color: white;
 		display: flex;
-		justify-content: center;
 		align-items: center;
-		z-index: 9999;
-		backdrop-filter: blur(2px);
-		animation: fadeInBg 0.25s ease-out forwards;
+		justify-content: center;
+		margin-right: 12px;
+		font-size: 15px;
+		transition: 0.2s;
+	}
+
+	.menu-item.active .icon-circle {
+		background: green;
+	}
+
+	.menu-item:hover .icon-circle {
+		background: green;
 	}
 
 	/* ---------- TARJETA DEL POPUP ---------- */
@@ -420,6 +507,19 @@
 		transform: translateY(15px);
 		opacity: 0;
 		animation: popupSlideUp 0.25s ease-out forwards;
+	}
+	.popup-overlay {
+		position: fixed;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background: rgba(0, 0, 0, 0.5);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		z-index: 9999;
+		animation: fadeInBg 0.25s ease-out;
 	}
 
 	/* ---------- TITULO ---------- */

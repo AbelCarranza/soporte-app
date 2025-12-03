@@ -93,10 +93,6 @@
 	<div class="centered-layout">
 		<!-- Sección de Información del Reporte -->
 		<div class="form-section main-info">
-			<h2 class="section-title">
-				<span class="icon">👤</span>
-				Información del Reporte
-			</h2>
 			<div class="form-grid">
 				<div class="form-row">
 					<Svelecte
@@ -154,10 +150,7 @@
 	.form-section {
 		width: 100%;
 		max-width: 600px;
-		padding: 32px;
-		background: #f8fafc;
 		border-radius: 12px;
-		border: 1px solid #e2e8f0;
 		transition: all 0.3s ease;
 	}
 
@@ -165,24 +158,6 @@
 		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
 		border-color: #cbd5e0;
 		transform: translateY(-2px);
-	}
-
-	.section-title {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 12px;
-		margin: 0 0 28px 0;
-		color: #2d3748;
-		font-size: 1.5rem;
-		font-weight: 600;
-		border-bottom: 2px solid #e2e8f0;
-		padding-bottom: 16px;
-		text-align: center;
-	}
-
-	.icon {
-		font-size: 1.8rem;
 	}
 
 	.form-grid {
@@ -221,15 +196,6 @@
 			max-width: none;
 		}
 
-		.section-title {
-			font-size: 1.3rem;
-			margin-bottom: 24px;
-		}
-
-		.icon {
-			font-size: 1.6rem;
-		}
-
 		.form-grid {
 			gap: 20px;
 		}
@@ -249,16 +215,6 @@
 			padding: 20px 16px;
 		}
 
-		.section-title {
-			font-size: 1.2rem;
-			gap: 10px;
-			padding-bottom: 14px;
-		}
-
-		.icon {
-			font-size: 1.5rem;
-		}
-
 		.form-grid {
 			gap: 18px;
 		}
@@ -268,14 +224,6 @@
 		}
 	}
 
-	/* Mejoras de accesibilidad */
-	.section-title:focus {
-		outline: 2px solid #4299e1;
-		outline-offset: 2px;
-		border-radius: 4px;
-	}
-
-	/* Centrado perfecto para todos los dispositivos */
 	.centered-layout {
 		min-height: auto;
 	}

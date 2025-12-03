@@ -17,7 +17,8 @@
 </script>
 
 <div class="search-container">
-	<div>
+	<div class="search-wrapper">
+		<i class="fa fa-search"></i>
 		<input class="input" type="text" placeholder="Código" bind:value={codigo} />
 	</div>
 
@@ -121,6 +122,23 @@
 		border-top-color: transparent;
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;
+	}
+
+	.search-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.search-wrapper i {
+		position: absolute;
+		left: 10px;
+		font-size: 14px;
+		color: #666;
+	}
+
+	.search-wrapper .input {
+		padding-left: 32px; 
 	}
 
 	@keyframes spin {

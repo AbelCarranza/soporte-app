@@ -75,19 +75,16 @@
 						label="Marca"
 						bind:value={brand}
 						placeholder="Ej: Dell, HP, Lenovo"
-						required
 					/>
 					<InputField
 						label="Código Patrimonial"
 						bind:value={asset_code}
 						placeholder="Ej: PAT-001234"
-						required
 					/>
 					<InputField
 						label="Número de Serie"
 						bind:value={serial}
 						placeholder="Ej: SN123456789"
-						required
 					/>
 				</div>
 				<div class="form-row">
@@ -96,13 +93,11 @@
 						label="Procesador"
 						bind:value={cpu}
 						placeholder="Ej: Intel Core i5"
-						required
 					/>
 					<InputField
 						label="Velocidad del CPU"
 						bind:value={speed}
 						placeholder="Ej: 2.4 GHz"
-						required
 					/>
 					<InputField label="Memoria RAM" bind:value={ram} placeholder="Ej: 8 GB" required />
 				</div>
@@ -123,14 +118,12 @@
 						label="Marca del Disco"
 						bind:value={hdd_brand}
 						placeholder="Ej: Seagate, WD"
-						required
 					/>
 					<InputField label="Capacidad" bind:value={hdd_capacity} placeholder="Ej: 1 TB" required />
 					<InputField
 						label="Tecnología"
 						bind:value={hdd_technology}
 						placeholder="Ej: SSD, HDD, NVMe"
-						required
 					/>
 				</div>
 			</div>
@@ -223,4 +216,95 @@
 			padding: 12px;
 		}
 	}
+
+	@media (max-width: 350px) {
+
+	.form-container {
+		padding: 10px;
+		margin: 2px;
+		flex-direction: column;
+		gap: 12px;
+	}
+
+	.form-section {
+		padding: 14px;
+	}
+
+	.section-title {
+		font-size: 1rem;
+		gap: 8px;
+		padding-bottom: 8px;
+	}
+
+	.icon {
+		font-size: 1.2rem;
+	}
+
+	.form-row {
+		grid-template-columns: 1fr !important;
+		gap: 14px;
+	}
+
+	.form-grid {
+		gap: 14px;
+	}
+
+	:global(input),
+	:global(select),
+	:global(textarea) {
+		font-size: 0.9rem !important;
+		padding: 10px !important;
+	}
+}
+
+/* === Modo ultra compacto (≤ 300px) ========================= */
+@media (max-width: 300px) {
+
+	/* Contenedor principal más compacto */
+	.form-container {
+		padding: 8px;
+		margin: 0;
+		flex-direction: column;
+		gap: 10px;
+	}
+
+	/* Secciones compactas */
+	.form-section {
+		padding: 10px;
+		border-radius: 6px;
+	}
+
+	.section-title {
+		font-size: 0.9rem;
+		gap: 6px;
+		padding-bottom: 6px;
+	}
+
+	.icon {
+		font-size: 1.1rem;
+	}
+
+	/* Grid completamente colapsado */
+	.form-row {
+		grid-template-columns: 1fr !important;
+		gap: 10px;
+	}
+
+	.form-grid {
+		gap: 10px;
+	}
+
+	/* Inputs compactos */
+	:global(input),
+	:global(select),
+	:global(textarea) {
+		font-size: 0.8rem !important;
+		padding: 8px !important;
+	}
+
+	/* Ajuste para InputField wrapper */
+	:global(.input-field) {
+		margin-bottom: 0 !important;
+	}
+}
 </style>

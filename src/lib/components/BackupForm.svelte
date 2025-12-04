@@ -28,9 +28,7 @@
 
 	let showOtherFields = selected_decision === 'other';
 
-
 	$: showOtherFields = selected_decision === 'other';
-
 
 	$: {
 		if (selected_decision === 'other') {
@@ -47,13 +45,10 @@
 		dispatch('update', { action_plan, selected_decision });
 	}
 
-
 	export function enviarDatos(): boolean {
-
 		if (selected_decision === 'other') {
 			action_plan = other_description.trim();
 		}
-
 
 		if (!selected_decision.trim()) {
 			notifyError('Debe seleccionar una decisión.');
@@ -74,15 +69,11 @@
 <div class="form-container">
 	<!-- Sección de Decisión -->
 	<div class="form-section">
-		<h2 class="section-title">
-			Decisión Tomada
-		</h2>
+		<h2 class="section-title">Decisión Tomada</h2>
 		<div class="form-grid">
 			<div class="form-row full-width">
 				<div class="select-field">
-					<label for="decision-select" class="field-label">
-						Tipo de Decisión <span class="required">*</span>
-					</label>
+					<label for="decision-select" class="field-label"> Tipo de Decisión </label>
 					<select
 						id="decision-select"
 						bind:value={selected_decision}
@@ -193,10 +184,6 @@
 		font-size: 0.95rem;
 	}
 
-	.required {
-		color: #e53e3e;
-	}
-
 	.decision-select {
 		padding: 12px 16px;
 		border: 2px solid #e2e8f0;
@@ -222,7 +209,12 @@
 		color: #a0aec0;
 	}
 
-	/* Animación para las secciones condicionales */
+	.section-title:focus {
+		outline: 2px solid #4299e1;
+		outline-offset: 2px;
+		border-radius: 4px;
+	}
+
 	@keyframes fadeIn {
 		from {
 			opacity: 0;
@@ -234,12 +226,10 @@
 		}
 	}
 
-	/* Estilos específicos para mejorar la jerarquía visual */
 	:global(.input-field) {
 		margin-bottom: 0;
 	}
 
-	/* Responsive */
 	@media (max-width: 768px) {
 		.form-container {
 			padding: 16px;
@@ -290,10 +280,85 @@
 		}
 	}
 
-	/* Mejoras de accesibilidad */
-	.section-title:focus {
-		outline: 2px solid #4299e1;
-		outline-offset: 2px;
-		border-radius: 4px;
+	@media (max-width: 350px) {
+		.form-container {
+			padding: 10px;
+			margin: 2px;
+		}
+
+		.form-section {
+			padding: 12px;
+		}
+
+		.section-title {
+			font-size: 0.95rem;
+			gap: 6px;
+			padding-bottom: 8px;
+		}
+
+		.icon {
+			font-size: 1.2rem;
+		}
+
+		.decision-select {
+			padding: 8px 10px;
+			font-size: 0.85rem;
+		}
+
+		.field-label {
+			font-size: 0.85rem;
+		}
+
+		.form-row {
+			grid-template-columns: 1fr !important;
+			gap: 12px;
+		}
+
+		.select-field {
+			gap: 6px;
+		}
+	}
+
+	@media (max-width: 300px) {
+		.form-container {
+			padding: 8px;
+			margin: 0;
+		}
+
+		.form-section {
+			padding: 10px;
+			border-radius: 6px;
+		}
+
+		.section-title {
+			font-size: 0.9rem;
+			gap: 4px;
+			padding-bottom: 6px;
+		}
+
+		.icon {
+			font-size: 1.1rem;
+		}
+
+		.form-grid,
+		.form-row {
+			gap: 10px !important;
+			grid-template-columns: 1fr !important;
+		}
+
+		.field-label {
+			font-size: 0.8rem;
+		}
+
+		.decision-select {
+			padding: 8px 8px;
+			font-size: 0.8rem;
+		}
+
+
+		.conditional-section {
+			padding: 10px;
+			border-left-width: 3px;
+		}
 	}
 </style>

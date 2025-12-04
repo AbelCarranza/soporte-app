@@ -138,7 +138,7 @@
 	}
 
 	.search-wrapper .input {
-		padding-left: 32px; 
+		padding-left: 32px;
 	}
 
 	@keyframes spin {
@@ -147,6 +147,128 @@
 		}
 		to {
 			transform: rotate(360deg);
+		}
+	}
+	@media (max-width: 600px) {
+		.search-container {
+			justify-content: center;
+			gap: 12px;
+		}
+
+		.radios {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.select {
+			width: 100%;
+		}
+
+		.btn {
+			width: 100%;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.input {
+			min-width: 100%;
+		}
+
+		.select {
+			font-size: 0.9rem;
+		}
+
+		.radios {
+			flex-direction: column;
+			gap: 6px;
+			text-align: center;
+		}
+
+		.radios label {
+			justify-content: center;
+		}
+
+		.btn {
+			padding: 10px;
+			font-size: 0.9rem;
+		}
+	}
+
+	@media (max-width: 350px) {
+		.search-wrapper i {
+			left: 8px;
+			font-size: 12px;
+		}
+
+		.search-wrapper .input {
+			padding-left: 28px;
+			font-size: 0.9rem;
+		}
+
+		.radios label {
+			font-size: 0.85rem;
+		}
+
+		.select,
+		.input {
+			padding: 6px 8px;
+			font-size: 0.9rem;
+		}
+
+		.btn {
+			padding: 8px;
+			font-size: 0.9rem;
+		}
+	}
+
+	@media (max-width: 300px) {
+
+		.search-container {
+			gap: 8px;
+			padding: 8px 0;
+		}
+
+
+		.search-wrapper .input {
+			width: 100%;
+			min-width: unset;
+			padding-left: 26px;
+			font-size: 0.85rem;
+		}
+
+		.search-wrapper i {
+			left: 6px;
+			font-size: 11px;
+		}
+
+		.radios {
+			flex-direction: column;
+			align-items: center;
+			gap: 4px;
+			width: 100%;
+		}
+
+		.radios label {
+			font-size: 0.8rem;
+		}
+
+
+		.select {
+			width: 100%;
+			font-size: 0.85rem;
+			padding: 6px 8px;
+		}
+
+		.btn {
+			width: 100%;
+			padding: 8px;
+			font-size: 0.85rem;
+		}
+
+		.spinner {
+			width: 14px;
+			height: 14px;
+			border-width: 2px;
 		}
 	}
 </style>

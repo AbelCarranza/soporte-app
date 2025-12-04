@@ -32,6 +32,7 @@
 	let loadingSheets = false;
 	let ticket_id: number | null = null;
 	let cargandoFolio = true;
+	let sidebarOpen = false;
 
 	$: stepStore.set(step);
 
@@ -184,6 +185,9 @@
 			loadingSheets = false;
 		}
 	}
+	function toggleSidebar() {
+		sidebarOpen = !sidebarOpen;
+	}
 </script>
 
 {#if mostrarPopup}
@@ -201,17 +205,22 @@
 {/if}
 
 <div class="container-head">
-	<div>
+	<div class="head-left">
 		<img src="/logo_resize.webp" alt="logo" />
+
+		<button class="hamburger" on:click={toggleSidebar} aria-label="Abrir menú">
+			<i class="fa-solid fa-bars"></i>
+		</button>
 	</div>
-	<header>
+
+	<header class="head-search">
 		<SearchBar on:buscar={recibirBusqueda} loading={loadingSearch} />
 	</header>
 </div>
 
 <div class="layout">
 	<!-- Sidebar -->
-	<div class="sidebar">
+	<div class="sidebar {sidebarOpen ? 'open' : ''}">
 		<h3 class="sidebar-title">Paso {step}</h3>
 		<p class="sidebar-sub">{descripcionPaso}</p>
 
@@ -287,6 +296,9 @@
 	</div>
 
 	<!-- CONTENT -->
+	{#if sidebarOpen}
+		<div class="sidebar-overlay" on:click={() => (sidebarOpen = false)}></div>
+	{/if}
 	<div class="content">
 		<div class="form-card">
 			{#if step === 1}
@@ -368,18 +380,21 @@
 		background-color: white;
 		padding: 5px;
 	}
-	/* Layout general */
+
 	.layout {
 		display: flex;
 		min-height: 100vh;
+		flex-direction: row;
+		width: 100%;
 	}
 
-	/* Sidebar */
+	/* ========== SIDEBAR DESKTOP ========== */
 	.sidebar {
 		width: 260px;
 		background: #0e2239;
 		padding: 25px 20px;
 		color: white;
+		transition: transform 0.3s ease-in-out;
 	}
 
 	.sidebar-title {
@@ -434,7 +449,8 @@
 	}
 
 	.form-card {
-		width: 900px;
+		width: 100%;
+		max-width: 900px;
 		background: white;
 		padding: 30px;
 		border-radius: 12px;
@@ -473,6 +489,7 @@
 		color: white;
 	}
 
+	/* ICONOS */
 	.icon-circle {
 		width: 32px;
 		height: 32px;
@@ -487,15 +504,12 @@
 		transition: 0.2s;
 	}
 
-	.menu-item.active .icon-circle {
-		background: green;
-	}
-
+	.menu-item.active .icon-circle,
 	.menu-item:hover .icon-circle {
 		background: green;
 	}
 
-	/* ---------- TARJETA DEL POPUP ---------- */
+	/* POPUP */
 	.popup {
 		background: #ffffff;
 		padding: 24px 28px;
@@ -504,10 +518,9 @@
 		max-width: 90%;
 		text-align: center;
 		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
-		transform: translateY(15px);
-		opacity: 0;
 		animation: popupSlideUp 0.25s ease-out forwards;
 	}
+
 	.popup-overlay {
 		position: fixed;
 		top: 0;
@@ -519,106 +532,187 @@
 		justify-content: center;
 		align-items: center;
 		z-index: 9999;
-		animation: fadeInBg 0.25s ease-out;
 	}
 
-	/* ---------- TITULO ---------- */
-	.popup h3 {
-		font-size: 20px;
-		margin-bottom: 10px;
-		font-weight: 600;
-		color: #333;
-	}
-
-	/* ---------- TEXTO ---------- */
-	.popup p {
-		font-size: 15px;
-		color: #555;
-		margin-top: 0;
-	}
-
-	/* ---------- BOTONES ---------- */
 	.popup-buttons {
 		margin-top: 22px;
 		display: flex;
 		gap: 12px;
 		justify-content: center;
-		flex-wrap: wrap; /* hace responsive */
+		flex-wrap: wrap;
 	}
 
-	/* Botón aceptar */
-	.popup-buttons .confirm {
-		background: #2a8f2a;
-		color: white;
-		padding: 9px 18px;
-		border-radius: 8px;
-		font-size: 15px;
-		min-width: 110px;
-		transition: transform 0.15s;
-	}
-
-	.popup-buttons .confirm:hover {
-		transform: scale(1.05);
-	}
-
-	/* Botón cancelar */
+	.popup-buttons .confirm,
 	.popup-buttons .cancel {
-		background: #999;
-		color: white;
 		padding: 9px 18px;
 		border-radius: 8px;
 		font-size: 15px;
 		min-width: 110px;
+		color: white;
 		transition: transform 0.15s;
 	}
 
-	.popup-buttons .cancel:hover {
+	.confirm {
+		background: #2a8f2a;
+	}
+	.cancel {
+		background: #999;
+	}
+
+	.confirm:hover,
+	.cancel:hover {
 		transform: scale(1.05);
 	}
 
-	/* ---------- ANIMACIONES ---------- */
-	@keyframes fadeInBg {
-		from {
-			opacity: 0;
+	.hamburger {
+		display: none;
+		background: none;
+		border: none;
+		font-size: 28px;
+		cursor: pointer;
+		color: #0e2239;
+	}
+
+	@media (max-width: 850px) {
+		.layout {
+			flex-direction: column;
 		}
-		to {
-			opacity: 1;
+
+		.sidebar {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 250px;
+			height: 100vh;
+			transform: translateX(-100%);
+			z-index: 999;
+		}
+
+		.sidebar.open {
+			transform: translateX(0);
+		}
+
+		.sidebar-overlay {
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+			background: rgba(0, 0, 0, 0.45);
+			z-index: 998;
+		}
+
+		.hamburger {
+			display: block;
+		}
+
+		.content {
+			padding: 15px 10px;
 		}
 	}
 
-	@keyframes popupSlideUp {
-		from {
-			transform: translateY(30px);
-			opacity: 0;
+	@media (max-width: 600px) {
+		.form-card {
+			padding: 20px;
+			border-radius: 8px;
 		}
-		to {
-			transform: translateY(0);
-			opacity: 1;
+
+		h2 {
+			font-size: 1.3rem;
+		}
+
+		.nav-buttons {
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.nav-buttons .btn {
+			width: 100%;
 		}
 	}
 
-	/* ---------- RESPONSIVE EXTRA ---------- */
 	@media (max-width: 450px) {
 		.popup {
 			width: 95%;
-			padding: 20px;
+			padding: 18px;
 			border-radius: 12px;
 		}
 
-		.popup h3 {
-			font-size: 18px;
-		}
-
-		.popup p {
-			font-size: 14px;
-		}
-
 		.popup-buttons {
-			gap: 8px;
+			flex-direction: column;
 		}
 
 		.popup-buttons button {
 			width: 100%;
+		}
+	}
+
+	@media (max-width: 350px) {
+		.container-head {
+			flex-direction: column;
+			gap: 10px;
+		}
+	}
+
+	@media (max-width: 300px) {
+		.form-card {
+			padding: 12px;
+		}
+
+		h2 {
+			font-size: 1.1rem;
+		}
+
+		.sidebar {
+			width: 200px;
+		}
+
+		.sidebar ul li {
+			padding: 8px 10px;
+			font-size: 0.85rem;
+		}
+
+		.content,
+		p {
+			font-size: 0.85rem;
+		}
+
+		.nav-buttons {
+			flex-direction: column;
+			width: 100%;
+			gap: 6px;
+		}
+
+		.nav-buttons .btn {
+			padding: 8px;
+			font-size: 0.85rem;
+			width: 100%;
+		}
+
+		.popup {
+			width: 92%;
+			padding: 14px;
+		}
+
+		.popup-buttons {
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.popup-buttons button {
+			width: 100%;
+			font-size: 0.85rem;
+			padding: 8px;
+		}
+
+		.container-head {
+			flex-direction: column;
+			gap: 6px;
+		}
+
+		.hamburger {
+			font-size: 20px;
+			padding: 6px 8px;
 		}
 	}
 </style>

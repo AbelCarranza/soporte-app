@@ -60,7 +60,7 @@
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
-		button[disabled] {
+	button[disabled] {
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
@@ -79,7 +79,24 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
+	}
+	@media (max-width: 300px) {
+		.final-buttons {
+			flex-direction: column;
+			gap: 0.7rem;
+		}
+
+		.btn {
+			width: 100%;
+			text-align: center;
+			padding: 1rem;
+			font-size: 0.9rem;
+		}
 	}
 </style>

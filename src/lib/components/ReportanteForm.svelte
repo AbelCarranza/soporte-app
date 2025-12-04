@@ -154,12 +154,6 @@
 		transition: all 0.3s ease;
 	}
 
-	.form-section:hover {
-		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
-		border-color: #cbd5e0;
-		transform: translateY(-2px);
-	}
-
 	.form-grid {
 		display: flex;
 		flex-direction: column;
@@ -173,12 +167,11 @@
 		align-items: start;
 	}
 
-	/* Efectos visuales mejorados */
+
 	.form-section {
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
-	/* Estados de focus para mejor accesibilidad */
 	:global(.input-field:focus-within) {
 		transform: translateY(-1px);
 	}
@@ -227,4 +220,6 @@
 	.centered-layout {
 		min-height: auto;
 	}
+
+	
 </style>

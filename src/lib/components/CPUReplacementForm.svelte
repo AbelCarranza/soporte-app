@@ -1,89 +1,88 @@
 <script lang="ts">
-  import InputField from './InputField.svelte';
-  import { createEventDispatcher } from 'svelte';
-  import { replacementStore } from '$lib/stores/replacementStorage';
-  import type { ReplacementData, SetReplacementValues } from '$lib/types/ReplacementData';
+	import InputField from './InputField.svelte';
+	import { createEventDispatcher } from 'svelte';
+	import { replacementStore } from '$lib/stores/replacementStorage';
+	import type { ReplacementData, SetReplacementValues } from '$lib/types/ReplacementData';
 
-  const dispatch = createEventDispatcher<{ update: ReplacementData }>();
+	const dispatch = createEventDispatcher<{ update: ReplacementData }>();
 
-  let bk_brand = '';
-  let bk_asset = '';
-  let bk_serial = '';
-  let bk_plate = '';
-  let bk_cpu = '';
-  let bk_speed = '';
-  let bk_ram = '';
+	let bk_brand = '';
+	let bk_asset = '';
+	let bk_serial = '';
+	let bk_plate = '';
+	let bk_cpu = '';
+	let bk_speed = '';
+	let bk_ram = '';
 
-  let bk_hdbrand = '';
-  let bk_hdd_cap = '';
-  let bk_hdd_tech = '';
+	let bk_hdbrand = '';
+	let bk_hdd_cap = '';
+	let bk_hdd_tech = '';
 
-  let initialized = false;
+	let initialized = false;
 
-  // === CARGAR DESDE STORAGE ===
-  replacementStore.subscribe((data: ReplacementData) => {
-    bk_brand = data.bk_brand ?? '';
-    bk_asset = data.bk_asset ?? '';
-    bk_serial = data.bk_serial ?? '';
-    bk_plate = data.bk_plate ?? '';
-    bk_cpu = data.bk_cpu ?? '';
-    bk_speed = data.bk_speed ?? '';
-    bk_ram = data.bk_ram ?? '';
+	// === CARGAR DESDE STORAGE ===
+	replacementStore.subscribe((data: ReplacementData) => {
+		bk_brand = data.bk_brand ?? '';
+		bk_asset = data.bk_asset ?? '';
+		bk_serial = data.bk_serial ?? '';
+		bk_plate = data.bk_plate ?? '';
+		bk_cpu = data.bk_cpu ?? '';
+		bk_speed = data.bk_speed ?? '';
+		bk_ram = data.bk_ram ?? '';
 
-    bk_hdbrand = data.bk_hdbrand ?? '';
-    bk_hdd_cap = data.bk_hdd_cap ?? '';
-    bk_hdd_tech = data.bk_hdd_tech ?? '';
+		bk_hdbrand = data.bk_hdbrand ?? '';
+		bk_hdd_cap = data.bk_hdd_cap ?? '';
+		bk_hdd_tech = data.bk_hdd_tech ?? '';
 
-    initialized = true;
-  });
+		initialized = true;
+	});
 
-  export function setData(values: SetReplacementValues): void {
-    bk_brand = values.Brand ?? '';
-    bk_asset = values.AssetCode ?? '';
-    bk_serial = values.Serial ?? '';
-    bk_plate = values.Plate ?? '';
-    bk_cpu = values.CPU ?? '';
-    bk_speed = values.CPUSpeed ?? '';
-    bk_ram = values.RAM ?? '';
+	export function setData(values: SetReplacementValues): void {
+		bk_brand = values.Brand ?? '';
+		bk_asset = values.AssetCode ?? '';
+		bk_serial = values.Serial ?? '';
+		bk_plate = values.Plate ?? '';
+		bk_cpu = values.CPU ?? '';
+		bk_speed = values.CPUSpeed ?? '';
+		bk_ram = values.RAM ?? '';
 
-    bk_hdbrand = values.HDDBrand ?? '';
-    bk_hdd_cap = values.HDDCapacity ?? '';
-    bk_hdd_tech = values.HDDTechnology ?? '';
-  }
+		bk_hdbrand = values.HDDBrand ?? '';
+		bk_hdd_cap = values.HDDCapacity ?? '';
+		bk_hdd_tech = values.HDDTechnology ?? '';
+	}
 
-  // === GUARDAR CAMBIOS EN STORAGE SOLO SI YA CARGÓ ===
-  $: if (initialized) {
-    replacementStore.update((current) => ({
-      ...current,
-      bk_brand,
-      bk_asset,
-      bk_serial,
-      bk_plate,
-      bk_cpu,
-      bk_speed,
-      bk_ram,
-      bk_hdbrand,
-      bk_hdd_cap,
-      bk_hdd_tech,
-    }));
-  }
+	// === GUARDAR CAMBIOS EN STORAGE SOLO SI YA CARGÓ ===
+	$: if (initialized) {
+		replacementStore.update((current) => ({
+			...current,
+			bk_brand,
+			bk_asset,
+			bk_serial,
+			bk_plate,
+			bk_cpu,
+			bk_speed,
+			bk_ram,
+			bk_hdbrand,
+			bk_hdd_cap,
+			bk_hdd_tech
+		}));
+	}
 
-  export function enviarDatos(): void {
-    dispatch('update', {
-      bk_brand,
-      bk_asset,
-      bk_serial,
-      bk_plate,
-      bk_cpu,
-      bk_speed,
-      bk_ram,
-      bk_hdbrand,
-      bk_hdd_cap,
-      bk_hdd_tech,
-    });
-  }
+	export function enviarDatos(): void {
+		dispatch('update', {
+			bk_brand,
+			bk_asset,
+			bk_serial,
+			bk_plate,
+			bk_cpu,
+			bk_speed,
+			bk_ram,
+			bk_hdbrand,
+			bk_hdd_cap,
+			bk_hdd_tech
+		});
+	}
 </script>
-
 
 <div class="form-container">
 	<!-- Información del Equipo de Reemplazo -->
@@ -96,31 +95,16 @@
 
 			<div class="form-grid">
 				<div class="form-row">
-					<InputField label="Marca" bind:value={bk_brand} placeholder="Ej: Dell, HP" required />
-					<InputField
-						label="Código Patrimonial"
-						bind:value={bk_asset}
-						placeholder="Ej: PAT-001"
-						required
-					/>
-					<InputField
-						label="Número de Serie"
-						bind:value={bk_serial}
-						placeholder="Ej: SN123456"
-						required
-					/>
+					<InputField label="Marca" bind:value={bk_brand} placeholder="Ej: Dell, HP" />
+					<InputField label="Código Patrimonial" bind:value={bk_asset} placeholder="Ej: PAT-001" />
+					<InputField label="Número de Serie" bind:value={bk_serial} placeholder="Ej: SN123456" />
 				</div>
 
 				<div class="form-row">
-					<InputField label="Placa" bind:value={bk_plate} placeholder="Ej: Gigabyte" required />
-					<InputField
-						label="Procesador"
-						bind:value={bk_cpu}
-						placeholder="Ej: Intel Core i5"
-						required
-					/>
-					<InputField label="Velocidad" bind:value={bk_speed} placeholder="Ej: 2.4 GHz" required />
-					<InputField label="Memoria RAM" bind:value={bk_ram} placeholder="Ej: 8 GB" required />
+					<InputField label="Placa" bind:value={bk_plate} placeholder="Ej: Gigabyte" />
+					<InputField label="Procesador" bind:value={bk_cpu} placeholder="Ej: Intel Core i5" />
+					<InputField label="Velocidad" bind:value={bk_speed} placeholder="Ej: 2.4 GHz" />
+					<InputField label="Memoria RAM" bind:value={bk_ram} placeholder="Ej: 8 GB" />
 				</div>
 			</div>
 		</div>
@@ -136,23 +120,12 @@
 
 			<div class="form-grid">
 				<div class="form-row">
-					<InputField
-						label="Marca del Disco"
-						bind:value={bk_hdbrand}
-						placeholder="Ej: WD"
-						required
-					/>
+					<InputField label="Marca del Disco" bind:value={bk_hdbrand} placeholder="Ej: WD" />
 					<InputField label="Capacidad" bind:value={bk_hdd_cap} placeholder="Ej: 1 TB" required />
-					<InputField
-						label="Tecnología"
-						bind:value={bk_hdd_tech}
-						placeholder="Ej: SSD, HDD"
-						required
-					/>
+					<InputField label="Tecnología" bind:value={bk_hdd_tech} placeholder="Ej: SSD, HDD" />
 				</div>
 			</div>
 		</div>
-
 	</div>
 </div>
 
@@ -239,6 +212,95 @@
 
 		.form-section {
 			padding: 12px;
+		}
+	}
+
+	@media (max-width: 350px) {
+		.form-container {
+			padding: 10px;
+			margin: 2px;
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		.form-section {
+			padding: 14px;
+		}
+
+		.section-title {
+			font-size: 1rem;
+			gap: 8px;
+			padding-bottom: 8px;
+		}
+
+		.icon {
+			font-size: 1.2rem;
+		}
+
+		.form-row {
+			grid-template-columns: 1fr !important;
+			gap: 14px;
+		}
+
+		.form-grid {
+			gap: 14px;
+		}
+
+		:global(input),
+		:global(select),
+		:global(textarea) {
+			font-size: 0.9rem !important;
+			padding: 10px !important;
+		}
+	}
+
+	/* === Modo ultra compacto (≤ 300px) ========================= */
+	@media (max-width: 300px) {
+		/* Contenedor principal más compacto */
+		.form-container {
+			padding: 8px;
+			margin: 0;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		/* Secciones compactas */
+		.form-section {
+			padding: 10px;
+			border-radius: 6px;
+		}
+
+		.section-title {
+			font-size: 0.9rem;
+			gap: 6px;
+			padding-bottom: 6px;
+		}
+
+		.icon {
+			font-size: 1.1rem;
+		}
+
+		/* Grid completamente colapsado */
+		.form-row {
+			grid-template-columns: 1fr !important;
+			gap: 10px;
+		}
+
+		.form-grid {
+			gap: 10px;
+		}
+
+		/* Inputs compactos */
+		:global(input),
+		:global(select),
+		:global(textarea) {
+			font-size: 0.8rem !important;
+			padding: 8px !important;
+		}
+
+		/* Ajuste para InputField wrapper */
+		:global(.input-field) {
+			margin-bottom: 0 !important;
 		}
 	}
 </style>

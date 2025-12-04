@@ -15,8 +15,6 @@ export async function generarFicha(data: ReportData) {
 		});
 	}
 
-	console.log('Generando Word con los siguientes datos:', data);
-
 	const content = await loadFile('/templates/Ficha.docx');
 
 	const zip = new PizZip(content);

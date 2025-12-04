@@ -184,7 +184,6 @@
 		align-items: start;
 	}
 
-	/* Responsive */
 	@media (max-width: 768px) {
 		.form-container {
 			padding: 16px;
@@ -210,6 +209,7 @@
 		.form-container {
 			padding: 12px;
 			margin: 4px;
+			flex-direction: column;
 		}
 
 		.form-section {
@@ -257,10 +257,9 @@
 	}
 }
 
-/* === Modo ultra compacto (≤ 300px) ========================= */
 @media (max-width: 300px) {
 
-	/* Contenedor principal más compacto */
+
 	.form-container {
 		padding: 8px;
 		margin: 0;
@@ -268,7 +267,6 @@
 		gap: 10px;
 	}
 
-	/* Secciones compactas */
 	.form-section {
 		padding: 10px;
 		border-radius: 6px;
@@ -284,7 +282,6 @@
 		font-size: 1.1rem;
 	}
 
-	/* Grid completamente colapsado */
 	.form-row {
 		grid-template-columns: 1fr !important;
 		gap: 10px;
@@ -294,7 +291,7 @@
 		gap: 10px;
 	}
 
-	/* Inputs compactos */
+
 	:global(input),
 	:global(select),
 	:global(textarea) {
@@ -302,7 +299,6 @@
 		padding: 8px !important;
 	}
 
-	/* Ajuste para InputField wrapper */
 	:global(.input-field) {
 		margin-bottom: 0 !important;
 	}

@@ -204,169 +204,171 @@
 	</div>
 {/if}
 
-<div class="container-head">
-	<div class="head-left">
-		<img src="/logo_resize.webp" alt="logo" />
+<div>
+	<div class="container-head">
+		<div class="head-left">
+			<img src="/logo_resize.webp" alt="logo" />
 
-		<button class="hamburger" on:click={toggleSidebar} aria-label="Abrir menú">
-			<i class="fa-solid fa-bars"></i>
-		</button>
+			<button class="hamburger" on:click={toggleSidebar} aria-label="Abrir menú">
+				<i class="fa-solid fa-bars"></i>
+			</button>
+		</div>
+
+		<header class="head-search">
+			<SearchBar on:buscar={recibirBusqueda} loading={loadingSearch} />
+		</header>
 	</div>
 
-	<header class="head-search">
-		<SearchBar on:buscar={recibirBusqueda} loading={loadingSearch} />
-	</header>
-</div>
+	<div class="layout">
+		<!-- Sidebar -->
+		<div class="sidebar {sidebarOpen ? 'open' : ''}">
+			<h3 class="sidebar-title">Paso {step}</h3>
+			<p class="sidebar-sub">{descripcionPaso}</p>
 
-<div class="layout">
-	<!-- Sidebar -->
-	<div class="sidebar {sidebarOpen ? 'open' : ''}">
-		<h3 class="sidebar-title">Paso {step}</h3>
-		<p class="sidebar-sub">{descripcionPaso}</p>
-
-		<ul class="menu">
-			<li>
-				<button
-					type="button"
-					class="menu-item {step === 1 ? 'active' : ''}"
-					on:click={() => goTo(1)}
-				>
-					<span class="icon-circle"><i class="fa-solid fa-user"></i></span>
-					Datos del Reportante
-				</button>
-			</li>
-
-			<li>
-				<button
-					type="button"
-					class="menu-item {step === 2 ? 'active' : ''}"
-					on:click={() => goTo(2)}
-				>
-					<span class="icon-circle"><i class="fa-solid fa-laptop"></i></span>
-					Datos del Equipo
-				</button>
-			</li>
-
-			<li>
-				<button
-					type="button"
-					class="menu-item {step === 3 ? 'active' : ''}"
-					on:click={() => goTo(3)}
-				>
-					<span class="icon-circle"><i class="fa-solid fa-computer-mouse"></i></span>
-					Periféricos
-				</button>
-			</li>
-
-			<li>
-				<button
-					type="button"
-					class="menu-item {step === 4 ? 'active' : ''}"
-					on:click={() => goTo(4)}
-				>
-					<span class="icon-circle"><i class="fa-solid fa-box"></i></span>
-					Backup
-				</button>
-			</li>
-
-			{#if esReemplazo}
+			<ul class="menu">
 				<li>
 					<button
 						type="button"
-						class="menu-item {step === 5 ? 'active' : ''}"
-						on:click={() => goTo(5)}
+						class="menu-item {step === 1 ? 'active' : ''}"
+						on:click={() => goTo(1)}
 					>
-						<span class="icon-circle"><i class="fa-solid fa-laptop-code"></i></span>
-						Equipo de Reemplazo
+						<span class="icon-circle"><i class="fa-solid fa-user"></i></span>
+						Datos del Reportante
 					</button>
 				</li>
 
 				<li>
 					<button
 						type="button"
-						class="menu-item {step === 6 ? 'active' : ''}"
-						on:click={() => goTo(6)}
+						class="menu-item {step === 2 ? 'active' : ''}"
+						on:click={() => goTo(2)}
+					>
+						<span class="icon-circle"><i class="fa-solid fa-laptop"></i></span>
+						Datos del Equipo
+					</button>
+				</li>
+
+				<li>
+					<button
+						type="button"
+						class="menu-item {step === 3 ? 'active' : ''}"
+						on:click={() => goTo(3)}
 					>
 						<span class="icon-circle"><i class="fa-solid fa-computer-mouse"></i></span>
-						Periféricos Reemplazo
+						Periféricos
 					</button>
 				</li>
-			{/if}
-		</ul>
-	</div>
 
-	<!-- CONTENT -->
-	{#if sidebarOpen}
-		<div class="sidebar-overlay" on:click={() => (sidebarOpen = false)}></div>
-	{/if}
-	<div class="content">
-		<div class="form-card">
-			{#if step === 1}
-				<h2>Datos del Reportante</h2>
-				<ReportanteForm
-					bind:this={reportanteRef}
-					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-				/>
-			{/if}
+				<li>
+					<button
+						type="button"
+						class="menu-item {step === 4 ? 'active' : ''}"
+						on:click={() => goTo(4)}
+					>
+						<span class="icon-circle"><i class="fa-solid fa-box"></i></span>
+						Backup
+					</button>
+				</li>
 
-			{#if step === 2}
-				<h2>Datos del Equipo</h2>
-				<CPUForm
-					bind:this={cpuForm}
-					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-				/>
-			{/if}
+				{#if esReemplazo}
+					<li>
+						<button
+							type="button"
+							class="menu-item {step === 5 ? 'active' : ''}"
+							on:click={() => goTo(5)}
+						>
+							<span class="icon-circle"><i class="fa-solid fa-laptop-code"></i></span>
+							Equipo de Reemplazo
+						</button>
+					</li>
 
-			{#if step === 3}
-				<h2>Periféricos</h2>
-				<PerifericoForm
-					bind:this={perifericoRef}
-					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-				/>
-			{/if}
+					<li>
+						<button
+							type="button"
+							class="menu-item {step === 6 ? 'active' : ''}"
+							on:click={() => goTo(6)}
+						>
+							<span class="icon-circle"><i class="fa-solid fa-computer-mouse"></i></span>
+							Periféricos Reemplazo
+						</button>
+					</li>
+				{/if}
+			</ul>
+		</div>
 
-			{#if step === 4}
-				<h2>Backup</h2>
-				<BackupForm
-					bind:this={backupRef}
-					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-				/>
-			{/if}
-
-			{#if step === 5 && esReemplazo}
-				<h2>Datos del Equipo de Reemplazo</h2>
-				<CPUReplacementForm
-					bind:this={cpuReplacementRef}
-					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-				/>
-			{/if}
-
-			{#if step === 6 && esReemplazo}
-				<h2>Periféricos del Equipo de Reemplazo</h2>
-				<PerifericoReplacementForm
-					bind:this={perifericoReplacementRef}
-					on:update={(e) => (reportData = { ...reportData, ...e.detail })}
-				/>
-			{/if}
-
-			{#if (!esReemplazo && step === 4) || (esReemplazo && step === 6)}
-				<FinalButtons
-					on:generarWord={generarWord}
-					on:confirmarEnvioSheets={() => (mostrarPopup = true)}
-					canSend={wordGenerado}
-					{loadingSheets}
-				/>
-			{/if}
-
-			<!-- BOTONES -->
-			<div class="nav-buttons">
-				{#if step > 1}
-					<button class="btn prev" on:click={prev}>Atrás</button>
+		<!-- CONTENT -->
+		{#if sidebarOpen}
+			<div class="sidebar-overlay" on:click={() => (sidebarOpen = false)}></div>
+		{/if}
+		<div class="content">
+			<div class="form-card">
+				{#if step === 1}
+					<h2>Datos del Reportante</h2>
+					<ReportanteForm
+						bind:this={reportanteRef}
+						on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+					/>
 				{/if}
 
-				{#if (!esReemplazo && step < 4) || (esReemplazo && step < 6)}
-					<button class="btn next" on:click={next}>Siguiente</button>
+				{#if step === 2}
+					<h2>Datos del Equipo</h2>
+					<CPUForm
+						bind:this={cpuForm}
+						on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+					/>
 				{/if}
+
+				{#if step === 3}
+					<h2>Periféricos</h2>
+					<PerifericoForm
+						bind:this={perifericoRef}
+						on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+					/>
+				{/if}
+
+				{#if step === 4}
+					<h2>Backup</h2>
+					<BackupForm
+						bind:this={backupRef}
+						on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+					/>
+				{/if}
+
+				{#if step === 5 && esReemplazo}
+					<h2>Datos del Equipo de Reemplazo</h2>
+					<CPUReplacementForm
+						bind:this={cpuReplacementRef}
+						on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+					/>
+				{/if}
+
+				{#if step === 6 && esReemplazo}
+					<h2>Periféricos del Equipo de Reemplazo</h2>
+					<PerifericoReplacementForm
+						bind:this={perifericoReplacementRef}
+						on:update={(e) => (reportData = { ...reportData, ...e.detail })}
+					/>
+				{/if}
+
+				{#if (!esReemplazo && step === 4) || (esReemplazo && step === 6)}
+					<FinalButtons
+						on:generarWord={generarWord}
+						on:confirmarEnvioSheets={() => (mostrarPopup = true)}
+						canSend={wordGenerado}
+						{loadingSheets}
+					/>
+				{/if}
+
+				<!-- BOTONES -->
+				<div class="nav-buttons">
+					{#if step > 1}
+						<button class="btn prev" on:click={prev}>Atrás</button>
+					{/if}
+
+					{#if (!esReemplazo && step < 4) || (esReemplazo && step < 6)}
+						<button class="btn next" on:click={next}>Siguiente</button>
+					{/if}
+				</div>
 			</div>
 		</div>
 	</div>
@@ -654,7 +656,7 @@
 		}
 	}
 
-	@media (max-width: 300px) {
+	@media (max-width: 380px) {
 		.form-card {
 			padding: 12px;
 		}

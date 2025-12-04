@@ -6,7 +6,6 @@ export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 
 	const response = await fetch(SCRIPT_URL, { credentials: 'omit' });
 	const data = await response.json();
-     console.log(data)
 
 	if (!Array.isArray(data)) return [];
 
@@ -37,8 +36,6 @@ export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 			})
 			.filter(Boolean);
 	}
-
-	console.log(filtrado)
 
 	return filtrado;
 }

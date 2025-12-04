@@ -6,7 +6,6 @@ export async function getFolio(): Promise<number> {
 		);
 
 		const data = await response.json();
-		console.log('DATA:', data);
 
 		const folios = Array.isArray(data)
 			? data.map((n) => Number(n)).filter((n) => !isNaN(n))
@@ -19,6 +18,6 @@ export async function getFolio(): Promise<number> {
 
 	} catch (error) {
 		console.error('Error obteniendo folio:', error);
-		return 1; // Valor seguro por defecto
+		return 1; 
 	}
 }

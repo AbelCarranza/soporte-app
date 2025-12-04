@@ -20,7 +20,7 @@
 
 	let initialized = false;
 
-	// === CARGAR DESDE STORAGE ===
+
 	replacementStore.subscribe((data: ReplacementData) => {
 		bk_brand = data.bk_brand ?? '';
 		bk_asset = data.bk_asset ?? '';
@@ -51,7 +51,6 @@
 		bk_hdd_tech = values.HDDTechnology ?? '';
 	}
 
-	// === GUARDAR CAMBIOS EN STORAGE SOLO SI YA CARGÓ ===
 	$: if (initialized) {
 		replacementStore.update((current) => ({
 			...current,
@@ -208,6 +207,7 @@
 		.form-container {
 			padding: 12px;
 			margin: 4px;
+			flex-direction: column;
 		}
 
 		.form-section {

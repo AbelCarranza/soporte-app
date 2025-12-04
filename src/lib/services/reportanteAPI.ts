@@ -33,6 +33,5 @@ export async function addReportante(nombre: string): Promise<void> {
 	});
 
 	const data = await res.json();
-	console.log('Respuesta de Apps Script:', data);
 
 }

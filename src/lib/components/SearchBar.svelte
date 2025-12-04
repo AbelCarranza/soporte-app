@@ -179,7 +179,6 @@
 		}
 
 		.radios {
-			flex-direction: column;
 			gap: 6px;
 			text-align: center;
 		}

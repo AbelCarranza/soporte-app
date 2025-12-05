@@ -17,6 +17,12 @@
 	let hdd_capacity = '';
 	let hdd_technology = '';
 
+	// Checkbox para mostrar/ocultar toda la sección
+	let showHardware = true;
+
+	export let autocompletar = false;
+
+	// Suscripción al store
 	reportStore.subscribe((data) => {
 		brand = data.brand ?? '';
 		asset_code = data.asset_code ?? '';
@@ -30,6 +36,21 @@
 		plate = data.plate ?? '';
 	});
 
+	// LIMPIAR todo cuando se desactiva el checkbox
+	$: if (!showHardware) {
+		brand = '';
+		asset_code = '';
+		serial = '';
+		plate = '';
+		cpu = '';
+		speed = '';
+		ram = '';
+		hdd_brand = '';
+		hdd_capacity = '';
+		hdd_technology = '';
+	}
+
+	// Setear datos desde otra parte del sistema
 	export function setData(values: any) {
 		reportStore.update((current) => ({
 			...current,
@@ -45,6 +66,8 @@
 			plate: values.Plate
 		}));
 	}
+
+	// Enviar datos al padre
 	export function enviarDatos() {
 		dispatch('update', {
 			brand,
@@ -57,61 +80,43 @@
 			hdd_brand,
 			hdd_capacity,
 			hdd_technology,
+			autocompletar
 		});
 	}
 </script>
 
+<label class="checkbox-autofill section-toggle">
+	<input type="checkbox" bind:checked={showHardware} />
+	<span>🖥️ Mostrar Información del Equipo</span>
+</label>
 <div class="form-container">
-	<div>
-		<!-- Sección de Información del Equipo -->
+	{#if showHardware}
 		<div class="form-section">
-			<h2 class="section-title">
-				<span class="icon">💻</span>
-				Información del Equipo
-			</h2>
 			<div class="form-grid">
 				<div class="form-row">
-					<InputField
-						label="Marca"
-						bind:value={brand}
-						placeholder="Ej: Dell, HP, Lenovo"
-					/>
+					<InputField label="Marca" bind:value={brand} placeholder="Ej: Dell, HP, Lenovo" />
 					<InputField
 						label="Código Patrimonial"
 						bind:value={asset_code}
 						placeholder="Ej: PAT-001234"
 					/>
-					<InputField
-						label="Número de Serie"
-						bind:value={serial}
-						placeholder="Ej: SN123456789"
-					/>
+					<InputField label="Número de Serie" bind:value={serial} placeholder="Ej: SN123456789" />
 				</div>
+
 				<div class="form-row">
-					<InputField label="Placa" bind:value={plate} placeholder="Ej: Gigagyte" required />
-					<InputField
-						label="Procesador"
-						bind:value={cpu}
-						placeholder="Ej: Intel Core i5"
-					/>
-					<InputField
-						label="Velocidad del CPU"
-						bind:value={speed}
-						placeholder="Ej: 2.4 GHz"
-					/>
+					<InputField label="Placa" bind:value={plate} placeholder="Ej: Gigabyte" required />
+					<InputField label="Procesador" bind:value={cpu} placeholder="Ej: Intel Core i5" />
+					<InputField label="Velocidad del CPU" bind:value={speed} placeholder="Ej: 2.4 GHz" />
 					<InputField label="Memoria RAM" bind:value={ram} placeholder="Ej: 8 GB" required />
 				</div>
 			</div>
 		</div>
-	</div>
-
-	<div>
-		<!-- Sección de Disco Duro -->
 		<div class="form-section">
 			<h2 class="section-title">
 				<span class="icon">💾</span>
 				Disco Duro
 			</h2>
+
 			<div class="form-grid">
 				<div class="form-row">
 					<InputField
@@ -128,10 +133,23 @@
 				</div>
 			</div>
 		</div>
-	</div>
+	{/if}
 </div>
 
 <style>
+	.section-toggle {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 1.1rem;
+		font-weight: 600;
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.section-toggle input {
+		transform: scale(1.3);
+	}
 	.form-container {
 		max-width: 1200px;
 		margin: 0 auto;
@@ -218,89 +236,85 @@
 	}
 
 	@media (max-width: 350px) {
+		.form-container {
+			padding: 10px;
+			margin: 2px;
+			flex-direction: column;
+			gap: 12px;
+		}
 
-	.form-container {
-		padding: 10px;
-		margin: 2px;
-		flex-direction: column;
-		gap: 12px;
+		.form-section {
+			padding: 14px;
+		}
+
+		.section-title {
+			font-size: 1rem;
+			gap: 8px;
+			padding-bottom: 8px;
+		}
+
+		.icon {
+			font-size: 1.2rem;
+		}
+
+		.form-row {
+			grid-template-columns: 1fr !important;
+			gap: 14px;
+		}
+
+		.form-grid {
+			gap: 14px;
+		}
+
+		:global(input),
+		:global(select),
+		:global(textarea) {
+			font-size: 0.9rem !important;
+			padding: 10px !important;
+		}
 	}
 
-	.form-section {
-		padding: 14px;
+	@media (max-width: 300px) {
+		.form-container {
+			padding: 8px;
+			margin: 0;
+			flex-direction: column;
+			gap: 10px;
+		}
+
+		.form-section {
+			padding: 10px;
+			border-radius: 6px;
+		}
+
+		.section-title {
+			font-size: 0.9rem;
+			gap: 6px;
+			padding-bottom: 6px;
+		}
+
+		.icon {
+			font-size: 1.1rem;
+		}
+
+		.form-row {
+			grid-template-columns: 1fr !important;
+			gap: 10px;
+		}
+
+		.form-grid {
+			gap: 10px;
+		}
+
+		:global(input),
+		:global(select),
+		:global(textarea) {
+			font-size: 0.8rem !important;
+			padding: 8px !important;
+		}
+
+		:global(.input-field) {
+			margin-bottom: 0 !important;
+		}
 	}
-
-	.section-title {
-		font-size: 1rem;
-		gap: 8px;
-		padding-bottom: 8px;
-	}
-
-	.icon {
-		font-size: 1.2rem;
-	}
-
-	.form-row {
-		grid-template-columns: 1fr !important;
-		gap: 14px;
-	}
-
-	.form-grid {
-		gap: 14px;
-	}
-
-	:global(input),
-	:global(select),
-	:global(textarea) {
-		font-size: 0.9rem !important;
-		padding: 10px !important;
-	}
-}
-
-@media (max-width: 300px) {
-
-
-	.form-container {
-		padding: 8px;
-		margin: 0;
-		flex-direction: column;
-		gap: 10px;
-	}
-
-	.form-section {
-		padding: 10px;
-		border-radius: 6px;
-	}
-
-	.section-title {
-		font-size: 0.9rem;
-		gap: 6px;
-		padding-bottom: 6px;
-	}
-
-	.icon {
-		font-size: 1.1rem;
-	}
-
-	.form-row {
-		grid-template-columns: 1fr !important;
-		gap: 10px;
-	}
-
-	.form-grid {
-		gap: 10px;
-	}
-
-
-	:global(input),
-	:global(select),
-	:global(textarea) {
-		font-size: 0.8rem !important;
-		padding: 8px !important;
-	}
-
-	:global(.input-field) {
-		margin-bottom: 0 !important;
-	}
-}
 </style>

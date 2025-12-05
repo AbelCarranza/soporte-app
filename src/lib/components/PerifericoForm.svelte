@@ -83,6 +83,14 @@
 			observations
 		});
 	}
+	export function getCurrentState() {
+		return {
+			showMonitor,
+			showKeyboard,
+			showMouse,
+			showOthers
+		};
+	}
 </script>
 
 <div class="form-container">

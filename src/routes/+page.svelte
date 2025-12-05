@@ -117,15 +117,25 @@
 
 	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
 		const { tipo } = e.detail;
-		if (
-			tipo === '4' && // Entrada
-			!((step === 4 && esReemplazo) || (esReemplazo && (step === 5 || step === 6)))
-		) {
+		const pasoValido =
+			step === 2 || 
+			step === 3 || 
+			(esReemplazo && (step === 5 || step === 6)); // Reemplazo
+
+		if (!pasoValido) {
 			notifyError(
-				'La búsqueda por *Entrada* solo está permitida durante el proceso de Reemplazo de Equipo de Reserva.'
+				'Para realizar una búsqueda debes estar en el Paso 2 o el paso correspondiente al componente.'
 			);
 			return;
 		}
+
+		if (tipo === '4' && !(esReemplazo && (step === 5 || step === 6))) {
+			notifyError(
+				'La búsqueda por Entrada solo está permitida durante el proceso de Reemplazo de Equipo de Reserva.'
+			);
+			return;
+		}
+
 		loadingSearch = true;
 
 		try {
@@ -298,7 +308,11 @@
 
 		<!-- CONTENT -->
 		{#if sidebarOpen}
-			<div class="sidebar-overlay" on:click={() => (sidebarOpen = false)}></div>
+			<button
+				class="sidebar-overlay"
+				aria-label="Cerrar sidebar"
+				on:click={() => (sidebarOpen = false)}
+			></button>
 		{/if}
 		<div class="content">
 			<div class="form-card">
@@ -596,12 +610,11 @@
 
 		.sidebar-overlay {
 			position: fixed;
-			top: 0;
-			left: 0;
-			width: 100%;
-			height: 100%;
-			background: rgba(0, 0, 0, 0.45);
-			z-index: 998;
+			inset: 0;
+			background: rgba(0, 0, 0, 0.4);
+			border: none;
+			padding: 0;
+			cursor: pointer;
 		}
 
 		.hamburger {
@@ -649,14 +662,11 @@
 		}
 	}
 
-	@media (max-width: 350px) {
+	@media (min-width: 300px) and (max-width: 621px) {
 		.container-head {
 			flex-direction: column;
 			gap: 10px;
 		}
-	}
-
-	@media (max-width: 380px) {
 		.form-card {
 			padding: 12px;
 		}

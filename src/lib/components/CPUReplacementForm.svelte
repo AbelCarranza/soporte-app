@@ -19,7 +19,7 @@
 	let bk_hdd_tech = '';
 
 	let initialized = false;
-
+	let showReplacementHardware = true; // ⬅ NUEVO (toggle)
 
 	replacementStore.subscribe((data: ReplacementData) => {
 		bk_brand = data.bk_brand ?? '';
@@ -81,54 +81,71 @@
 			bk_hdd_tech
 		});
 	}
-</script>
+</script>	
+
+<label class="checkbox-autofill section-toggle">
+<input type="checkbox" bind:checked={showReplacementHardware} />
+	<span>🖥️ Mostrar Información del Equipo</span>
+</label>
 
 <div class="form-container">
-	<!-- Información del Equipo de Reemplazo -->
-	<div>
-		<div class="form-section">
-			<h2 class="section-title">
-				<span class="icon">💻</span>
-				Información del Equipo de Reemplazo
-			</h2>
+	{#if showReplacementHardware}
+		<div>
+			<div class="form-section">
+				<div class="form-grid">
+					<div class="form-row">
+						<InputField label="Marca" bind:value={bk_brand} placeholder="Ej: Dell, HP" />
+						<InputField
+							label="Código Patrimonial"
+							bind:value={bk_asset}
+							placeholder="Ej: PAT-001"
+						/>
+						<InputField label="Número de Serie" bind:value={bk_serial} placeholder="Ej: SN123456" />
+					</div>
 
-			<div class="form-grid">
-				<div class="form-row">
-					<InputField label="Marca" bind:value={bk_brand} placeholder="Ej: Dell, HP" />
-					<InputField label="Código Patrimonial" bind:value={bk_asset} placeholder="Ej: PAT-001" />
-					<InputField label="Número de Serie" bind:value={bk_serial} placeholder="Ej: SN123456" />
-				</div>
-
-				<div class="form-row">
-					<InputField label="Placa" bind:value={bk_plate} placeholder="Ej: Gigabyte" />
-					<InputField label="Procesador" bind:value={bk_cpu} placeholder="Ej: Intel Core i5" />
-					<InputField label="Velocidad" bind:value={bk_speed} placeholder="Ej: 2.4 GHz" />
-					<InputField label="Memoria RAM" bind:value={bk_ram} placeholder="Ej: 8 GB" />
-				</div>
-			</div>
-		</div>
-	</div>
-
-	<div>
-		<!-- Sección de Disco Duro -->
-		<div class="form-section">
-			<h2 class="section-title">
-				<span class="icon">💾</span>
-				Disco Duro
-			</h2>
-
-			<div class="form-grid">
-				<div class="form-row">
-					<InputField label="Marca del Disco" bind:value={bk_hdbrand} placeholder="Ej: WD" />
-					<InputField label="Capacidad" bind:value={bk_hdd_cap} placeholder="Ej: 1 TB" required />
-					<InputField label="Tecnología" bind:value={bk_hdd_tech} placeholder="Ej: SSD, HDD" />
+					<div class="form-row">
+						<InputField label="Placa" bind:value={bk_plate} placeholder="Ej: Gigabyte" />
+						<InputField label="Procesador" bind:value={bk_cpu} placeholder="Ej: Intel Core i5" />
+						<InputField label="Velocidad" bind:value={bk_speed} placeholder="Ej: 2.4 GHz" />
+						<InputField label="Memoria RAM" bind:value={bk_ram} placeholder="Ej: 8 GB" />
+					</div>
 				</div>
 			</div>
 		</div>
-	</div>
+
+		<div>
+			<div class="form-section">
+				<h2 class="section-title">
+					<span class="icon">💾</span>
+					Disco Duro
+				</h2>
+
+				<div class="form-grid">
+					<div class="form-row">
+						<InputField label="Marca del Disco" bind:value={bk_hdbrand} placeholder="Ej: WD" />
+						<InputField label="Capacidad" bind:value={bk_hdd_cap} placeholder="Ej: 1 TB" required />
+						<InputField label="Tecnología" bind:value={bk_hdd_tech} placeholder="Ej: SSD, HDD" />
+					</div>
+				</div>
+			</div>
+		</div>
+	{/if}
 </div>
 
 <style>
+	.section-toggle {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		font-size: 1.1rem;
+		font-weight: 600;
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.section-toggle input {
+		transform: scale(1.3);
+	}
 	.form-container {
 		max-width: 1200px;
 		margin: 0 auto;

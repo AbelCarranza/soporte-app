@@ -22,7 +22,7 @@
 
 	export let autocompletar = false;
 
-	// Suscripción a la store
+	// 🟦 Suscripción a la store (incluye showHardware)
 	reportStore.subscribe((data) => {
 		brand = data.brand ?? '';
 		asset_code = data.asset_code ?? '';
@@ -34,9 +34,17 @@
 		hdd_technology = data.hdd_technology ?? '';
 		serial = data.serial ?? '';
 		plate = data.plate ?? '';
+
+		showHardware = data.showHardware ?? false;
 	});
 
-	// Limpiar inputs cuando se desmarca el checkbox
+	// 🟦 Cada vez que cambia el checkbox → guardar en store
+	$: reportStore.update((d) => ({ 
+		...d, 
+		showHardware 
+	}));
+
+	// 🟦 Si el checkbox se desmarca → limpiar los campos
 	$: if (!showHardware) {
 		brand = '';
 		asset_code = '';
@@ -48,9 +56,23 @@
 		hdd_brand = '';
 		hdd_capacity = '';
 		hdd_technology = '';
+
+		reportStore.update((data) => ({
+			...data,
+			brand: '',
+			asset_code: '',
+			serial: '',
+			plate: '',
+			cpu: '',
+			speed: '',
+			ram: '',
+			hdd_brand: '',
+			hdd_capacity: '',
+			hdd_technology: ''
+		}));
 	}
 
-	// Actualizar la store con valores externos
+	// 🟦 Cargar valores desde autocompletar
 	export function setData(values: any) {
 		reportStore.update((current) => ({
 			...current,
@@ -67,6 +89,7 @@
 		}));
 	}
 
+	// 🟦 Validación + envío de datos
 	export function enviarDatos(): boolean {
 		const fields = {
 			brand,
@@ -86,44 +109,30 @@
 			if (!valid) return false;
 
 			reportStore.update((current) => ({ ...current, ...fields }));
-
 			dispatch('update', { ...fields, autocompletar });
 			return true;
-		} else {
-			brand = '';
-			asset_code = '';
-			serial = '';
-			plate = '';
-			cpu = '';
-			speed = '';
-			ram = '';
-			hdd_brand = '';
-			hdd_capacity = '';
-			hdd_technology = '';
-
-			reportStore.update((current) => ({
-				...current,
-				brand: '',
-				asset_code: '',
-				serial: '',
-				plate: '',
-				cpu: '',
-				speed: '',
-				ram: '',
-				hdd_brand: '',
-				hdd_capacity: '',
-				hdd_technology: ''
-			}));
-
-			dispatch('update', { ...fields, autocompletar }); 
-			return true;
 		}
-	}
 
-	export function getCurrentState() {
-		return { showHardware };
+		// Caso: checkbox desmarcado → limpiar
+		reportStore.update((current) => ({
+			...current,
+			brand: '',
+			asset_code: '',
+			serial: '',
+			plate: '',
+			cpu: '',
+			speed: '',
+			ram: '',
+			hdd_brand: '',
+			hdd_capacity: '',
+			hdd_technology: ''
+		}));
+
+		dispatch('update', { ...fields, autocompletar });
+		return true;
 	}
 </script>
+
 
 <label class="checkbox-autofill section-toggle">
 	<input type="checkbox" bind:checked={showHardware} />

@@ -12,6 +12,8 @@ export interface ReplacementData {
   bk_hdd_tech?: string;
 
   bk_obs?: string;
+
+  showReplacementHardware?: boolean; 
 }
 
 export interface SetReplacementValues {

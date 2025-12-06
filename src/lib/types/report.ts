@@ -18,6 +18,7 @@ export interface ReportData {
   hdd_brand?: string;
   hdd_capacity?: string;
   hdd_technology?: string;
+  observations ?: string;
 
   // Periféricos
   monitor_brand?: string;
@@ -68,6 +69,7 @@ export interface ReportData {
   
   // Registro y cierre
   technician?: string;
+  showHardware: boolean;
 }
 
 

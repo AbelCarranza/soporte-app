@@ -7,6 +7,8 @@
 		SetBackupPerifericoValues
 	} from '$lib/types/BackupPerifericoData';
 
+	import { validateBackupPerifericos } from '$lib/utils/backupPerifericoValidator';
+
 	const dispatch = createEventDispatcher<{ update: BackupPerifericoData }>();
 
 	let showMonitor = false;
@@ -74,8 +76,12 @@
 		}));
 	}
 
-	export function enviarDatos(): void {
-		dispatch('update', {
+	export function enviarDatos(): boolean {
+		const fields = {
+			showMonitor,
+			showKeyboard,
+			showMouse,
+			showOthers,
 			bk_monitor,
 			bk_mon_code,
 			bk_mon_serial,
@@ -86,7 +92,15 @@
 			bk_mouse_code,
 			bk_mouse_serial,
 			bk_obs
-		});
+		};
+
+		if (!validateBackupPerifericos(fields)) {
+			return false;
+		}
+
+		backupPerifericoStore.update((current) => ({ ...current, ...fields }));
+		dispatch('update', fields);
+		return true;
 	}
 	export function getCurrentState() {
 		return {
@@ -335,10 +349,6 @@
 		.form-row {
 			grid-template-columns: 1fr !important;
 			gap: 14px;
-		}
-
-		.form-row > * {
-			min-width: 100%;
 		}
 
 		.icon {

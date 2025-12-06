@@ -341,10 +341,6 @@
 			gap: 14px;
 		}
 
-		.form-row > * {
-			min-width: 100%;
-		}
-
 		.icon {
 			font-size: 1rem;
 		}

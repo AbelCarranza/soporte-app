@@ -4,7 +4,6 @@
 	import { replacementStore } from '$lib/stores/replacementStorage';
 	import type { ReplacementData, SetReplacementValues } from '$lib/types/ReplacementData';
 	import { validateHardware } from '$lib/utils/hardwareValidator';
-	import { notifyError } from '$lib/services/notyf';
 
 	const dispatch = createEventDispatcher<{ update: ReplacementData }>();
 
@@ -21,7 +20,7 @@
 	let bk_hdd_tech = '';
 
 	let initialized = false;
-	let showReplacementHardware = true; // ⬅ toggle
+	let showReplacementHardware = false; 
 
 	// Suscripción a la store
 	replacementStore.subscribe((data: ReplacementData) => {
@@ -36,6 +35,9 @@
 		bk_hdbrand = data.bk_hdbrand ?? '';
 		bk_hdd_cap = data.bk_hdd_cap ?? '';
 		bk_hdd_tech = data.bk_hdd_tech ?? '';
+
+		// 🔥 Sincronizar el checkbox con el valor guardado
+		showReplacementHardware = data.showReplacementHardware ?? false;
 
 		initialized = true;
 	});
@@ -54,9 +56,11 @@
 		bk_hdd_tech = values.HDDTechnology ?? '';
 	}
 
+	// 🔥 Actualizar store cuando cambien los valores cargados
 	$: if (initialized) {
 		replacementStore.update((current) => ({
 			...current,
+			showReplacementHardware,
 			bk_brand,
 			bk_asset,
 			bk_serial,
@@ -70,12 +74,6 @@
 		}));
 	}
 
-	/**
-	 * Enviar datos del equipo de reemplazo
-	 * - Valida si el checkbox está activo antes del paso 6
-	 * - Limpia datos si checkbox desmarcado
-	 * - Devuelve true si se puede avanzar, false si no
-	 */
 	export function enviarDatos(): boolean {
 		const fields = {
 			bk_brand,
@@ -87,18 +85,21 @@
 			bk_ram,
 			bk_hdbrand,
 			bk_hdd_cap,
-			bk_hdd_tech
+			bk_hdd_tech,
+			showReplacementHardware
 		};
+
 		if (showReplacementHardware) {
 
 			const valid = validateHardware(showReplacementHardware, fields);
-			if (!valid) return false; 
-
+			if (!valid) return false;
 
 			replacementStore.update((current) => ({ ...current, ...fields }));
 			dispatch('update', { ...fields });
 			return true;
+
 		} else {
+			// Limpiar campos
 			bk_brand = '';
 			bk_asset = '';
 			bk_serial = '';
@@ -112,6 +113,7 @@
 
 			replacementStore.update((current) => ({
 				...current,
+				showReplacementHardware: false,
 				bk_brand: '',
 				bk_asset: '',
 				bk_serial: '',
@@ -124,10 +126,11 @@
 				bk_hdd_tech: ''
 			}));
 
-			dispatch('update', { ...fields });
+			dispatch('update', fields);
 			return true;
 		}
 	}
+
 	export function getCurrentState() {
 		return { showReplacementHardware };
 	}

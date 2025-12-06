@@ -12,7 +12,13 @@ function safeParseReplacement(data: string | null): ReplacementData {
 
 const stored = browser ? localStorage.getItem('replacementData') : null;
 
-const initial: ReplacementData = safeParseReplacement(stored);
+const parsed = safeParseReplacement(stored);
+
+
+const initial: ReplacementData = {
+  showReplacementHardware: false,
+  ...parsed
+};
 
 export const replacementStore = writable<ReplacementData>(initial);
 

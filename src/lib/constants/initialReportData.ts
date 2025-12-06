@@ -3,7 +3,7 @@ import type { ReportData } from '$lib/types/report';
 export const initialReportData: ReportData = {
 
   issue_date: '',
-  ticket_id: '',
+  ticket_id: 0,
   reported_by: '',
   location: '',
   brand: '',
@@ -51,7 +51,9 @@ export const initialReportData: ReportData = {
 
 
  selected_decision: '',
-  action_plan: '',
+ action_plan: '',
+ showHardware: false,
+
 
   technician: '',
 };

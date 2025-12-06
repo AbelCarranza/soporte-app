@@ -129,7 +129,10 @@
 	}
 
 	async function goTo(num: number) {
-		// Validar paso actual antes de saltar
+		if (num < step) {
+			step = num;
+			return;
+		}
 		switch (step) {
 			case 1:
 				if (reportanteRef) {
@@ -168,7 +171,6 @@
 				}
 				break;
 		}
-
 		step = num;
 	}
 

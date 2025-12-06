@@ -42,6 +42,24 @@ function setPerifericoData(ref: any, eq: any, map: Record<string, string[]>) {
     });
 }
 
+
+// 🔥 VALIDACIÓN PARA CPU NORMAL Y REEMPLAZO
+function validarCheckboxCPU(ref: any): boolean {
+    const state = ref?.getCurrentState?.();
+    if (!state) return true;
+
+    const activo = state.showHardware ?? state.showReplacementHardware ?? false;
+
+    if (!activo) {
+        notifyError(`Debes activar primero el checkbox de hardware para completar los datos.`);
+        return false;
+    }
+
+    return true;
+}
+
+
+// --- YA EXISTENTE --- //
 function validarCheckboxPeriferico(ref: any, eq: any): boolean {
     const tipo =
         eq.matchField.includes("Monitor") ? "monitor" :
@@ -69,6 +87,7 @@ function validarCheckboxPeriferico(ref: any, eq: any): boolean {
 }
 
 
+
 export async function recibirBusquedaHandler(
     e: CustomEvent<{ tipo: string; codigo: string; form: string }>,
     refs: Refs
@@ -83,9 +102,12 @@ export async function recibirBusquedaHandler(
 
     const eq = data[0];
 
-
+    // --- REEMPLAZO (tipo 4) ---
     if (tipo === '4') {
         if (eq.matchField === 'AssetCode' || eq.matchField === 'Serial') {
+
+            if (!validarCheckboxCPU(refs.cpuReplacementRef)) return;
+
             refs.cpuReplacementRef?.setData(eq);
             notifySuccess('Datos de CPU para reemplazo completados');
         } else {
@@ -98,10 +120,14 @@ export async function recibirBusquedaHandler(
     }
 
 
+    // --- FORM 1 Y 2 (BUSQUEDA NORMAL) ---
     if (form === '1' || form === '2') {
         const tipoBusqueda = form === '1' ? '' : 'por serie';
 
         if (eq.matchField === 'AssetCode' || eq.matchField === 'Serial') {
+
+            if (!validarCheckboxCPU(refs.cpuForm)) return;
+
             refs.cpuForm?.setData(eq);
             notifySuccess(`Datos de CPU ${tipoBusqueda} completados`);
         } else {

@@ -2,6 +2,7 @@
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { reportStore } from '$lib/stores/reportStorage';
+	import { validateHardware } from '$lib/utils/hardwareValidator';
 
 	const dispatch = createEventDispatcher();
 
@@ -17,12 +18,11 @@
 	let hdd_capacity = '';
 	let hdd_technology = '';
 
-	// Checkbox para mostrar/ocultar toda la sección
-	let showHardware = true;
+	let showHardware = false;
 
 	export let autocompletar = false;
 
-	// Suscripción al store
+	// Suscripción a la store
 	reportStore.subscribe((data) => {
 		brand = data.brand ?? '';
 		asset_code = data.asset_code ?? '';
@@ -36,7 +36,7 @@
 		plate = data.plate ?? '';
 	});
 
-	// LIMPIAR todo cuando se desactiva el checkbox
+	// Limpiar inputs cuando se desmarca el checkbox
 	$: if (!showHardware) {
 		brand = '';
 		asset_code = '';
@@ -50,7 +50,7 @@
 		hdd_technology = '';
 	}
 
-	// Setear datos desde otra parte del sistema
+	// Actualizar la store con valores externos
 	export function setData(values: any) {
 		reportStore.update((current) => ({
 			...current,
@@ -67,9 +67,8 @@
 		}));
 	}
 
-	// Enviar datos al padre
-	export function enviarDatos() {
-		dispatch('update', {
+	export function enviarDatos(): boolean {
+		const fields = {
 			brand,
 			asset_code,
 			serial,
@@ -79,9 +78,50 @@
 			ram,
 			hdd_brand,
 			hdd_capacity,
-			hdd_technology,
-			autocompletar
-		});
+			hdd_technology
+		};
+
+		if (showHardware) {
+			const valid = validateHardware(showHardware, fields);
+			if (!valid) return false;
+
+			reportStore.update((current) => ({ ...current, ...fields }));
+
+			dispatch('update', { ...fields, autocompletar });
+			return true;
+		} else {
+			brand = '';
+			asset_code = '';
+			serial = '';
+			plate = '';
+			cpu = '';
+			speed = '';
+			ram = '';
+			hdd_brand = '';
+			hdd_capacity = '';
+			hdd_technology = '';
+
+			reportStore.update((current) => ({
+				...current,
+				brand: '',
+				asset_code: '',
+				serial: '',
+				plate: '',
+				cpu: '',
+				speed: '',
+				ram: '',
+				hdd_brand: '',
+				hdd_capacity: '',
+				hdd_technology: ''
+			}));
+
+			dispatch('update', { ...fields, autocompletar }); 
+			return true;
+		}
+	}
+
+	export function getCurrentState() {
+		return { showHardware };
 	}
 </script>
 

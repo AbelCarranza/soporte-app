@@ -3,14 +3,17 @@
 	import { createEventDispatcher } from 'svelte';
 	import { perifericoStore } from '$lib/stores/perifericoStore';
 	import type { PerifericoData, SetPerifericoValues } from '$lib/types/PerifericoData';
+	import { validatePerifericos } from '$lib/utils/perifericoValidator';
 
 	const dispatch = createEventDispatcher<{ update: PerifericoData }>();
 
+	// === CHECKBOX ===
 	let showMonitor = false;
 	let showKeyboard = false;
 	let showMouse = false;
 	let showOthers = false;
 
+	// === CAMPOS ===
 	let monitor_brand = '';
 	let monitor_code = '';
 	let monitor_serial = '';
@@ -25,7 +28,7 @@
 
 	let observations = '';
 
-	// === CARGAR DESDE STORE ===
+	// === SUSCRIPCIÓN AL STORE ===
 	perifericoStore.subscribe((data: PerifericoData) => {
 		showMonitor = data.showMonitor ?? false;
 		showKeyboard = data.showKeyboard ?? false;
@@ -47,6 +50,7 @@
 		observations = data.observations ?? '';
 	});
 
+	// === ACTUALIZAR STORE DESDE VALORES EXTERNOS ===
 	export function setData(values: SetPerifericoValues): void {
 		perifericoStore.update((current) => ({
 			...current,
@@ -65,12 +69,19 @@
 
 			mouse_brand: values.mouse_brand ?? current.mouse_brand,
 			mouse_code: values.mouse_code ?? current.mouse_code,
-			mouse_serial: values.mouse_serial ?? current.mouse_serial
+			mouse_serial: values.mouse_serial ?? current.mouse_serial,
+
+			observations: values.observations ?? current.observations
 		}));
 	}
 
-	export function enviarDatos(): void {
-		dispatch('update', {
+	// === ENVIAR DATOS AL PADRE CON VALIDACIÓN ===
+	export function enviarDatos(): boolean {
+		const fields = {
+			showMonitor,
+			showKeyboard,
+			showMouse,
+			showOthers,
 			monitor_brand,
 			monitor_code,
 			monitor_serial,
@@ -81,8 +92,41 @@
 			mouse_code,
 			mouse_serial,
 			observations
-		});
+		};
+
+		// Validar todos los campos usando el validador externo
+		if (!validatePerifericos(fields)) {
+			// Reset automático si ningún checkbox está activo
+			if (!showMonitor && !showKeyboard && !showMouse && !showOthers) {
+				perifericoStore.set({
+					showMonitor: false,
+					showKeyboard: false,
+					showMouse: false,
+					showOthers: false,
+					monitor_brand: '',
+					monitor_code: '',
+					monitor_serial: '',
+					keyboard_brand: '',
+					keyboard_code: '',
+					keyboard_serial: '',
+					mouse_brand: '',
+					mouse_code: '',
+					mouse_serial: '',
+					observations: ''
+				});
+			}
+			return false;
+		}
+
+		// Actualizar store con datos válidos
+		perifericoStore.update((current) => ({ ...current, ...fields }));
+
+		// Enviar datos al padre
+		dispatch('update', fields);
+		return true;
 	}
+
+	// === RETORNAR ESTADO ACTUAL ===
 	export function getCurrentState() {
 		return {
 			showMonitor,

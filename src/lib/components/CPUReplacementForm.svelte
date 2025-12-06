@@ -3,6 +3,8 @@
 	import { createEventDispatcher } from 'svelte';
 	import { replacementStore } from '$lib/stores/replacementStorage';
 	import type { ReplacementData, SetReplacementValues } from '$lib/types/ReplacementData';
+	import { validateHardware } from '$lib/utils/hardwareValidator';
+	import { notifyError } from '$lib/services/notyf';
 
 	const dispatch = createEventDispatcher<{ update: ReplacementData }>();
 
@@ -19,8 +21,9 @@
 	let bk_hdd_tech = '';
 
 	let initialized = false;
-	let showReplacementHardware = true; // ⬅ NUEVO (toggle)
+	let showReplacementHardware = true; // ⬅ toggle
 
+	// Suscripción a la store
 	replacementStore.subscribe((data: ReplacementData) => {
 		bk_brand = data.bk_brand ?? '';
 		bk_asset = data.bk_asset ?? '';
@@ -67,8 +70,14 @@
 		}));
 	}
 
-	export function enviarDatos(): void {
-		dispatch('update', {
+	/**
+	 * Enviar datos del equipo de reemplazo
+	 * - Valida si el checkbox está activo antes del paso 6
+	 * - Limpia datos si checkbox desmarcado
+	 * - Devuelve true si se puede avanzar, false si no
+	 */
+	export function enviarDatos(): boolean {
+		const fields = {
 			bk_brand,
 			bk_asset,
 			bk_serial,
@@ -79,12 +88,53 @@
 			bk_hdbrand,
 			bk_hdd_cap,
 			bk_hdd_tech
-		});
+		};
+		if (showReplacementHardware) {
+
+			const valid = validateHardware(showReplacementHardware, fields);
+			if (!valid) return false; 
+
+
+			replacementStore.update((current) => ({ ...current, ...fields }));
+			dispatch('update', { ...fields });
+			return true;
+		} else {
+			bk_brand = '';
+			bk_asset = '';
+			bk_serial = '';
+			bk_plate = '';
+			bk_cpu = '';
+			bk_speed = '';
+			bk_ram = '';
+			bk_hdbrand = '';
+			bk_hdd_cap = '';
+			bk_hdd_tech = '';
+
+			replacementStore.update((current) => ({
+				...current,
+				bk_brand: '',
+				bk_asset: '',
+				bk_serial: '',
+				bk_plate: '',
+				bk_cpu: '',
+				bk_speed: '',
+				bk_ram: '',
+				bk_hdbrand: '',
+				bk_hdd_cap: '',
+				bk_hdd_tech: ''
+			}));
+
+			dispatch('update', { ...fields });
+			return true;
+		}
 	}
-</script>	
+	export function getCurrentState() {
+		return { showReplacementHardware };
+	}
+</script>
 
 <label class="checkbox-autofill section-toggle">
-<input type="checkbox" bind:checked={showReplacementHardware} />
+	<input type="checkbox" bind:checked={showReplacementHardware} />
 	<span>🖥️ Mostrar Información del Equipo</span>
 </label>
 
@@ -271,9 +321,7 @@
 		}
 	}
 
-	/* === Modo ultra compacto (≤ 300px) ========================= */
 	@media (max-width: 300px) {
-		/* Contenedor principal más compacto */
 		.form-container {
 			padding: 8px;
 			margin: 0;
@@ -281,7 +329,6 @@
 			gap: 10px;
 		}
 
-		/* Secciones compactas */
 		.form-section {
 			padding: 10px;
 			border-radius: 6px;
@@ -297,7 +344,6 @@
 			font-size: 1.1rem;
 		}
 
-		/* Grid completamente colapsado */
 		.form-row {
 			grid-template-columns: 1fr !important;
 			gap: 10px;
@@ -307,7 +353,6 @@
 			gap: 10px;
 		}
 
-		/* Inputs compactos */
 		:global(input),
 		:global(select),
 		:global(textarea) {
@@ -315,7 +360,6 @@
 			padding: 8px !important;
 		}
 
-		/* Ajuste para InputField wrapper */
 		:global(.input-field) {
 			margin-bottom: 0 !important;
 		}

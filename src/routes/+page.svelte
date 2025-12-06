@@ -85,19 +85,41 @@
 	}
 
 	async function next() {
+		// Paso 1: Reportante
 		if (step === 1 && reportanteRef) {
 			const ok = await reportanteRef.enviarDatos();
 			if (!ok) return;
 		}
 
-		if (step === 2) cpuForm?.enviarDatos?.();
-		if (step === 3) perifericoRef?.enviarDatos?.();
-		if (step === 4 && backupRef) {
-			const ok = backupRef.enviarDatos();
+		// Paso 2: CPU
+		if (step === 2 && cpuForm) {
+			const ok = cpuForm.enviarDatos?.();
 			if (!ok) return;
 		}
-		if (step === 5) cpuReplacementRef?.enviarDatos?.();
-		if (step === 6) perifericoReplacementRef?.enviarDatos?.();
+
+		// Paso 3: Periféricos
+		if (step === 3 && perifericoRef) {
+			const ok = perifericoRef.enviarDatos?.();
+			if (!ok) return;
+		}
+
+		// Paso 4: Backup
+		if (step === 4 && backupRef) {
+			const ok = backupRef.enviarDatos?.();
+			if (!ok) return;
+		}
+
+		// Paso 5: CPU Reemplazo
+		if (step === 5 && cpuReplacementRef) {
+			const ok = cpuReplacementRef.enviarDatos?.();
+			if (!ok) return;
+		}
+
+		// Paso 6: Periféricos Reemplazo
+		if (step === 6 && perifericoReplacementRef) {
+			const ok = perifericoReplacementRef.enviarDatos?.();
+			if (!ok) return;
+		}
 
 		if (step < totalSteps) step++;
 	}
@@ -107,9 +129,44 @@
 	}
 
 	async function goTo(num: number) {
-		if (num > 1 && reportanteRef) {
-			const ok = await reportanteRef.enviarDatos();
-			if (!ok) return;
+		// Validar paso actual antes de saltar
+		switch (step) {
+			case 1:
+				if (reportanteRef) {
+					const ok = await reportanteRef.enviarDatos();
+					if (!ok) return;
+				}
+				break;
+			case 2:
+				if (cpuForm) {
+					const ok = cpuForm.enviarDatos?.();
+					if (!ok) return;
+				}
+				break;
+			case 3:
+				if (perifericoRef) {
+					const ok = perifericoRef.enviarDatos?.();
+					if (!ok) return;
+				}
+				break;
+			case 4:
+				if (backupRef) {
+					const ok = backupRef.enviarDatos?.();
+					if (!ok) return;
+				}
+				break;
+			case 5:
+				if (cpuReplacementRef) {
+					const ok = cpuReplacementRef.enviarDatos?.();
+					if (!ok) return;
+				}
+				break;
+			case 6:
+				if (perifericoReplacementRef) {
+					const ok = perifericoReplacementRef.enviarDatos?.();
+					if (!ok) return;
+				}
+				break;
 		}
 
 		step = num;
@@ -117,10 +174,7 @@
 
 	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
 		const { tipo } = e.detail;
-		const pasoValido =
-			step === 2 || 
-			step === 3 || 
-			(esReemplazo && (step === 5 || step === 6)); // Reemplazo
+		const pasoValido = step === 2 || step === 3 || (esReemplazo && (step === 5 || step === 6)); // Reemplazo
 
 		if (!pasoValido) {
 			notifyError(

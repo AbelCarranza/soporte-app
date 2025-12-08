@@ -4,9 +4,10 @@
 	import { reportanteStore } from '$lib/stores/reportanteStore';
 	import Svelecte from 'svelecte';
 	import { getReportantes, addReportante } from '$lib/services/reportanteAPI';
-
 	import { get } from 'svelte/store';
 	import { notifyError } from '$lib/services/notyf';
+
+	import { cleanText, hasInvalidSymbols } from '$lib/utils/reportanteValidation';
 
 	const dispatch = createEventDispatcher();
 
@@ -18,7 +19,6 @@
 
 	let opciones_reportante: string[] = [];
 
-	// Inicializar desde store
 	$: {
 		const data: any = get(reportanteStore);
 		reported_by = data.reported_by ?? '';
@@ -27,7 +27,6 @@
 		issue_date = data.issue_date ?? '';
 	}
 
-	// Cargar reportantes al inicio
 	async function cargarReportantes() {
 		loading = true;
 		try {
@@ -57,23 +56,38 @@
 			location: values.Location ?? current.location
 		}));
 	}
+
 	export async function enviarDatos(): Promise<boolean> {
 		let ok = true;
 
-		if (!reported_by || reported_by.trim() === '') {
+		reported_by = cleanText(reported_by);
+		location = cleanText(location);
+		technician = cleanText(technician);
+
+		if (!reported_by) {
 			notifyError("El campo 'Persona que Reporta' es obligatorio.");
+			ok = false;
+		} else if (hasInvalidSymbols(reported_by)) {
+			notifyError("El campo 'Persona que Reporta' contiene símbolos no permitidos.");
 			ok = false;
 		}
 
-		if (!location.trim()) {
+		if (!location) {
 			notifyError("El campo 'Ubicación' es obligatorio.");
 			ok = false;
-		}
-		if (!technician.trim()) {
-			notifyError("El campo 'Técnico Responsable' es obligatorio.");
+		} else if (hasInvalidSymbols(location, true)) {
+			notifyError("El campo 'Ubicación' contiene símbolos no permitidos.");
 			ok = false;
 		}
-		
+
+		if (!technician) {
+			notifyError("El campo 'Técnico Responsable' es obligatorio.");
+			ok = false;
+		} else if (hasInvalidSymbols(technician)) {
+			notifyError("El campo 'Técnico Responsable' contiene símbolos no permitidos.");
+			ok = false;
+		}
+
 		if (!ok) return false;
 
 		generarFecha();
@@ -91,7 +105,6 @@
 
 <div class="form-container">
 	<div class="centered-layout">
-		<!-- Sección de Información del Reporte -->
 		<div class="form-section main-info">
 			<div class="form-grid">
 				<div class="form-row">
@@ -112,6 +125,7 @@
 						}}
 					/>
 				</div>
+
 				<div class="form-row">
 					<InputField
 						label="Ubicación"
@@ -120,6 +134,7 @@
 						required
 					/>
 				</div>
+
 				<div class="form-row">
 					<InputField
 						label="Técnico Responsable"
@@ -166,7 +181,6 @@
 		gap: 20px;
 		align-items: start;
 	}
-
 
 	.form-section {
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
@@ -220,6 +234,4 @@
 	.centered-layout {
 		min-height: auto;
 	}
-
-	
 </style>

@@ -13,55 +13,93 @@
 
 	const stored: DecisionData = get(decisionStore);
 
-	let selected_decision: string = stored.selected_decision;
-	let action_plan: string = stored.action_plan;
-	let other_description: string = stored.other_description || '';
+	let selected_decision: string = stored.selected_decision ?? '';
+	let action_plan: string = stored.action_plan ?? '';
+	let other_description: string = stored.other_description ?? '';
 
 	const decisionOptions: DecisionOption[] = [
 		{ value: '', label: 'Seleccione una opción', disabled: true },
 		{ value: 'Reemplazo con Equipo de Reserva', label: 'Reemplazo con Equipo de Reserva' },
 		{ value: 'Reparación en el Lugar', label: 'Reparación en el Lugar' },
-		{ value: 'Retirado para Reparación Externa', label: 'Retirado para Reparación Externa' },
-		{ value: 'Solo Diagnóstico/Mantenimiento', label: 'Solo Diagnóstico/Mantenimiento' },
+		{
+			value: 'Retirado para Reparación Externa',
+			label: 'Retirado para Reparación Externa'
+		},
+		{
+			value: 'Solo Diagnóstico/Mantenimiento',
+			label: 'Solo Diagnóstico/Mantenimiento'
+		},
 		{ value: 'other', label: 'Otro' }
 	];
 
-	let showOtherFields = selected_decision === 'other';
-
+	// Mostrar/ocultar "Otro"
+	let showOtherFields = false;
 	$: showOtherFields = selected_decision === 'other';
 
+	// Limpiar texto sin romper si viene null
+	function cleanText(value: any): string {
+		if (value === null || value === undefined) return '';
+		return String(value).replace(/\s+/g, ' ').trim();
+	}
+
+	// Regex válidos (letras, números y espacios internos)
+	const onlyTextRegex = /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ ]+$/;
+
+	function hasInvalidSymbols(value: string): boolean {
+		return !onlyTextRegex.test(value);
+	}
+
+	// Reactividad segura
 	$: {
 		if (selected_decision === 'other') {
-			action_plan = other_description;
+			action_plan = cleanText(other_description);
 		} else if (selected_decision) {
 			action_plan = selected_decision;
 			other_description = '';
 		}
 	}
 
+	// Sincronizar con store
 	$: decisionStore.set({ selected_decision, action_plan, other_description });
 
-	$: if (selected_decision !== '' || action_plan !== '') {
+	// Emitir cambios al padre
+	$: if (selected_decision || action_plan) {
 		dispatch('update', { action_plan, selected_decision });
 	}
 
 	export function enviarDatos(): boolean {
-		if (selected_decision === 'other') {
-			action_plan = other_description.trim();
-		}
+		selected_decision = cleanText(selected_decision);
 
-		if (!selected_decision.trim()) {
+		if (!selected_decision) {
 			notifyError('Debe seleccionar una decisión.');
 			return false;
 		}
 
-		if (selected_decision === 'other' && !other_description.trim()) {
-			notifyError("Debe describir la decisión en el campo 'Descripción de la Decisión'.");
-			return false;
+		if (selected_decision === 'other') {
+			// ⚠️ No usamos cleanText aquí para detectar espacios externos reales
+			const raw = other_description ?? '';
+
+			if (raw.trim() !== raw) {
+				notifyError('La descripción no debe tener espacios al inicio o al final.');
+				return false;
+			}
+
+			if (!raw) {
+				notifyError("Debe describir la decisión en el campo 'Descripción de la Decisión'.");
+				return false;
+			}
+
+			if (hasInvalidSymbols(raw)) {
+				notifyError('La descripción contiene caracteres no permitidos.');
+				return false;
+			}
+
+			// Solo si todo está bien, limpiamos
+			other_description = cleanText(raw);
+			action_plan = other_description;
 		}
 
 		dispatch('update', { action_plan, selected_decision });
-
 		return true;
 	}
 </script>
@@ -354,7 +392,6 @@
 			padding: 8px 8px;
 			font-size: 0.8rem;
 		}
-
 
 		.conditional-section {
 			padding: 10px;

@@ -82,20 +82,51 @@
 			showKeyboard,
 			showMouse,
 			showOthers,
+
 			monitor_brand,
 			monitor_code,
 			monitor_serial,
+
 			keyboard_brand,
 			keyboard_code,
 			keyboard_serial,
+
 			mouse_brand,
 			mouse_code,
 			mouse_serial,
+
 			observations
 		};
 
-		// Validar todos los campos usando el validador externo
-		if (!validatePerifericos(fields)) {
+		// ✅ NUEVA VALIDACIÓN GENÉRICA
+		const isValid = validatePerifericos(
+			fields,
+			{
+				monitor: {
+					brand: 'monitor_brand',
+					code: 'monitor_code',
+					serial: 'monitor_serial'
+				},
+				keyboard: {
+					brand: 'keyboard_brand',
+					code: 'keyboard_code',
+					serial: 'keyboard_serial'
+				},
+				mouse: {
+					brand: 'mouse_brand',
+					code: 'mouse_code',
+					serial: 'mouse_serial'
+				},
+				observations: 'observations'
+			},
+			{
+				monitor: showMonitor,
+				keyboard: showKeyboard,
+				mouse: showMouse
+			}
+		);
+
+		if (!isValid) {
 			// Reset automático si ningún checkbox está activo
 			if (!showMonitor && !showKeyboard && !showMouse && !showOthers) {
 				perifericoStore.set({
@@ -152,12 +183,14 @@
 						label="Marca y/o Modelo"
 						bind:value={monitor_brand}
 						placeholder="Ej: Dell P2419H, LG 24MK400H"
+						required
 					/>
-					<InputField label="Código" bind:value={monitor_code} placeholder="Ej: DEL-P2419H" />
+					<InputField label="Código" bind:value={monitor_code} placeholder="Ej: DEL-P2419H" required/>
 					<InputField
 						label="Número de Serie"
 						bind:value={monitor_serial}
 						placeholder="Ej: CN-0PK4C6-64125-2AO-1E3G"
+						required
 					/>
 				</div>
 			</div>
@@ -178,12 +211,14 @@
 						label="Marca y/o Modelo"
 						bind:value={keyboard_brand}
 						placeholder="Ej: Logitech K120, Dell KB216"
+						required
 					/>
-					<InputField label="Código" bind:value={keyboard_code} placeholder="Ej: LOG-K120" />
+					<InputField label="Código" bind:value={keyboard_code} placeholder="Ej: LOG-K120" required/>
 					<InputField
 						label="Número de Serie"
 						bind:value={keyboard_serial}
 						placeholder="Ej: 2109A3B4C5D6"
+						required
 					/>
 				</div>
 			</div>
@@ -204,12 +239,14 @@
 						label="Marca y/o Modelo"
 						bind:value={mouse_brand}
 						placeholder="Ej: Logitech M90, Dell MS116"
+						required
 					/>
-					<InputField label="Código" bind:value={mouse_code} placeholder="Ej: LOG-M90" />
+					<InputField label="Código" bind:value={mouse_code} placeholder="Ej: LOG-M90" required/>
 					<InputField
 						label="Número de Serie"
 						bind:value={mouse_serial}
 						placeholder="Ej: 2109X1Y2Z3A4"
+						required
 					/>
 				</div>
 			</div>

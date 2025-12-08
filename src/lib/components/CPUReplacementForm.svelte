@@ -147,20 +147,21 @@
 			<div class="form-section">
 				<div class="form-grid">
 					<div class="form-row">
-						<InputField label="Marca" bind:value={bk_brand} placeholder="Ej: Dell, HP" />
+						<InputField label="Marca" bind:value={bk_brand} placeholder="Ej: Dell, HP" required/>
 						<InputField
 							label="Código Patrimonial"
 							bind:value={bk_asset}
 							placeholder="Ej: PAT-001"
+							required
 						/>
-						<InputField label="Número de Serie" bind:value={bk_serial} placeholder="Ej: SN123456" />
+						<InputField label="Número de Serie" bind:value={bk_serial} placeholder="Ej: SN123456" required/>
 					</div>
 
 					<div class="form-row">
-						<InputField label="Placa" bind:value={bk_plate} placeholder="Ej: Gigabyte" />
-						<InputField label="Procesador" bind:value={bk_cpu} placeholder="Ej: Intel Core i5" />
-						<InputField label="Velocidad" bind:value={bk_speed} placeholder="Ej: 2.4 GHz" />
-						<InputField label="Memoria RAM" bind:value={bk_ram} placeholder="Ej: 8 GB" />
+						<InputField label="Placa" bind:value={bk_plate} placeholder="Ej: Gigabyte" required/>
+						<InputField label="Procesador" bind:value={bk_cpu} placeholder="Ej: Intel Core i5" required/>
+						<InputField label="Velocidad" bind:value={bk_speed} placeholder="Ej: 2.4 GHz" required/>
+						<InputField label="Memoria RAM" bind:value={bk_ram} placeholder="Ej: 8 GB" required/>
 					</div>
 				</div>
 			</div>
@@ -175,9 +176,9 @@
 
 				<div class="form-grid">
 					<div class="form-row">
-						<InputField label="Marca del Disco" bind:value={bk_hdbrand} placeholder="Ej: WD" />
+						<InputField label="Marca del Disco" bind:value={bk_hdbrand} placeholder="Ej: WD" required/>
 						<InputField label="Capacidad" bind:value={bk_hdd_cap} placeholder="Ej: 1 TB" required />
-						<InputField label="Tecnología" bind:value={bk_hdd_tech} placeholder="Ej: SSD, HDD" />
+						<InputField label="Tecnología" bind:value={bk_hdd_tech} placeholder="Ej: SSD, HDD" required/>
 					</div>
 				</div>
 			</div>

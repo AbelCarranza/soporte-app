@@ -6,7 +6,7 @@
 	import ReportanteForm from '$lib/components/ReportanteForm.svelte';
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
 	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
-	import PerifericoReplacementForm from '$lib/components/PerifericoReplacementForm.svelte';
+	import PerifericoReplacementForm from '$lib/components/PerifericoBackupForm.svelte';
 
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { generarFicha } from '$lib/services/docGenerator';
@@ -82,6 +82,30 @@
 
 	$: if (ticket_id !== null) {
 		reportData.ticket_id = ticket_id;
+	}
+
+	function validarDecisionFinal(): boolean {
+		const { selected_decision, other_description } = get(decisionStore);
+
+		if (selected_decision === 'other') {
+			const desc = other_description ?? '';
+
+			// Espacios al inicio o al final
+			if (desc.trim() !== desc) {
+				notifyError('La descripción no debe tener espacios al inicio o al final.');
+				return false;
+			}
+
+			// Caracteres especiales (solo letras, números y espacios internos)
+			const regex = /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ ]+$/;
+
+			if (!regex.test(desc)) {
+				notifyError('La descripción contiene caracteres no permitidos.');
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	async function next() {
@@ -208,6 +232,8 @@
 	}
 
 	function generarWord() {
+		if (!validarDecisionFinal()) return;
+
 		if (step === 6) {
 			perifericoReplacementRef?.enviarDatos?.();
 		}
@@ -229,6 +255,8 @@
 	}
 
 	async function confirmarEnvio() {
+		if (!validarDecisionFinal()) return;
+
 		mostrarPopup = false;
 		loadingSheets = true;
 
@@ -251,6 +279,7 @@
 			loadingSheets = false;
 		}
 	}
+	
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
 	}

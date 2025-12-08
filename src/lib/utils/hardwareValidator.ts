@@ -1,14 +1,8 @@
-// hardwareValidator.ts
 import { notifyError } from '../services/notyf';
 
-const allowedRegex = /^[A-Za-z0-9\- ]+$/;
+const defaultRegex = /^[A-Za-z0-9\- ]+$/;
+const speedRegex = /^[0-9]+(\.[0-9]+)?$/;
 
-/**
- * Valida los campos de hardware.
- * @param showHardware boolean → si el checkbox está activo
- * @param fields objeto con los campos
- * @returns boolean (true si pasa validación, false si falla)
- */
 export function validateHardware(showHardware: boolean, fields: any): boolean {
 	if (!showHardware) return true;
 
@@ -22,9 +16,14 @@ export function validateHardware(showHardware: boolean, fields: any): boolean {
 			return false;
 		}
 
-		if (!allowedRegex.test(trimmed)) {
+		const regex =
+			key === 'speed' || key === 'bk_speed'
+				? speedRegex
+				: defaultRegex;
+
+		if (!regex.test(trimmed)) {
 			notifyError(
-				`"${translateKey(key)}" contiene caracteres inválidos. Solo se permite letras, números, espacios y "-".`
+				`"${translateKey(key)}" contiene caracteres inválidos.`
 			);
 			return false;
 		}
@@ -49,7 +48,6 @@ function translateKey(key: string): string {
 		hdd_technology: 'Tecnología del Disco'
 	};
 
-	// Campos de backup
 	if (key.startsWith('bk_')) {
 		const suffixMap: Record<string, string> = {
 			brand: 'Marca',
@@ -64,9 +62,9 @@ function translateKey(key: string): string {
 			hdd_tech: 'Tecnología del Disco'
 		};
 
-		const realKey = key.slice(3); // elimina 'bk_'
+		const realKey = key.slice(3);
 		const translated = suffixMap[realKey] ?? realKey;
-		return `${translated}`;
+		return translated;
 	}
 
 	return map[key] ?? key;

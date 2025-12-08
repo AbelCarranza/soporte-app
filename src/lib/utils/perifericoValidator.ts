@@ -2,73 +2,98 @@ import { notifyError } from '../services/notyf';
 
 const allowedRegex = /^[A-Za-z0-9\- ]+$/;
 
-/**
- * Valida los campos de periféricos.
- * @param state estado actual con los showX y los valores de los campos
- * @returns boolean (true si pasa validación, false si falla)
- */
-export function validatePerifericos(state: any): boolean {
-	const { showMonitor, showKeyboard, showMouse, monitor_brand, monitor_code, monitor_serial,
-			keyboard_brand, keyboard_code, keyboard_serial, mouse_brand, mouse_code, mouse_serial,
-			observations } = state;
+type FieldMap = {
+  monitor: {
+    brand: string;
+    code: string;
+    serial: string;
+  };
+  keyboard: {
+    brand: string;
+    code: string;
+    serial: string;
+  };
+  mouse: {
+    brand: string;
+    code: string;
+    serial: string;
+  };
+  observations: string;
+};
 
-	// Verifica si al menos un checkbox está activo
-	if (!showMonitor && !showKeyboard && !showMouse && !state.showOthers) {
-		notifyError('Debe seleccionar al menos un periférico o ingresar observaciones.');
-		return false;
-	}
+type ShowMap = {
+  monitor: boolean;
+  keyboard: boolean;
+  mouse: boolean;
+};
 
-	// Validación por sección
-	if (showMonitor) {
-		if (!validateFields({ monitor_brand, monitor_code, monitor_serial }, 'Monitor')) return false;
-	}
-	if (showKeyboard) {
-		if (!validateFields({ keyboard_brand, keyboard_code, keyboard_serial }, 'Teclado')) return false;
-	}
-	if (showMouse) {
-		if (!validateFields({ mouse_brand, mouse_code, mouse_serial }, 'Mouse')) return false;
-	}
+export function validatePerifericos(
+  data: any,
+  fields: FieldMap,
+  show: ShowMap
+): boolean {
 
-	// Observaciones no son obligatorias, solo se limpia o mantiene
-	state.observations = String(observations ?? '').trim();
+  if (show.monitor) {
+    if (!validateFields(
+      {
+        brand: data[fields.monitor.brand],
+        code: data[fields.monitor.code],
+        serial: data[fields.monitor.serial]
+      },
+      'Monitor'
+    )) return false;
+  }
 
-	return true;
+  if (show.keyboard) {
+    if (!validateFields(
+      {
+        brand: data[fields.keyboard.brand],
+        code: data[fields.keyboard.code],
+        serial: data[fields.keyboard.serial]
+      },
+      'Teclado'
+    )) return false;
+  }
+
+  if (show.mouse) {
+    if (!validateFields(
+      {
+        brand: data[fields.mouse.brand],
+        code: data[fields.mouse.code],
+        serial: data[fields.mouse.serial]
+      },
+      'Mouse'
+    )) return false;
+  }
+
+  // Trim observaciones
+  if (fields.observations) {
+    data[fields.observations] = String(data[fields.observations] ?? '').trim();
+  }
+
+  return true;
 }
 
-// Función genérica para validar un conjunto de campos
-function validateFields(fields: Record<string, any>, sectionName: string): boolean {
-	for (const [key, value] of Object.entries(fields)) {
-		const trimmed = String(value ?? '').trim();
+function validateFields(fields: any, sectionName: string): boolean {
+  const labels: any = {
+    brand: 'Marca y/o Modelo',
+    code: 'Código',
+    serial: 'Número de Serie'
+  };
 
-		if (!trimmed) {
-			notifyError(`El campo "${sectionName} - ${labelKey(key)}" debe estar completo.`);
-			return false;
-		}
+  for (const [key, value] of Object.entries(fields)) {
+    const trimmed = String(value ?? '').trim();
 
-		if (!allowedRegex.test(trimmed)) {
-			notifyError(
-				`"${sectionName} - ${labelKey(key)}" contiene caracteres inválidos. Solo se permite letras, números, espacios y "-".`
-			);
-			return false;
-		}
+    if (!trimmed) {
+      notifyError(`El campo "${sectionName} - ${labels[key]}" debe estar completo.`);
+      return false;
+    }
 
-		fields[key] = trimmed;
-	}
-	return true;
-}
+    if (!allowedRegex.test(trimmed)) {
+      notifyError(`"${sectionName} - ${labels[key]}" contiene caracteres inválidos.`);
+      return false;
+    }
+  }
 
-// Traduce nombres de campos internos a etiquetas en español
-function labelKey(key: string): string {
-	const map: Record<string, string> = {
-		monitor_brand: 'Marca y/o Modelo',
-		monitor_code: 'Código',
-		monitor_serial: 'Número de Serie',
-		keyboard_brand: 'Marca y/o Modelo',
-		keyboard_code: 'Código',
-		keyboard_serial: 'Número de Serie',
-		mouse_brand: 'Marca y/o Modelo',
-		mouse_code: 'Código',
-		mouse_serial: 'Número de Serie'
-	};
-	return map[key] ?? key;
+  return true;
 }

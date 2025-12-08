@@ -2,12 +2,9 @@
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
-	import type {
-		BackupPerifericoData,
-		SetBackupPerifericoValues
-	} from '$lib/types/BackupPerifericoData';
+	import type {BackupPerifericoData,SetBackupPerifericoValues} from '$lib/types/BackupPerifericoData';
 
-	import { validateBackupPerifericos } from '$lib/utils/backupPerifericoValidator';
+	import { validatePerifericos } from '$lib/utils/perifericoValidator';
 
 	const dispatch = createEventDispatcher<{ update: BackupPerifericoData }>();
 
@@ -82,19 +79,50 @@
 			showKeyboard,
 			showMouse,
 			showOthers,
+
 			bk_monitor,
 			bk_mon_code,
 			bk_mon_serial,
+
 			bk_keyboard,
 			bk_key_code,
 			bk_key_serial,
+
 			bk_mouse,
 			bk_mouse_code,
 			bk_mouse_serial,
+
 			bk_obs
 		};
 
-		if (!validateBackupPerifericos(fields)) {
+		const isValid = validatePerifericos(
+			fields,
+			{
+				monitor: {
+					brand: 'bk_monitor',
+					code: 'bk_mon_code',
+					serial: 'bk_mon_serial'
+				},
+				keyboard: {
+					brand: 'bk_keyboard',
+					code: 'bk_key_code',
+					serial: 'bk_key_serial'
+				},
+				mouse: {
+					brand: 'bk_mouse',
+					code: 'bk_mouse_code',
+					serial: 'bk_mouse_serial'
+				},
+				observations: 'bk_obs'
+			},
+			{
+				monitor: showMonitor,
+				keyboard: showKeyboard,
+				mouse: showMouse
+			}
+		);
+
+		if (!isValid) {
 			return false;
 		}
 
@@ -102,6 +130,7 @@
 		dispatch('update', fields);
 		return true;
 	}
+
 	export function getCurrentState() {
 		return {
 			showMonitor,
@@ -111,6 +140,7 @@
 		};
 	}
 </script>
+
 
 <div class="form-container">
 	<!-- MONITOR -->
@@ -127,12 +157,14 @@
 						label="Marca y/o Modelo"
 						bind:value={bk_monitor}
 						placeholder="Ej: Dell P2419H, LG 24MK400H"
+						required
 					/>
-					<InputField label="Código" bind:value={bk_mon_code} placeholder="Ej: DEL-P2419H" />
+					<InputField label="Código" bind:value={bk_mon_code} placeholder="Ej: DEL-P2419H" required/>
 					<InputField
 						label="Número de Serie"
 						bind:value={bk_mon_serial}
 						placeholder="Ej: CN-0PK4C6-64125-2AO-1E3G"
+						required
 					/>
 				</div>
 			</div>
@@ -153,9 +185,10 @@
 						label="Marca y/o Modelo"
 						bind:value={bk_keyboard}
 						placeholder="Ej: Logitech K120, Dell KB216"
+						required
 					/>
-					<InputField label="Código" bind:value={bk_key_code} placeholder="Ej: LOG-K120" />
-					<InputField label="Serie" bind:value={bk_key_serial} placeholder="Ej: 2109A3B4C5D6" />
+					<InputField label="Código" bind:value={bk_key_code} placeholder="Ej: LOG-K120" required/>
+					<InputField label="Serie" bind:value={bk_key_serial} placeholder="Ej: 2109A3B4C5D6" required/>
 				</div>
 			</div>
 		{/if}
@@ -175,9 +208,10 @@
 						label="Marca y/o Modelo"
 						bind:value={bk_mouse}
 						placeholder="Ej: Logitech M90, Dell MS116"
+						required
 					/>
-					<InputField label="Código" bind:value={bk_mouse_code} placeholder="Ej: LOG-M90" />
-					<InputField label="Serie" bind:value={bk_mouse_serial} placeholder="Ej: 2109X1Y2Z3A4" />
+					<InputField label="Código" bind:value={bk_mouse_code} placeholder="Ej: LOG-M90" required/>
+					<InputField label="Serie" bind:value={bk_mouse_serial} placeholder="Ej: 2109X1Y2Z3A4" required/>
 				</div>
 			</div>
 		{/if}

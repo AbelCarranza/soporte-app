@@ -11,7 +11,10 @@
   {#if label}
     <!-- svelte-ignore a11y_label_has_associated_control -->
     <label class="label">
-      {label} {required ? "*" : ""}
+      {label}
+      {#if required}
+        <span class="required-star">*</span>
+      {/if}
     </label>
   {/if}
 
@@ -39,6 +42,12 @@
   .label {
     font-weight: 600;
     font-size: 0.95rem;
+  }
+
+  .required-star {
+    color: #ff3b3b;
+    margin-left: 2px;
+    font-weight: 700;
   }
 
   input {

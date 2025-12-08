@@ -143,19 +143,20 @@
 		<div class="form-section">
 			<div class="form-grid">
 				<div class="form-row">
-					<InputField label="Marca" bind:value={brand} placeholder="Ej: Dell, HP, Lenovo" />
+					<InputField label="Marca" bind:value={brand} placeholder="Ej: Dell, HP, Lenovo" required/>
 					<InputField
 						label="Código Patrimonial"
 						bind:value={asset_code}
 						placeholder="Ej: PAT-001234"
+						required
 					/>
-					<InputField label="Número de Serie" bind:value={serial} placeholder="Ej: SN123456789" />
+					<InputField label="Número de Serie" bind:value={serial} placeholder="Ej: SN123456789" required/>
 				</div>
 
 				<div class="form-row">
 					<InputField label="Placa" bind:value={plate} placeholder="Ej: Gigabyte" required />
-					<InputField label="Procesador" bind:value={cpu} placeholder="Ej: Intel Core i5" />
-					<InputField label="Velocidad del CPU" bind:value={speed} placeholder="Ej: 2.4 GHz" />
+					<InputField label="Procesador" bind:value={cpu} placeholder="Ej: Intel Core i5" required/>
+					<InputField label="Velocidad del CPU" bind:value={speed} placeholder="Ej: 2.4 GHz" required/>
 					<InputField label="Memoria RAM" bind:value={ram} placeholder="Ej: 8 GB" required />
 				</div>
 			</div>
@@ -172,12 +173,14 @@
 						label="Marca del Disco"
 						bind:value={hdd_brand}
 						placeholder="Ej: Seagate, WD"
+						required
 					/>
 					<InputField label="Capacidad" bind:value={hdd_capacity} placeholder="Ej: 1 TB" required />
 					<InputField
 						label="Tecnología"
 						bind:value={hdd_technology}
 						placeholder="Ej: SSD, HDD, NVMe"
+						required
 					/>
 				</div>
 			</div>

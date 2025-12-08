@@ -1,7 +1,8 @@
 import { notifyError } from '../services/notyf';
 
 const defaultRegex = /^[A-Za-z0-9\- ]+$/;
-const speedRegex = /^[0-9]+(\.[0-9]+)?$/;
+const speedRegex = /^[0-9]+(\.[0-9]+)?\s*[a-zA-Z]*$/;
+const serialRegex = /^[A-Za-z0-9.]+$/;
 
 export function validateHardware(showHardware: boolean, fields: any): boolean {
 	if (!showHardware) return true;
@@ -19,12 +20,12 @@ export function validateHardware(showHardware: boolean, fields: any): boolean {
 		const regex =
 			key === 'speed' || key === 'bk_speed'
 				? speedRegex
-				: defaultRegex;
+				: key === 'serial' || key === 'bk_serial'
+					? serialRegex
+					: defaultRegex;
 
 		if (!regex.test(trimmed)) {
-			notifyError(
-				`"${translateKey(key)}" contiene caracteres inválidos.`
-			);
+			notifyError(`"${translateKey(key)}" contiene caracteres inválidos.`);
 			return false;
 		}
 

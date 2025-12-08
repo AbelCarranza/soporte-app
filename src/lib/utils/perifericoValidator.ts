@@ -66,7 +66,6 @@ export function validatePerifericos(
     )) return false;
   }
 
-  // Trim observaciones
   if (fields.observations) {
     data[fields.observations] = String(data[fields.observations] ?? '').trim();
   }

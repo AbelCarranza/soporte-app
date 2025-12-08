@@ -5,25 +5,26 @@
 	import PerifericoForm from '$lib/components/PerifericoForm.svelte';
 	import ReportanteForm from '$lib/components/ReportanteForm.svelte';
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
-	import CPUReplacementForm from '$lib/components/CPUReplacementForm.svelte';
+	import CPUReplacementForm from '$lib/components/CPUBackupForm.svelte';
 	import PerifericoReplacementForm from '$lib/components/PerifericoBackupForm.svelte';
 
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { generarFicha } from '$lib/services/docGenerator';
 	import { recibirBusquedaHandler } from '$lib/services/recibirBusqueda';
-	import { notifyError, notifySuccess } from '$lib/services/notyf';
+	import { notifyError, notifySuccess, notifyInfo } from '$lib/services/notyf';
 
 	import { decisionStore } from '$lib/stores/decisionStore';
 	import { stepStore } from '$lib/stores/stepStore';
 	import { resetAllStores } from '$lib/stores/resetStores';
 	import { get } from 'svelte/store';
-
 	import type { ReportData } from '$lib/types/report';
 	import type { SvelteComponent } from 'svelte';
 	import { initialReportData } from '$lib/constants/initialReportData';
-
 	import { onMount } from 'svelte';
 	import { getFolio } from '$lib/services/folio';
+
+	// Stores de validación
+	import { validarPaso4, validarPaso6 } from '$lib/utils/validaciones';
 
 	let step = get(stepStore);
 	const decisionData = get(decisionStore);
@@ -42,7 +43,6 @@
 	};
 
 	$: esReemplazo = reportData.selected_decision === 'Reemplazo con Equipo de Reserva';
-
 	$: totalSteps = esReemplazo ? 6 : 4;
 
 	let wordGenerado = false;
@@ -90,73 +90,31 @@
 		if (selected_decision === 'other') {
 			const desc = other_description ?? '';
 
-			// Espacios al inicio o al final
 			if (desc.trim() !== desc) {
 				notifyError('La descripción no debe tener espacios al inicio o al final.');
 				return false;
 			}
 
-			// Caracteres especiales (solo letras, números y espacios internos)
 			const regex = /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ ]+$/;
-
 			if (!regex.test(desc)) {
 				notifyError('La descripción contiene caracteres no permitidos.');
 				return false;
 			}
 		}
-
 		return true;
 	}
 
+	function guardarPasoActual() {
+		cpuForm?.enviarDatos?.();
+		perifericoRef?.enviarDatos?.();
+		if (esReemplazo) {
+			cpuReplacementRef?.enviarDatos?.();
+			perifericoReplacementRef?.enviarDatos?.();
+		}
+	}
+
 	async function next() {
-		// Paso 1: Reportante
-		if (step === 1 && reportanteRef) {
-			const ok = await reportanteRef.enviarDatos();
-			if (!ok) return;
-		}
-
-		// Paso 2: CPU
-		if (step === 2 && cpuForm) {
-			const ok = cpuForm.enviarDatos?.();
-			if (!ok) return;
-		}
-
-		// Paso 3: Periféricos
-		if (step === 3 && perifericoRef) {
-			const ok = perifericoRef.enviarDatos?.();
-			if (!ok) return;
-		}
-
-		// Paso 4: Backup
-		if (step === 4 && backupRef) {
-			const ok = backupRef.enviarDatos?.();
-			if (!ok) return;
-		}
-
-		// Paso 5: CPU Reemplazo
-		if (step === 5 && cpuReplacementRef) {
-			const ok = cpuReplacementRef.enviarDatos?.();
-			if (!ok) return;
-		}
-
-		// Paso 6: Periféricos Reemplazo
-		if (step === 6 && perifericoReplacementRef) {
-			const ok = perifericoReplacementRef.enviarDatos?.();
-			if (!ok) return;
-		}
-
-		if (step < totalSteps) step++;
-	}
-
-	function prev() {
-		if (step > 1) step--;
-	}
-
-	async function goTo(num: number) {
-		if (num < step) {
-			step = num;
-			return;
-		}
+		// Guardar datos del paso actual antes de avanzar
 		switch (step) {
 			case 1:
 				if (reportanteRef) {
@@ -195,13 +153,27 @@
 				}
 				break;
 		}
+		if (step < totalSteps) step++;
+	}
+
+	function prev() {
+		if (step > 1) step--;
+	}
+
+	async function goTo(num: number) {
+		if (num < step) {
+			step = num;
+			return;
+		}
+		await next();
 		step = num;
 	}
 
 	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
-		const { tipo } = e.detail;
-		const pasoValido = step === 2 || step === 3 || (esReemplazo && (step === 5 || step === 6)); // Reemplazo
+		const { tipo, form } = e.detail;
 
+		// Validación de paso vs tipo
+		const pasoValido = step === 2 || step === 3 || (esReemplazo && (step === 5 || step === 6));
 		if (!pasoValido) {
 			notifyError(
 				'Para realizar una búsqueda debes estar en el Paso 2 o el paso correspondiente al componente.'
@@ -209,15 +181,19 @@
 			return;
 		}
 
-		if (tipo === '4' && !(esReemplazo && (step === 5 || step === 6))) {
-			notifyError(
-				'La búsqueda por Entrada solo está permitida durante el proceso de Reemplazo de Equipo de Reserva.'
+		if (esReemplazo && (step === 5 || step === 6) && tipo !== '4') {
+			notifyInfo(
+				`Estás en el paso ${step} (Reemplazo). Para completar estos datos debes cambiar el select a "Entrada".`
 			);
 			return;
 		}
 
-		loadingSearch = true;
+		if (!esReemplazo && (step === 2 || step === 3) && tipo === '4') {
+			notifyInfo(`No puedes buscar con "Entrada" en este paso. Cambia el select a "Salida".`);
+			return;
+		}
 
+		loadingSearch = true;
 		try {
 			await recibirBusquedaHandler(e, {
 				reportanteRef,
@@ -232,19 +208,18 @@
 	}
 
 	function generarWord() {
+		guardarPasoActual();
+
 		if (!validarDecisionFinal()) return;
 
-		if (step === 6) {
-			perifericoReplacementRef?.enviarDatos?.();
-		}
+		if ((step === 4 && !validarPaso4()) || (step === 6 && !validarPaso6())) return;
 
-		const { selected_decision, action_plan, other_description } = get(decisionStore);
+		const { selected_decision, other_description } = get(decisionStore);
 
 		if (!selected_decision.trim()) {
 			notifyError('Debe seleccionar una decisión antes de generar el Word.');
 			return;
 		}
-
 		if (selected_decision === 'other' && !other_description.trim()) {
 			notifyError('Debe describir la decisión antes de generar el Word.');
 			return;
@@ -255,7 +230,11 @@
 	}
 
 	async function confirmarEnvio() {
+		guardarPasoActual();
+
 		if (!validarDecisionFinal()) return;
+
+		if ((step === 4 && !validarPaso4()) || (step === 6 && !validarPaso6())) return;
 
 		mostrarPopup = false;
 		loadingSheets = true;
@@ -265,12 +244,7 @@
 			notifySuccess('Datos enviados correctamente');
 
 			resetAllStores();
-
-			reportData = {
-				...initialReportData,
-				selected_decision: ''
-			};
-
+			reportData = { ...initialReportData, selected_decision: '' };
 			wordGenerado = false;
 			step = 1;
 		} catch (err) {
@@ -279,7 +253,7 @@
 			loadingSheets = false;
 		}
 	}
-	
+
 	function toggleSidebar() {
 		sidebarOpen = !sidebarOpen;
 	}

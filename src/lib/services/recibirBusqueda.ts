@@ -9,6 +9,7 @@ type Refs = {
     perifericoReplacementRef?: any;
 };
 
+// 🔹 CONSTANTES DE MAPEO
 const perifericoMap = {
     MonitorCode: ['bk_monitor', 'bk_mon_code', 'bk_mon_serial', 'MonitorBrand', 'MonitorCode', 'MonitorSerial'],
     KeyboardCode: ['bk_keyboard', 'bk_key_code', 'bk_key_serial', 'KeyboardBrand', 'KeyboardCode', 'KeyboardSerial'],
@@ -29,6 +30,7 @@ const perifericoMapForm = {
     MouseSerial: ['mouse_brand', 'mouse_code', 'mouse_serial', 'MouseBrand', 'MouseCode', 'MouseSerial'],
 };
 
+
 function setPerifericoData(ref: any, eq: any, map: Record<string, string[]>) {
     const mapping = map[eq.matchField];
     if (!mapping) return;
@@ -42,51 +44,37 @@ function setPerifericoData(ref: any, eq: any, map: Record<string, string[]>) {
     });
 }
 
-
-// 🔥 VALIDACIÓN PARA CPU NORMAL Y REEMPLAZO
 function validarCheckboxCPU(ref: any): boolean {
     const state = ref?.getCurrentState?.();
-    if (!state) return true;
-
-    const activo = state.showHardware ?? state.showReplacementHardware ?? false;
+    const activo = state?.showHardware ?? state?.showReplacementHardware ?? false;
 
     if (!activo) {
         notifyError(`Debes activar primero el checkbox de hardware para completar los datos.`);
         return false;
     }
-
     return true;
 }
 
-
-// --- YA EXISTENTE --- //
 function validarCheckboxPeriferico(ref: any, eq: any): boolean {
-    const tipo =
-        eq.matchField.includes("Monitor") ? "monitor" :
-        eq.matchField.includes("Keyboard") ? "keyboard" :
-        eq.matchField.includes("Mouse") ? "mouse" :
-        null;
+    const tipo = eq.matchField.includes("Monitor") ? "monitor"
+        : eq.matchField.includes("Keyboard") ? "keyboard"
+            : eq.matchField.includes("Mouse") ? "mouse"
+                : null;
 
-    if (!tipo) return true; // no es periférico
+    if (!tipo) return true;
 
     const state = ref?.getCurrentState?.();
-    if (!state) return true;
-
-    const activo =
-        tipo === "monitor" ? state.showMonitor :
-        tipo === "keyboard" ? state.showKeyboard :
-        tipo === "mouse" ? state.showMouse :
-        false;
+    const activo = tipo === "monitor" ? state?.showMonitor
+        : tipo === "keyboard" ? state?.showKeyboard
+            : tipo === "mouse" ? state?.showMouse
+                : false;
 
     if (!activo) {
         notifyError(`Debes activar primero el checkbox del ${tipo} para completar los datos.`);
         return false;
     }
-
     return true;
 }
-
-
 
 export async function recibirBusquedaHandler(
     e: CustomEvent<{ tipo: string; codigo: string; form: string }>,
@@ -95,47 +83,29 @@ export async function recibirBusquedaHandler(
     const { codigo, form, tipo } = e.detail;
 
     const data = await buscarEnSheets(form, codigo);
-    if (!data || data.length === 0) {
-        notifyError('No se encontraron equipos. Verifique el código ingresado.');
-        return;
-    }
+    if (!data?.length) return notifyError('No se encontraron equipos. Verifique el código ingresado.');
 
     const eq = data[0];
+    const isCPU = eq.matchField === 'AssetCode' || eq.matchField === 'Serial';
+    const isReemplazo = tipo === '4';
+    const isFormNormal = form === '1' || form === '2';
+    const tipoBusqueda = form === '2' ? 'por serie' : '';
 
-    // --- REEMPLAZO (tipo 4) ---
-    if (tipo === '4') {
-        if (eq.matchField === 'AssetCode' || eq.matchField === 'Serial') {
 
-            if (!validarCheckboxCPU(refs.cpuReplacementRef)) return;
+    if (isCPU) {
+        const cpuRef = isReemplazo ? refs.cpuReplacementRef : refs.cpuForm;
+        if (!validarCheckboxCPU(cpuRef)) return;
 
-            refs.cpuReplacementRef?.setData(eq);
-            notifySuccess('Datos de CPU para reemplazo completados');
-        } else {
-            if (!validarCheckboxPeriferico(refs.perifericoReplacementRef, eq)) return;
-
-            setPerifericoData(refs.perifericoReplacementRef, eq, perifericoMap);
-            notifySuccess('Datos del periférico para reemplazo completados');
-        }
+        cpuRef?.setData(eq);
+        notifySuccess(`Datos de CPU ${isReemplazo ? 'para reemplazo' : tipoBusqueda} completados`);
         return;
     }
 
 
-    // --- FORM 1 Y 2 (BUSQUEDA NORMAL) ---
-    if (form === '1' || form === '2') {
-        const tipoBusqueda = form === '1' ? '' : 'por serie';
+    const perifericoRef = isReemplazo ? refs.perifericoReplacementRef : refs.perifericoRef;
+    if (!validarCheckboxPeriferico(perifericoRef, eq)) return;
 
-        if (eq.matchField === 'AssetCode' || eq.matchField === 'Serial') {
-
-            if (!validarCheckboxCPU(refs.cpuForm)) return;
-
-            refs.cpuForm?.setData(eq);
-            notifySuccess(`Datos de CPU ${tipoBusqueda} completados`);
-        } else {
-            if (!validarCheckboxPeriferico(refs.perifericoRef, eq)) return;
-
-            setPerifericoData(refs.perifericoRef, eq, perifericoMapForm);
-            notifySuccess(`Datos del periférico ${tipoBusqueda} completados`);
-        }
-        return;
-    }
+    const map = isReemplazo ? perifericoMap : perifericoMapForm;
+    setPerifericoData(perifericoRef, eq, map);
+    notifySuccess(`Datos del periférico ${isReemplazo ? 'para reemplazo' : tipoBusqueda} completados`);
 }

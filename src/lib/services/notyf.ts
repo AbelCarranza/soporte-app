@@ -1,4 +1,5 @@
 import { Notyf } from 'notyf';
+import 'notyf/notyf.min.css';
 
 let notyf: Notyf | null = null;
 
@@ -9,6 +10,14 @@ function getNotyf() {
       position: { x: 'right', y: 'bottom' },
       ripple: true,
       dismissible: true,
+      types: [
+        {
+          type: 'info',
+          background: '#528eeeff',
+          icon: false,
+          duration: 4000,
+        },
+      ],
     });
   }
   return notyf;

@@ -22,7 +22,6 @@
 	let initialized = false;
 	let showReplacementHardware = false; 
 
-	// Suscripción a la store
 	replacementStore.subscribe((data: ReplacementData) => {
 		bk_brand = data.bk_brand ?? '';
 		bk_asset = data.bk_asset ?? '';
@@ -36,7 +35,6 @@
 		bk_hdd_cap = data.bk_hdd_cap ?? '';
 		bk_hdd_tech = data.bk_hdd_tech ?? '';
 
-		// 🔥 Sincronizar el checkbox con el valor guardado
 		showReplacementHardware = data.showReplacementHardware ?? false;
 
 		initialized = true;
@@ -56,7 +54,6 @@
 		bk_hdd_tech = values.HDDTechnology ?? '';
 	}
 
-	// 🔥 Actualizar store cuando cambien los valores cargados
 	$: if (initialized) {
 		replacementStore.update((current) => ({
 			...current,
@@ -99,7 +96,6 @@
 			return true;
 
 		} else {
-			// Limpiar campos
 			bk_brand = '';
 			bk_asset = '';
 			bk_serial = '';

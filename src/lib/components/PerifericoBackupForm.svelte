@@ -27,7 +27,6 @@
 
 	let bk_obs = '';
 
-	// === CARGAR DESDE STORE ===
 	backupPerifericoStore.subscribe((data: BackupPerifericoData) => {
 		showMonitor = data.showMonitor ?? false;
 		showKeyboard = data.showKeyboard ?? false;

@@ -22,7 +22,6 @@
 
 	export let autocompletar = false;
 
-	// 🟦 Suscripción a la store (incluye showHardware)
 	reportStore.subscribe((data) => {
 		brand = data.brand ?? '';
 		asset_code = data.asset_code ?? '';
@@ -38,13 +37,11 @@
 		showHardware = data.showHardware ?? false;
 	});
 
-	// 🟦 Cada vez que cambia el checkbox → guardar en store
 	$: reportStore.update((d) => ({ 
 		...d, 
 		showHardware 
 	}));
 
-	// 🟦 Si el checkbox se desmarca → limpiar los campos
 	$: if (!showHardware) {
 		brand = '';
 		asset_code = '';
@@ -72,7 +69,6 @@
 		}));
 	}
 
-	// 🟦 Cargar valores desde autocompletar
 	export function setData(values: any) {
 		reportStore.update((current) => ({
 			...current,
@@ -89,7 +85,6 @@
 		}));
 	}
 
-	// 🟦 Validación + envío de datos
 	export function enviarDatos(): boolean {
 		const fields = {
 			brand,
@@ -113,7 +108,6 @@
 			return true;
 		}
 
-		// Caso: checkbox desmarcado → limpiar
 		reportStore.update((current) => ({
 			...current,
 			brand: '',

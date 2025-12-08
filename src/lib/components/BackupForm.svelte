@@ -32,24 +32,20 @@
 		{ value: 'other', label: 'Otro' }
 	];
 
-	// Mostrar/ocultar "Otro"
 	let showOtherFields = false;
 	$: showOtherFields = selected_decision === 'other';
 
-	// Limpiar texto sin romper si viene null
 	function cleanText(value: any): string {
 		if (value === null || value === undefined) return '';
 		return String(value).replace(/\s+/g, ' ').trim();
 	}
 
-	// Regex válidos (letras, números y espacios internos)
 	const onlyTextRegex = /^[A-Za-z0-9ÁÉÍÓÚáéíóúÑñ ]+$/;
 
 	function hasInvalidSymbols(value: string): boolean {
 		return !onlyTextRegex.test(value);
 	}
 
-	// Reactividad segura
 	$: {
 		if (selected_decision === 'other') {
 			action_plan = cleanText(other_description);
@@ -59,10 +55,8 @@
 		}
 	}
 
-	// Sincronizar con store
 	$: decisionStore.set({ selected_decision, action_plan, other_description });
 
-	// Emitir cambios al padre
 	$: if (selected_decision || action_plan) {
 		dispatch('update', { action_plan, selected_decision });
 	}
@@ -76,7 +70,6 @@
 		}
 
 		if (selected_decision === 'other') {
-			// ⚠️ No usamos cleanText aquí para detectar espacios externos reales
 			const raw = other_description ?? '';
 
 			if (raw.trim() !== raw) {
@@ -94,7 +87,6 @@
 				return false;
 			}
 
-			// Solo si todo está bien, limpiamos
 			other_description = cleanText(raw);
 			action_plan = other_description;
 		}

@@ -23,7 +23,6 @@
 	import { onMount } from 'svelte';
 	import { getFolio } from '$lib/services/folio';
 
-	// Stores de validación
 	import { validarPaso4, validarPaso6 } from '$lib/utils/validaciones';
 
 	let step = get(stepStore);
@@ -114,7 +113,6 @@
 	}
 
 	async function next() {
-		// Guardar datos del paso actual antes de avanzar
 		switch (step) {
 			case 1:
 				if (reportanteRef) {
@@ -463,7 +461,6 @@
 		width: 100%;
 	}
 
-	/* ========== SIDEBAR DESKTOP ========== */
 	.sidebar {
 		width: 260px;
 		background: #0e2239;
@@ -564,7 +561,6 @@
 		color: white;
 	}
 
-	/* ICONOS */
 	.icon-circle {
 		width: 32px;
 		height: 32px;
@@ -584,7 +580,6 @@
 		background: green;
 	}
 
-	/* POPUP */
 	.popup {
 		background: #ffffff;
 		padding: 24px 28px;

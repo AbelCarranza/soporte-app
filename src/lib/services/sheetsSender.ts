@@ -21,7 +21,6 @@ function multi(...lines: string[]) {
   return lines.join("\n");
 }
 
-// === ANTIGUOS ===
 form.append(
   "old_equipo",
   multi(
@@ -59,7 +58,6 @@ form.append(
   )
 );
 
-// === NUEVOS ===
 form.append(
   "new_equipo",
   multi(
@@ -96,7 +94,7 @@ form.append(
     `Serie: ${cleanField(reportData.bk_mouse_serial)}`
   )
 );
-	// === ENVÍO ===
+
 	const res = await fetch(url, {
 		method: 'POST',
 		body: form

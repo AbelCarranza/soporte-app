@@ -11,7 +11,6 @@ export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 
 	let filtrado = [];
 
-	// --- CÓDIGOS PATRIMONIALES ---
 	if (tipoBusqueda === '1') {
 		const camposPatrimonio = ['AssetCode', 'KeyboardCode', 'MonitorCode', 'MouseCode'];
 
@@ -25,7 +24,6 @@ export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 			.filter(Boolean);
 	}
 
-	// --- BÚSQUEDA POR SERIE ---
 	else if (tipoBusqueda === '2') {
 		const camposSerial = ['Serial', 'KeyboardSerial', 'MouseSerial', 'MonitorSerial'];
 

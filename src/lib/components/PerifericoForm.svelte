@@ -7,13 +7,11 @@
 
 	const dispatch = createEventDispatcher<{ update: PerifericoData }>();
 
-	// === CHECKBOX ===
 	let showMonitor = false;
 	let showKeyboard = false;
 	let showMouse = false;
 	let showOthers = false;
 
-	// === CAMPOS ===
 	let monitor_brand = '';
 	let monitor_code = '';
 	let monitor_serial = '';
@@ -28,7 +26,6 @@
 
 	let observations = '';
 
-	// === SUSCRIPCIÓN AL STORE ===
 	perifericoStore.subscribe((data: PerifericoData) => {
 		showMonitor = data.showMonitor ?? false;
 		showKeyboard = data.showKeyboard ?? false;
@@ -50,7 +47,6 @@
 		observations = data.observations ?? '';
 	});
 
-	// === ACTUALIZAR STORE DESDE VALORES EXTERNOS ===
 	export function setData(values: SetPerifericoValues): void {
 		perifericoStore.update((current) => ({
 			...current,
@@ -75,7 +71,6 @@
 		}));
 	}
 
-	// === ENVIAR DATOS AL PADRE CON VALIDACIÓN ===
 	export function enviarDatos(): boolean {
 		const fields = {
 			showMonitor,
@@ -98,7 +93,6 @@
 			observations
 		};
 
-		// ✅ NUEVA VALIDACIÓN GENÉRICA
 		const isValid = validatePerifericos(
 			fields,
 			{
@@ -127,7 +121,6 @@
 		);
 
 		if (!isValid) {
-			// Reset automático si ningún checkbox está activo
 			if (!showMonitor && !showKeyboard && !showMouse && !showOthers) {
 				perifericoStore.set({
 					showMonitor: false,
@@ -149,15 +142,12 @@
 			return false;
 		}
 
-		// Actualizar store con datos válidos
 		perifericoStore.update((current) => ({ ...current, ...fields }));
 
-		// Enviar datos al padre
 		dispatch('update', fields);
 		return true;
 	}
 
-	// === RETORNAR ESTADO ACTUAL ===
 	export function getCurrentState() {
 		return {
 			showMonitor,

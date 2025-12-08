@@ -9,7 +9,6 @@ type Refs = {
     perifericoReplacementRef?: any;
 };
 
-// 🔹 CONSTANTES DE MAPEO
 const perifericoMap = {
     MonitorCode: ['bk_monitor', 'bk_mon_code', 'bk_mon_serial', 'MonitorBrand', 'MonitorCode', 'MonitorSerial'],
     KeyboardCode: ['bk_keyboard', 'bk_key_code', 'bk_key_serial', 'KeyboardBrand', 'KeyboardCode', 'KeyboardSerial'],

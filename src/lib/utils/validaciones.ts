@@ -1,4 +1,3 @@
-// src/lib/utils/validaciones.ts
 import { get } from 'svelte/store';
 import { notifyError } from '$lib/services/notyf';
 
@@ -7,9 +6,7 @@ import { perifericoStore } from '$lib/stores/perifericoStore';
 import { replacementStore } from '$lib/stores/replacementStorage';
 import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
 
-/**
- * Valida el paso 4: al menos CPU o algún periférico principal debe estar activo
- */
+
 export function validarPaso4(): boolean {
   const cpu = get(reportStore);
   const perif = get(perifericoStore);
@@ -58,8 +55,6 @@ export function validarPaso6(): boolean {
         showOthers: perifBackup.showOthers
       }).some((v) => v)
     : false;
-   console.log(cpuActivo) 
-
   if (!(cpuActivo || perifActivo)) {
     notifyError('Debes completar al menos el CPU o algún periférico del equipo principal.');
     return false;

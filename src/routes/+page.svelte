@@ -170,7 +170,6 @@
 	async function recibirBusqueda(e: CustomEvent<{ tipo: string; codigo: string; form: string }>) {
 		const { tipo, form } = e.detail;
 
-		// Validación de paso vs tipo
 		const pasoValido = step === 2 || step === 3 || (esReemplazo && (step === 5 || step === 6));
 		if (!pasoValido) {
 			notifyError(

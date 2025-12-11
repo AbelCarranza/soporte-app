@@ -46,7 +46,6 @@ function setPerifericoData(ref: any, eq: any, map: Record<string, string[]>) {
 function validarCheckboxCPU(ref: any): boolean {
     const state = ref?.getCurrentState?.();
     const activo = state?.showHardware ?? state?.showReplacementHardware ?? false;
-
     if (!activo) {
         notifyError(`Debes activar primero el checkbox de hardware para completar los datos.`);
         return false;
@@ -87,7 +86,6 @@ export async function recibirBusquedaHandler(
     const eq = data[0];
     const isCPU = eq.matchField === 'AssetCode' || eq.matchField === 'Serial';
     const isReemplazo = tipo === '4';
-    const isFormNormal = form === '1' || form === '2';
     const tipoBusqueda = form === '2' ? 'por serie' : '';
 
 

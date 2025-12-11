@@ -37,9 +37,9 @@
 		showHardware = data.showHardware ?? false;
 	});
 
-	$: reportStore.update((d) => ({ 
-		...d, 
-		showHardware 
+	$: reportStore.update((d) => ({
+		...d,
+		showHardware
 	}));
 
 	$: if (!showHardware) {
@@ -125,8 +125,12 @@
 		dispatch('update', { ...fields, autocompletar });
 		return true;
 	}
+	export function getCurrentState() {
+		return {
+			showHardware
+		};
+	}
 </script>
-
 
 <label class="checkbox-autofill section-toggle">
 	<input type="checkbox" bind:checked={showHardware} />
@@ -137,20 +141,40 @@
 		<div class="form-section">
 			<div class="form-grid">
 				<div class="form-row">
-					<InputField label="Marca" bind:value={brand} placeholder="Ej: Dell, HP, Lenovo" required/>
+					<InputField
+						label="Marca"
+						bind:value={brand}
+						placeholder="Ej: Dell, HP, Lenovo"
+						required
+					/>
 					<InputField
 						label="Código Patrimonial"
 						bind:value={asset_code}
 						placeholder="Ej: PAT-001234"
 						required
 					/>
-					<InputField label="Número de Serie" bind:value={serial} placeholder="Ej: SN123456789" required/>
+					<InputField
+						label="Número de Serie"
+						bind:value={serial}
+						placeholder="Ej: SN123456789"
+						required
+					/>
 				</div>
 
 				<div class="form-row">
 					<InputField label="Placa" bind:value={plate} placeholder="Ej: Gigabyte" required />
-					<InputField label="Procesador" bind:value={cpu} placeholder="Ej: Intel Core i5" required/>
-					<InputField label="Velocidad del CPU" bind:value={speed} placeholder="Ej: 2.4 GHz" required/>
+					<InputField
+						label="Procesador"
+						bind:value={cpu}
+						placeholder="Ej: Intel Core i5"
+						required
+					/>
+					<InputField
+						label="Velocidad del CPU"
+						bind:value={speed}
+						placeholder="Ej: 2.4 GHz"
+						required
+					/>
 					<InputField label="Memoria RAM" bind:value={ram} placeholder="Ej: 8 GB" required />
 				</div>
 			</div>

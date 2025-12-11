@@ -2,8 +2,10 @@
 	import InputField from './InputField.svelte';
 	import { createEventDispatcher } from 'svelte';
 	import { backupPerifericoStore } from '$lib/stores/backupPerifericoStore';
-	import type {BackupPerifericoData,SetBackupPerifericoValues} from '$lib/types/BackupPerifericoData';
-
+	import type {
+		BackupPerifericoData,
+		SetBackupPerifericoValues
+	} from '$lib/types/BackupPerifericoData';
 	import { validatePerifericos } from '$lib/utils/perifericoValidator';
 
 	const dispatch = createEventDispatcher<{ update: BackupPerifericoData }>();
@@ -11,7 +13,6 @@
 	let showMonitor = false;
 	let showKeyboard = false;
 	let showMouse = false;
-	let showOthers = false;
 
 	let bk_monitor = '';
 	let bk_mon_code = '';
@@ -31,7 +32,6 @@
 		showMonitor = data.showMonitor ?? false;
 		showKeyboard = data.showKeyboard ?? false;
 		showMouse = data.showMouse ?? false;
-		showOthers = data.showOthers ?? false;
 
 		bk_monitor = data.bk_monitor ?? '';
 		bk_mon_code = data.bk_mon_code ?? '';
@@ -48,13 +48,73 @@
 		bk_obs = data.bk_obs ?? '';
 	});
 
+	$: backupPerifericoStore.update((d) => ({
+		...d,
+		showMonitor,
+		showKeyboard,
+		showMouse
+	}));
+
+	$: if (!showMonitor) resetMonitor();
+	$: if (!showKeyboard) resetKeyboard();
+	$: if (!showMouse) resetMouse();
+
+	function resetMonitor() {
+		bk_monitor = '';
+		bk_mon_code = '';
+		bk_mon_serial = '';
+		backupPerifericoStore.update((v) => ({
+			...v,
+			bk_monitor: '',
+			bk_mon_code: '',
+			bk_mon_serial: ''
+		}));
+	}
+
+	function resetKeyboard() {
+		bk_keyboard = '';
+		bk_key_code = '';
+		bk_key_serial = '';
+		backupPerifericoStore.update((v) => ({
+			...v,
+			bk_keyboard: '',
+			bk_key_code: '',
+			bk_key_serial: ''
+		}));
+	}
+
+	function resetMouse() {
+		bk_mouse = '';
+		bk_mouse_code = '';
+		bk_mouse_serial = '';
+		backupPerifericoStore.update((v) => ({
+			...v,
+			bk_mouse: '',
+			bk_mouse_code: '',
+			bk_mouse_serial: ''
+		}));
+	}
+
 	export function setData(values: SetBackupPerifericoValues): void {
 		backupPerifericoStore.update((current) => ({
 			...current,
 
-			showMonitor: !!(values.bk_monitor || values.bk_mon_code || values.bk_mon_serial),
-			showKeyboard: !!(values.bk_keyboard || values.bk_key_code || values.bk_key_serial),
-			showMouse: !!(values.bk_mouse || values.bk_mouse_code || values.bk_mouse_serial),
+			showMonitor:
+				values.bk_monitor || values.bk_mon_code || values.bk_mon_serial
+					? true
+					: current.showMonitor,
+
+			showKeyboard:
+				values.bk_keyboard || values.bk_key_code || values.bk_key_serial
+					? true
+					: current.showKeyboard,
+
+			showMouse:
+				values.bk_mouse || values.bk_mouse_code || values.bk_mouse_serial
+					? true
+					: current.showMouse,
+
+			showOthers: values.bk_obs ? true : current.showOthers,
 
 			bk_monitor: values.bk_monitor ?? current.bk_monitor,
 			bk_mon_code: values.bk_mon_code ?? current.bk_mon_code,
@@ -77,7 +137,6 @@
 			showMonitor,
 			showKeyboard,
 			showMouse,
-			showOthers,
 
 			bk_monitor,
 			bk_mon_code,
@@ -122,6 +181,24 @@
 		);
 
 		if (!isValid) {
+			if (!showMonitor && !showKeyboard && !showMouse) {
+				backupPerifericoStore.set({
+					showMonitor: false,
+					showKeyboard: false,
+					showMouse: false,
+					showOthers: false,
+					bk_monitor: '',
+					bk_mon_code: '',
+					bk_mon_serial: '',
+					bk_keyboard: '',
+					bk_key_code: '',
+					bk_key_serial: '',
+					bk_mouse: '',
+					bk_mouse_code: '',
+					bk_mouse_serial: '',
+					bk_obs: ''
+				});
+			}
 			return false;
 		}
 
@@ -134,18 +211,15 @@
 		return {
 			showMonitor,
 			showKeyboard,
-			showMouse,
-			showOthers
+			showMouse
 		};
 	}
 </script>
 
-
 <div class="form-container">
-	<!-- MONITOR -->
 	<div class="form-section">
 		<label class="section-toggle">
-			<input type="checkbox" bind:checked={showMonitor} />
+			<input type="checkbox" bind:checked={showMonitor} on:change={resetMonitor} />
 			<span>🖥️ Monitor</span>
 		</label>
 
@@ -158,7 +232,12 @@
 						placeholder="Ej: Dell P2419H, LG 24MK400H"
 						required
 					/>
-					<InputField label="Código" bind:value={bk_mon_code} placeholder="Ej: DEL-P2419H" required/>
+					<InputField
+						label="Código"
+						bind:value={bk_mon_code}
+						placeholder="Ej: DEL-P2419H"
+						required
+					/>
 					<InputField
 						label="Número de Serie"
 						bind:value={bk_mon_serial}
@@ -170,10 +249,9 @@
 		{/if}
 	</div>
 
-	<!-- TECLADO -->
 	<div class="form-section">
 		<label class="section-toggle">
-			<input type="checkbox" bind:checked={showKeyboard} />
+			<input type="checkbox" bind:checked={showKeyboard} on:change={resetKeyboard} />
 			<span>⌨️ Teclado</span>
 		</label>
 
@@ -186,17 +264,21 @@
 						placeholder="Ej: Logitech K120, Dell KB216"
 						required
 					/>
-					<InputField label="Código" bind:value={bk_key_code} placeholder="Ej: LOG-K120" required/>
-					<InputField label="Serie" bind:value={bk_key_serial} placeholder="Ej: 2109A3B4C5D6" required/>
+					<InputField label="Código" bind:value={bk_key_code} placeholder="Ej: LOG-K120" required />
+					<InputField
+						label="Serie"
+						bind:value={bk_key_serial}
+						placeholder="Ej: 2109A3B4C5D6"
+						required
+					/>
 				</div>
 			</div>
 		{/if}
 	</div>
 
-	<!-- MOUSE -->
 	<div class="form-section">
 		<label class="section-toggle">
-			<input type="checkbox" bind:checked={showMouse} />
+			<input type="checkbox" bind:checked={showMouse} on:change={resetMouse} />
 			<span>🖱️ Mouse</span>
 		</label>
 
@@ -209,8 +291,18 @@
 						placeholder="Ej: Logitech M90, Dell MS116"
 						required
 					/>
-					<InputField label="Código" bind:value={bk_mouse_code} placeholder="Ej: LOG-M90" required/>
-					<InputField label="Serie" bind:value={bk_mouse_serial} placeholder="Ej: 2109X1Y2Z3A4" required/>
+					<InputField
+						label="Código"
+						bind:value={bk_mouse_code}
+						placeholder="Ej: LOG-M90"
+						required
+					/>
+					<InputField
+						label="Serie"
+						bind:value={bk_mouse_serial}
+						placeholder="Ej: 2109X1Y2Z3A4"
+						required
+					/>
 				</div>
 			</div>
 		{/if}

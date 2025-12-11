@@ -7,6 +7,7 @@
 	import FinalButtons from '$lib/components/FinalButtons.svelte';
 	import CPUReplacementForm from '$lib/components/CPUBackupForm.svelte';
 	import PerifericoReplacementForm from '$lib/components/PerifericoBackupForm.svelte';
+	import { reportanteStore } from '$lib/stores/reportanteStore';
 
 	import { enviarDatosASheets } from '$lib/services/sheetsSender';
 	import { generarFicha } from '$lib/services/docGenerator';
@@ -222,6 +223,8 @@
 			return;
 		}
 
+		const datosReportante = get(reportanteStore);
+		reportData = { ...reportData, ...datosReportante };
 		generarFicha(reportData);
 		wordGenerado = true;
 	}
@@ -244,6 +247,8 @@
 			reportData = { ...initialReportData, selected_decision: '' };
 			wordGenerado = false;
 			step = 1;
+			ticket_id = await getFolio();
+			reportData.ticket_id = ticket_id;
 		} catch (err) {
 			console.error(err);
 		} finally {

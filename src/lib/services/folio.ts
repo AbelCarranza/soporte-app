@@ -5,6 +5,7 @@ export async function getFolio(): Promise<number> {
 			{ credentials: 'omit' }
 		);
 
+
 		const data = await response.json();
 
 		const folios = Array.isArray(data)
@@ -13,11 +14,13 @@ export async function getFolio(): Promise<number> {
 
 		if (folios.length === 0) return 1;
 
-		const last = folios[folios.length - 1];
-		return last + 1;
+		const maxFolio = Math.max(...folios);
+
+		return maxFolio + 1;
+
 
 	} catch (error) {
 		console.error('Error obteniendo folio:', error);
-		return 1; 
+		return 1;
 	}
 }

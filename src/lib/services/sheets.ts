@@ -1,5 +1,3 @@
-import { notifySuccess, notifyError } from './notyf';
-
 export async function buscarEnSheets(tipoBusqueda: string, codigo: string) {
 	const SCRIPT_URL =
 		'https://script.google.com/macros/s/AKfycbwHlyZmiAQ6Cdgoa-YRQLUBcIeH_clWjGLKT9Na1DcnrNvfEHw6WFXR0IachIPjP7ceIg/exec?sheet=Inventario';

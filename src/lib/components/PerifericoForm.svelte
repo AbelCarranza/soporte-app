@@ -10,7 +10,6 @@
 	let showMonitor = false;
 	let showKeyboard = false;
 	let showMouse = false;
-	let showOthers = false;
 
 	let monitor_brand = '';
 	let monitor_code = '';
@@ -30,7 +29,6 @@
 		showMonitor = data.showMonitor ?? false;
 		showKeyboard = data.showKeyboard ?? false;
 		showMouse = data.showMouse ?? false;
-		showOthers = data.showOthers ?? false;
 
 		monitor_brand = data.monitor_brand ?? '';
 		monitor_code = data.monitor_code ?? '';
@@ -47,13 +45,71 @@
 		observations = data.observations ?? '';
 	});
 
+	$: perifericoStore.update((d) => ({
+		...d,
+		showMonitor,
+		showKeyboard,
+		showMouse
+	}));
+
+	$: if (!showMonitor) resetMonitor();
+	$: if (!showKeyboard) resetKeyboard();
+	$: if (!showMouse) resetMouse();
+
+	function resetMonitor() {
+		monitor_brand = '';
+		monitor_code = '';
+		monitor_serial = '';
+		perifericoStore.update((v) => ({
+			...v,
+			monitor_brand: '',
+			monitor_code: '',
+			monitor_serial: ''
+		}));
+	}
+
+	function resetKeyboard() {
+		keyboard_brand = '';
+		keyboard_code = '';
+		keyboard_serial = '';
+		perifericoStore.update((v) => ({
+			...v,
+			keyboard_brand: '',
+			keyboard_code: '',
+			keyboard_serial: ''
+		}));
+	}
+
+	function resetMouse() {
+		mouse_brand = '';
+		mouse_code = '';
+		mouse_serial = '';
+		perifericoStore.update((v) => ({
+			...v,
+			mouse_brand: '',
+			mouse_code: '',
+			mouse_serial: ''
+		}));
+	}
+
 	export function setData(values: SetPerifericoValues): void {
 		perifericoStore.update((current) => ({
 			...current,
-			showMonitor: !!(values.monitor_brand || values.monitor_code || values.monitor_serial),
-			showKeyboard: !!(values.keyboard_brand || values.keyboard_code || values.keyboard_serial),
-			showMouse: !!(values.mouse_brand || values.mouse_code || values.mouse_serial),
-			showOthers: !!values.observations,
+
+			showMonitor:
+				values.monitor_brand || values.monitor_code || values.monitor_serial
+					? true
+					: current.showMonitor,
+
+			showKeyboard:
+				values.keyboard_brand || values.keyboard_code || values.keyboard_serial
+					? true
+					: current.showKeyboard,
+
+			showMouse:
+				values.mouse_brand || values.mouse_code || values.mouse_serial ? true : current.showMouse,
+
+			showOthers: values.observations ? true : current.showOthers,
 
 			monitor_brand: values.monitor_brand ?? current.monitor_brand,
 			monitor_code: values.monitor_code ?? current.monitor_code,
@@ -76,7 +132,6 @@
 			showMonitor,
 			showKeyboard,
 			showMouse,
-			showOthers,
 
 			monitor_brand,
 			monitor_code,
@@ -121,7 +176,7 @@
 		);
 
 		if (!isValid) {
-			if (!showMonitor && !showKeyboard && !showMouse && !showOthers) {
+			if (!showMonitor && !showKeyboard && !showMouse) {
 				perifericoStore.set({
 					showMonitor: false,
 					showKeyboard: false,
@@ -143,7 +198,6 @@
 		}
 
 		perifericoStore.update((current) => ({ ...current, ...fields }));
-
 		dispatch('update', fields);
 		return true;
 	}
@@ -152,17 +206,15 @@
 		return {
 			showMonitor,
 			showKeyboard,
-			showMouse,
-			showOthers
+			showMouse
 		};
 	}
 </script>
 
 <div class="form-container">
-	<!-- MONITOR -->
 	<div class="form-section">
 		<label class="section-toggle">
-			<input type="checkbox" bind:checked={showMonitor} />
+			<input type="checkbox" bind:checked={showMonitor} on:change={resetMonitor} />
 			<span>🖥️ Monitor</span>
 		</label>
 
@@ -175,7 +227,12 @@
 						placeholder="Ej: Dell P2419H, LG 24MK400H"
 						required
 					/>
-					<InputField label="Código" bind:value={monitor_code} placeholder="Ej: DEL-P2419H" required/>
+					<InputField
+						label="Código"
+						bind:value={monitor_code}
+						placeholder="Ej: DEL-P2419H"
+						required
+					/>
 					<InputField
 						label="Número de Serie"
 						bind:value={monitor_serial}
@@ -187,10 +244,9 @@
 		{/if}
 	</div>
 
-	<!-- TECLADO -->
 	<div class="form-section">
 		<label class="section-toggle">
-			<input type="checkbox" bind:checked={showKeyboard} />
+			<input type="checkbox" bind:checked={showKeyboard} on:change={resetKeyboard} />
 			<span>⌨️ Teclado</span>
 		</label>
 
@@ -203,7 +259,12 @@
 						placeholder="Ej: Logitech K120, Dell KB216"
 						required
 					/>
-					<InputField label="Código" bind:value={keyboard_code} placeholder="Ej: LOG-K120" required/>
+					<InputField
+						label="Código"
+						bind:value={keyboard_code}
+						placeholder="Ej: LOG-K120"
+						required
+					/>
 					<InputField
 						label="Número de Serie"
 						bind:value={keyboard_serial}
@@ -215,10 +276,9 @@
 		{/if}
 	</div>
 
-	<!-- MOUSE -->
 	<div class="form-section">
 		<label class="section-toggle">
-			<input type="checkbox" bind:checked={showMouse} />
+			<input type="checkbox" bind:checked={showMouse} on:change={resetMouse} />
 			<span>🖱️ Mouse</span>
 		</label>
 
@@ -231,7 +291,7 @@
 						placeholder="Ej: Logitech M90, Dell MS116"
 						required
 					/>
-					<InputField label="Código" bind:value={mouse_code} placeholder="Ej: LOG-M90" required/>
+					<InputField label="Código" bind:value={mouse_code} placeholder="Ej: LOG-M90" required />
 					<InputField
 						label="Número de Serie"
 						bind:value={mouse_serial}
